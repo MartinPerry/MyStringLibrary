@@ -141,7 +141,6 @@ void StringTests::TestStringToRealNumber()
 	printf(" OK \n");
 }
 
-
 template <typename T>
 void StringTests::TestAppendIntNumber()
 {
@@ -164,6 +163,8 @@ void StringTests::TestAppendIntNumber()
 	{
 		rnd.push_back(static_cast<T>(i));
 	}
+	rnd.push_back(std::numeric_limits<T>::min());
+	rnd.push_back(std::numeric_limits<T>::max());
 
 	//if it fails - index is in x
 	std::vector<T> x;
@@ -179,11 +180,11 @@ void StringTests::TestAppendIntNumber()
 	MyStringAnsi r1 = "";
 	std::string r2 = "";
 
-	for (int i = 0; i < rnd.size(); i++)
+	for (size_t i = 0; i < rnd.size(); i++)
 	{
 		r1 += rnd[i];
 	}
-	for (int i = 0; i < rnd.size(); i++)
+	for (size_t i = 0; i < rnd.size(); i++)
 	{
 		r2 += std::to_string(rnd[i]);
 	}
@@ -195,7 +196,7 @@ void StringTests::TestAppendIntNumber()
 	}
 
 	for (size_t i = 0; i < r1.length(); i++)
-	{
+	{		
 		if (r1[i] != r2[i])
 		{			
 			printf("Failed: %ll", x[i]);
@@ -212,9 +213,10 @@ void StringTests::TestAppendNumberAll()
 	StringTests::TestAppendIntNumber<int16_t>();	
 	StringTests::TestAppendIntNumber<int32_t>();
 	StringTests::TestAppendIntNumber<int64_t>();
-
+	
 	//this->TestAppendNumber<uint8_t>();
 	StringTests::TestAppendIntNumber<uint16_t>();
 	StringTests::TestAppendIntNumber<uint32_t>();
 	StringTests::TestAppendIntNumber<uint64_t>();
 }
+

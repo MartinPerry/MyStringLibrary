@@ -40,7 +40,8 @@ public:
 	//const char * GetConstString() const { return this->str; };
 	const char * c_str() const { return this->str; };
 	//int GetLength() const { return this->strLength; };
-	int length() const { return this->strLength; };
+	size_t length() const { return this->strLength; };
+	size_t capacity() const { return this->bufferSize; };
 
 	uint32_t GetHashCode() const;
 	uint32_t GetRawHashCode() const;
@@ -137,12 +138,24 @@ public:
 
 	
 private:
+
+	
+
 	char * str;
 	size_t strLength;	
 	size_t bufferSize;
 	mutable uint32_t hashCode;
 	
+	size_t CalcNewBufferSize(size_t forLen) const
+	{
+		size_t newSize = this->bufferSize + static_cast<size_t>(this->bufferSize * 0.6);
+		if (newSize < forLen + 1)
+		{
+			newSize = forLen + 1;
+		}
 
+		return newSize;
+	};
 	
 	void ResizeBuffer(size_t bufferSize);
 	void CreateNew(const char * str, size_t length);
@@ -213,7 +226,8 @@ void MyStringAnsi::operator += (T number)
 	
 	if (this->bufferSize <= this->strLength + len)
 	{
-		this->ResizeBuffer(this->strLength + len + 5);
+		size_t newSize = CalcNewBufferSize(this->strLength + len);		
+		this->ResizeBuffer(newSize);
 	}
 	
 	if (len == 1)
@@ -227,7 +241,7 @@ void MyStringAnsi::operator += (T number)
 	size_t i = this->strLength + len - 1;
 	while (input > 9)
 	{
-		uint64_t x = input / 100;
+		std::make_unsigned<T>::type x = input / 100;
 		const char * t = conversions[input - 100 * x];
 		this->str[i--] = t[1];
 		this->str[i--] = t[0];
@@ -262,7 +276,8 @@ void MyStringAnsi::operator += (T number)
 
 	if (this->bufferSize <= this->strLength + len)
 	{
-		this->ResizeBuffer(this->strLength + len + 5);
+		size_t newSize = CalcNewBufferSize(this->strLength + len);
+		this->ResizeBuffer(newSize);		
 	}
 
 	if (len == 1)
@@ -292,6 +307,8 @@ void MyStringAnsi::operator += (T number)
 
 	this->str[this->strLength] = 0;
 };
+
+
 
 template <typename T, typename>
 MyStringAnsi MyStringAnsi::operator + (T number) const

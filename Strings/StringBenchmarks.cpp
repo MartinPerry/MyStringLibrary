@@ -16,7 +16,6 @@ StringBenchmarks::StringBenchmarks(int count)
 	e = std::default_random_engine(r());
 }
 
-
 StringBenchmarks::~StringBenchmarks()
 {
 	delete[] res;
@@ -64,6 +63,16 @@ void StringBenchmarks::PrintTime()
 	std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " ms" << std::endl;
 }
 
+void StringBenchmarks::RunExternalTest(std::function<void(int c, double *)> f)
+{
+	std::cout << __func__ << std::endl;
+
+	this->Start("");
+	f(COUNT, res);
+	this->Finish();
+
+}
+
 void StringBenchmarks::TestStringToInt()
 {
 	
@@ -81,14 +90,14 @@ void StringBenchmarks::TestStringToInt()
 	this->Start("MyStringUtils::ToNumber");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = MyStringUtils::ToNumber<long long>(rnd[i].c_str());
+		res[i] = (double)MyStringUtils::ToNumber<long long>(rnd[i].c_str());
 	}
 	this->Finish();
 
 	this->Start("atoll");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = atoll(rnd[i].c_str());
+		res[i] = (double)atoll(rnd[i].c_str());
 	}
 	this->Finish();
 	
@@ -117,14 +126,14 @@ void StringBenchmarks::TestStringToDouble()
 	this->Start("MyStringUtils::ToNumber");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = MyStringUtils::ToNumber<long long>(rnd[i].c_str());
+		res[i] = (double)MyStringUtils::ToNumber<long long>(rnd[i].c_str());
 	}
 	this->Finish();
 
 	this->Start("std::strtod");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = std::strtod(rnd[i].c_str(), nullptr);
+		res[i] = (double)std::strtod(rnd[i].c_str(), nullptr);
 	}
 	this->Finish();
 	
@@ -144,9 +153,12 @@ void StringBenchmarks::TestAppendIntNumber()
 		rnd.push_back(uniform_dist(e));
 	}
 	
-	MyStringAnsi tmp(COUNT * 20);
-	std::string tmp2;
-	tmp2.reserve(COUNT * 20);
+	//MyStringAnsi tmp(COUNT * 20);
+	//std::string tmp2;
+	//tmp2.reserve(COUNT * 20);
+	
+	MyStringAnsi tmp = "";
+	std::string tmp2 = "";
 	
 	
 	this->Start("MyString +=");
@@ -168,7 +180,7 @@ void StringBenchmarks::TestAppendIntNumber()
 
 	if (strcmp(tmp.c_str(), tmp2.c_str()) != 0)
 	{
-		printf("Number conversion not working");
+		printf("Number conversion failed");
 	}
 	
 }

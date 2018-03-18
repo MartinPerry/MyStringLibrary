@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <random>
+#include <functional>
 
 struct StringBenchmarks
 {
@@ -17,6 +18,8 @@ struct StringBenchmarks
 	void TestAppendIntNumber();
 
 	void TestAppendNumberAll();
+
+	void RunExternalTest(std::function<void(int c, double *)> f);
 
 private:
 	const int COUNT;

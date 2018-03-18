@@ -113,7 +113,8 @@ void MyStringAnsi::Ctor(const char * str)
 
 	this->str = new char[this->bufferSize];
 
-	my_strncpy(this->str, this->bufferSize, str, this->strLength);
+	memcpy(this->str, str, strLength);
+	//my_strncpy(this->str, this->bufferSize, str, this->strLength);
 	this->str[this->strLength] = 0;
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
@@ -148,7 +149,8 @@ void MyStringAnsi::CreateNew(const char * str, size_t length)
 		this->str = new char[this->bufferSize];
 	}
 
-	my_strncpy(this->str, this->bufferSize, str, this->strLength);
+	memcpy(this->str, str, this->strLength);
+	//my_strncpy(this->str, this->bufferSize, str, this->strLength);
 	this->str[this->strLength] = 0;
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 
@@ -159,23 +161,24 @@ void MyStringAnsi::CreateNew(const char * str, size_t length)
 /// Current string is coppied to the resized one
 /// </summary>
 /// <param name="length"></param>
-void MyStringAnsi::ResizeBuffer(size_t bufferSize)
+void MyStringAnsi::ResizeBuffer(size_t newBufferSize)
 {
-	if (bufferSize < this->bufferSize)
+	if (newBufferSize < this->bufferSize)
 	{
 		//resize to lower size not permitted
 		return;
 	}
 
-	if (this->bufferSize > bufferSize)
+	if (this->bufferSize > newBufferSize)
 	{
 		return;
 	}
 
-	this->bufferSize = bufferSize;
+	this->bufferSize = newBufferSize;
 
 	char * newStr = new char[this->bufferSize];
-	my_strncpy(newStr, this->bufferSize, this->str, this->strLength);
+	memcpy(newStr, str, this->strLength);
+	//my_strncpy(newStr, this->bufferSize, this->str, this->strLength);
 	SAFE_DELETE_ARRAY(this->str);
 	this->str = newStr;
 
