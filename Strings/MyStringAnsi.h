@@ -7,6 +7,7 @@
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
 
+#define BUFFER_SIZE 16
 
 
 class MyStringAnsi
@@ -30,19 +31,31 @@ public:
 	static MyStringAnsi LoadFromFile(const MyStringAnsi & fileName);
 	static MyStringAnsi CreateFormated(const char * str, ...);
 
-	MyStringAnsi CreateReplaced(const char * src, const char * dest) const;
+	//MyStringAnsi CreateReplaced(const char * src, const char * dest) const;
 
 	//======================================================================
 	void Release();
 	bool SaveToFile(const MyStringAnsi & fileName) const;
 
-
-	//const char * GetConstString() const { return this->str; };
-	const char * c_str() const { return this->str; };
-	//int GetLength() const { return this->strLength; };
+	
+	const char * c_str() const { return this->str; };	
 	size_t length() const { return this->strLength; };
-	size_t capacity() const { return this->bufferSize; };
+	size_t capacity() const 
+	{ 
+		if (this->str == local) return BUFFER_SIZE;		
+		size_t bufferSize = 0;
+		memcpy(&bufferSize, local, sizeof(size_t));
+		return bufferSize;
+	};
 
+
+	void Trim();
+	void Reverse();
+	void RemoveMultipleChars(char t);
+
+	std::vector<MyStringAnsi> Split(char delimeter, bool keepEmptyValues = false) const;
+
+	/*
 	uint32_t GetHashCode() const;
 	uint32_t GetRawHashCode() const;
 	char GetCharAt(int index) const;
@@ -67,8 +80,7 @@ public:
 	int Find(const char * str, SearchAlgorithm algo = C_LIB) const;
 	int Find(const char * str, int offset) const;
 	std::vector<int> FindAll(const char * str) const;
-
-	std::vector<MyStringAnsi> Split(const char * delimeters, bool keepEmptyValues = false) const;
+	
 	
 
 	MyStringAnsi SubString(int start) const;
@@ -79,12 +91,9 @@ public:
 
 	int Count(const MyStringAnsi & str) const;
 	int Count(const char * str) const;
-
-	void Trim();
-	void Reverse();
+	
 	void ToUpper();
-	void ToLower();	
-	void RemoveMultipleChars(char t);
+	void ToLower();		
 	int Compare(const MyStringAnsi & str) const;
 
 	int LevenshteinDistance(const MyStringAnsi & str2) const;
@@ -99,7 +108,8 @@ public:
 	void operator += (const MyStringAnsi & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
-	
+	*/
+
 	template <typename T,
 		typename = typename std::enable_if<std::is_signed<T>::value>::type,
 		typename = typename std::enable_if<std::is_integral<T>::value>::type>
@@ -108,23 +118,27 @@ public:
 	template <typename T,
 		typename = typename std::enable_if<std::is_unsigned<T>::value>::type>
 	void operator += (T number);
-		
+	
+	inline char operator [](const int index) const;
+
+	/*
 	void operator += (const float number);
 	void operator += (const double number);
 
 	char & operator [](const int index);
-	char operator [](const int index) const;
+	
 	MyStringAnsi operator + (const MyStringAnsi & str) const;
 	MyStringAnsi operator + (const char * str) const;	
 	MyStringAnsi operator + (const double number) const;
-	
+	*/
 	template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>	
 	MyStringAnsi operator + (T number) const;
 	
-	operator uint32_t() const { return GetHashCode(); }
+	//operator uint32_t() const { return GetHashCode(); }
 
 
 	//conversion
+	/*
 	int ToInt() const;
 	double ToReal() const;
 	bool IsNumber() const;
@@ -135,20 +149,29 @@ public:
 
 	//friends
 	friend MyStringAnsi operator +(int value, const MyStringAnsi & right);
-
+	*/
 	
 private:
 
-	
 
-	char * str;
+	char local[BUFFER_SIZE];	
+	char * str;	
+
+	//char * str;
 	size_t strLength;	
-	size_t bufferSize;
+	//size_t bufferSize;
+
 	mutable uint32_t hashCode;
 	
+
 	size_t CalcNewBufferSize(size_t forLen) const
-	{
-		size_t newSize = this->bufferSize + static_cast<size_t>(this->bufferSize * 0.6);
+	{	
+		return CalcNewBufferSize(this->capacity(), forLen);		
+	};
+
+	size_t CalcNewBufferSize(size_t curSize, size_t forLen) const
+	{		
+		size_t newSize = curSize + static_cast<size_t>(curSize * 0.6);
 		if (newSize < forLen + 1)
 		{
 			newSize = forLen + 1;
@@ -160,18 +183,19 @@ private:
 	void ResizeBuffer(size_t bufferSize);
 	void CreateNew(const char * str, size_t length);
 	void Ctor(const char * str);
+	/*
 	int CLib(const char * str, int start = 0) const;
 	int BruteForce(const char * str, int start = 0) const;
 	int BoyerMoore(const char * str, int * &lookUp, int start = 0) const;
 	int KnuthMorisPrat(const char * str, int * &lookUp, int start = 0) const;
 
 	char * strtok_single(char * str, char const * delims) const;
-
+	*/
 
 };
 
 
-
+/*
 //For use in std::unordered_map
 //http://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
 namespace std
@@ -185,7 +209,7 @@ namespace std
 		};
 	};
 };
-
+*/
 #include "./ComparisonOperators.inl"
 
 static const char* const conversions[] = {
@@ -224,10 +248,11 @@ void MyStringAnsi::operator += (T number)
 	//sizeof(T) = 4 => 11 (10 + sign)
 	//sizeof(T) = 8 => 21 (20 + sign)
 	
-	if (this->bufferSize <= this->strLength + len)
+	size_t curSize = this->capacity();
+	if (curSize <= this->strLength + len)
 	{
-		size_t newSize = CalcNewBufferSize(this->strLength + len);		
-		this->ResizeBuffer(newSize);
+		curSize = CalcNewBufferSize(curSize, this->strLength + len);
+		this->ResizeBuffer(curSize);
 	}
 	
 	if (len == 1)
@@ -274,10 +299,11 @@ void MyStringAnsi::operator += (T number)
 	//sizeof(T) = 4 => 11 (10 + sign)
 	//sizeof(T) = 8 => 21 (20 + sign)
 
-	if (this->bufferSize <= this->strLength + len)
+	size_t curSize = this->capacity();
+	if (curSize <= this->strLength + len)
 	{
-		size_t newSize = CalcNewBufferSize(this->strLength + len);
-		this->ResizeBuffer(newSize);		
+		curSize = CalcNewBufferSize(curSize, this->strLength + len);
+		this->ResizeBuffer(curSize);
 	}
 
 	if (len == 1)
@@ -318,6 +344,11 @@ MyStringAnsi MyStringAnsi::operator + (T number) const
 	return newStr;
 }
 
+
+inline char MyStringAnsi::operator [](const int index) const
+{
+	return this->str[index];
+}
 
 #undef _CRT_SECURE_NO_WARNINGS    //for MSVC - disable MSVC warnings on C functions
 #undef _CRT_SECURE_NO_DEPRECATE

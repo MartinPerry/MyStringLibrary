@@ -102,6 +102,7 @@ void X_aligned_memcpy_sse2(char* dest, const char* src, const unsigned long s)
 }
 */
 
+//https://akrzemi1.wordpress.com/2014/04/14/common-optimizations/
 class StringX 
 {
 public:
@@ -151,6 +152,7 @@ int main(int argc, char ** argv)
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);
 
+	
 	/*
 	std::string xx = "";
 	size_t lastC = 0;
@@ -178,9 +180,33 @@ int main(int argc, char ** argv)
 		}
 	}
 	*/
+	
+
+	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
+	//oo1t.RemoveMultipleChars('x');
+	auto ss1 = oo1t.Split(' ');
+	auto ss = oo1t.Split(' ', true);
+
+	MyStringAnsi oo1 = "1";
+	MyStringAnsi oo14 = "abcdefghijklmo";
+	MyStringAnsi oo15 = "abcdefghijklmop";
+	MyStringAnsi oo16 = "abcdefghijklmopq";
+
+	oo1.capacity();
+	oo16.capacity();
+
+	//oo12 += 1234567890123;
+	//oo12 += 445645646545456;
+
+	//std::string x[50000];
+	//std::string po = "xxxxxxxxxxxxxxx xxxxx";
+	std::string po = "xxxxxxxxxxxxxx";
+	po += "x";
+	int oox = po.capacity();
+	po += "x";
 
 	StringX oo = "xx";
-	int ii = sizeof(oo);
+	int ii = sizeof(po);
 	printf("%s\n", oo.c_str());
 
 
@@ -188,17 +214,34 @@ int main(int argc, char ** argv)
 
 	//double ix = MyStringUtils::ToNumber<double>("3.14159e+001");
 	
-	//StringTests::TestStringToIntNumber();
-	//StringTests::TestStringToRealNumber();
+	StringTests::TestCtors();
+	StringTests::TestMethods();
+	StringTests::TestStringToIntNumber();
+	StringTests::TestStringToRealNumber();
 	StringTests::TestAppendNumberAll();
 
-	StringBenchmarks sb(1000'000);
-	//sb.RunExternalTest([&](int count, double * r) -> void{});
+	StringBenchmarks sb(10000'000);
+	/*
+	sb.RunExternalTest([&](int count, double * r) -> void{
+		for (int i = 0; i < count; i++)
+		{
+			MyStringAnsi x = "xxxxxxxxxxxxxxx";
+			r[i] += x.length();
+		}
+	});
 
-	
+	sb.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{
+			MyStringAnsi x = "xxxxxxxxxxxxxxxx";
+			r[i] += x.length();
+		}
+	});
+	*/
+	//sb.TestShortStrAllocation();
 	//sb.TestStringToInt();
 	//sb.TestStringToDouble();
-	sb.TestAppendNumberAll();
+	//sb.TestAppendNumberAll();
 
 	return 0;
 }

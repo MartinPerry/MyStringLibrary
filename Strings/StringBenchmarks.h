@@ -11,6 +11,7 @@ struct StringBenchmarks
 	StringBenchmarks(int count);
 	~StringBenchmarks();
 
+	void TestShortStrAllocation();
 	void TestStringToInt();
 	void TestStringToDouble();
 

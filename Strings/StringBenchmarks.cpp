@@ -61,6 +61,7 @@ void StringBenchmarks::Finish()
 void StringBenchmarks::PrintTime()
 {
 	std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " ms" << std::endl;
+	std::cout << " ======= " << std::endl;
 }
 
 void StringBenchmarks::RunExternalTest(std::function<void(int c, double *)> f)
@@ -71,6 +72,36 @@ void StringBenchmarks::RunExternalTest(std::function<void(int c, double *)> f)
 	f(COUNT, res);
 	this->Finish();
 
+}
+
+void StringBenchmarks::TestShortStrAllocation()
+{
+	std::cout << __func__ << std::endl;
+
+	std::uniform_int_distribution<short> uniform_dist(std::numeric_limits<short>::min(),
+		std::numeric_limits<short>::max());
+
+	std::vector<std::string> rnd;
+	for (int i = 0; i < COUNT; i++)
+	{
+		rnd.push_back(std::to_string(uniform_dist(e)).c_str());
+	}
+
+	this->Start("MyStringAnsi");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyStringAnsi x = rnd[i].c_str();
+		res[i] += x.length();
+	}
+	this->Finish();
+
+	this->Start("std::string");
+	for (int i = 0; i < COUNT; i++)
+	{
+		std::string x = rnd[i].c_str();
+		res[i] += x.length();
+	}
+	this->Finish();
 }
 
 void StringBenchmarks::TestStringToInt()

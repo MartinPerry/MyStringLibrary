@@ -3,11 +3,40 @@
 #include <string>
 #include <random>
 #include <assert.h> 
+#include <vector>>
 
 #include "MyString.h"
 #include "MyStringUtils.h"
 
 
+void StringTests::TestCtors()
+{
+	printf("==== Ctors (%s) ==== ", __func__);
+
+	MyStringAnsi m14 = "abcdefghijklmo"; //use local
+	MyStringAnsi m15 = "abcdefghijklmop"; //use local
+	MyStringAnsi m16 = "abcdefghijklmopq"; //use "heap"
+
+
+	std::string s14 = "abcdefghijklmo";
+	std::string s15 = "abcdefghijklmop";
+	std::string s16 = "abcdefghijklmopq";
+
+	if (strcmp(m14.c_str(), s14.c_str()) != 0)
+	{
+		StringTests::error("ctor not working");
+	}
+
+	if (strcmp(m15.c_str(), s15.c_str()) != 0)
+	{
+		StringTests::error("ctor not working");
+	}
+
+	if (strcmp(m16.c_str(), s16.c_str()) != 0)
+	{
+		StringTests::error("ctor not working");
+	}
+}
 
 void StringTests::TestStringToIntNumber()
 {
@@ -165,6 +194,8 @@ void StringTests::TestAppendIntNumber()
 	}
 	rnd.push_back(std::numeric_limits<T>::min());
 	rnd.push_back(std::numeric_limits<T>::max());
+	rnd.push_back(100001);
+	rnd.push_back(10001);
 
 	//if it fails - index is in x
 	std::vector<T> x;
@@ -218,5 +249,41 @@ void StringTests::TestAppendNumberAll()
 	StringTests::TestAppendIntNumber<uint16_t>();
 	StringTests::TestAppendIntNumber<uint32_t>();
 	StringTests::TestAppendIntNumber<uint64_t>();
+}
+
+void StringTests::TestMethods()
+{
+	//for trim
+	std::vector<const char *> inputs = {" 1111 111 ", "xxxx    ", "   ", " 11", 
+		"xxxxxxxxxxxxxxxx", " xxxxxxxxxxxxxxxx   "};
+	std::vector<const char *> outputs = { "1111 111", "xxxx", "", "11",
+		"xxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxx"};
+
+	for (size_t i = 0; i < inputs.size(); i++)
+	{
+		MyStringAnsi x1 = inputs[i];
+		x1.Trim();
+
+		if (strcmp(x1.c_str(), outputs[i]) != 0)
+		{
+			StringTests::error("Trim not working");
+		}
+	}
+
+
+	//for reverse
+	inputs = { "kobylamamalybok", "hello world", "x", "xax" };
+	outputs = { "kobylamamalybok", "dlrow olleh", "x", "xax" };
+
+	for (size_t i = 0; i < inputs.size(); i++)
+	{
+		MyStringAnsi x1 = inputs[i];
+		x1.Reverse();
+
+		if (strcmp(x1.c_str(), outputs[i]) != 0)
+		{
+			StringTests::error("Reverse not working");
+		}
+	}
 }
 

@@ -5,6 +5,7 @@
 
 struct StringTests 
 {
+	static void TestCtors();
 	static void TestStringToIntNumber();
 	static void TestStringToRealNumber();
 
@@ -12,6 +13,8 @@ struct StringTests
 	static void TestAppendIntNumber();
 
 	static void TestAppendNumberAll();
+
+	static void TestMethods();
 
 protected:
 	inline static void error(const std::string& s)
