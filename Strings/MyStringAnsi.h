@@ -39,13 +39,30 @@ public:
 
 	
 	const char * c_str() const { return this->str; };	
-	size_t length() const { return this->strLength; };
+
+	size_t length() const 
+	{ 
+		if (this->str == local) return local[BUFFER_SIZE];
+		return (uint8_t(local[7]) << 24) +
+			(uint8_t(local[6]) << 16) +
+			(uint8_t(local[5]) << 8) +
+			uint8_t(local[4]);
+	};
+
 	size_t capacity() const 
 	{ 
 		if (this->str == local) return BUFFER_SIZE;		
+		
+		return (uint8_t(local[3]) << 24) + 
+			(uint8_t(local[2]) << 16) + 
+			(uint8_t(local[1]) << 8) + 
+			uint8_t(local[0]);
+
+		/*
 		size_t bufferSize = 0;
 		memcpy(&bufferSize, local, sizeof(size_t));
 		return bufferSize;
+		*/
 	};
 
 
@@ -54,6 +71,8 @@ public:
 	void RemoveMultipleChars(char t);
 
 	std::vector<MyStringAnsi> Split(char delimeter, bool keepEmptyValues = false) const;
+
+	size_t Count(const char str) const;
 
 	/*
 	uint32_t GetHashCode() const;
@@ -90,7 +109,7 @@ public:
 	
 
 	int Count(const MyStringAnsi & str) const;
-	int Count(const char * str) const;
+	
 	
 	void ToUpper();
 	void ToLower();		
@@ -153,12 +172,14 @@ public:
 	
 private:
 
-
-	char local[BUFFER_SIZE];	
+	//minimal size must be: 
+	//uint32_t | uint32_t | uint8_t
+	//capacity | length (if "heap") | length (if local)  
+	char local[BUFFER_SIZE + 1];	
 	char * str;	
 
 	//char * str;
-	size_t strLength;	
+	//size_t strLength;	
 	//size_t bufferSize;
 
 	mutable uint32_t hashCode;
@@ -180,17 +201,26 @@ private:
 		return newSize;
 	};
 	
+	void SetBufferSizeInternal(size_t s)
+	{
+		memcpy(this->local, &s, sizeof(size_t));
+	};
+
+	void SetLengthInternal(size_t s)
+	{
+		if (this->str == local) local[BUFFER_SIZE] = s;
+		else memcpy(this->local + 4, &s, sizeof(size_t));
+	};
+
 	void ResizeBuffer(size_t bufferSize);
 	void CreateNew(const char * str, size_t length);
 	void Ctor(const char * str);
-	/*
+	
 	int CLib(const char * str, int start = 0) const;
 	int BruteForce(const char * str, int start = 0) const;
 	int BoyerMoore(const char * str, int * &lookUp, int start = 0) const;
 	int KnuthMorisPrat(const char * str, int * &lookUp, int start = 0) const;
 
-	char * strtok_single(char * str, char const * delims) const;
-	*/
 
 };
 
@@ -249,21 +279,23 @@ void MyStringAnsi::operator += (T number)
 	//sizeof(T) = 8 => 21 (20 + sign)
 	
 	size_t curSize = this->capacity();
-	if (curSize <= this->strLength + len)
+	size_t strLength = this->length();
+	if (curSize <= strLength + len)
 	{
-		curSize = CalcNewBufferSize(curSize, this->strLength + len);
+		curSize = CalcNewBufferSize(curSize, strLength + len);
 		this->ResizeBuffer(curSize);
 	}
 	
 	if (len == 1)
 	{
-		this->str[this->strLength++] = static_cast<char>(number + '0');
-		this->str[this->strLength] = 0;
+		this->str[strLength++] = static_cast<char>(number + '0');
+		this->str[strLength] = 0;
+		this->SetLengthInternal(strLength);
 		return;
 	}
 
 
-	size_t i = this->strLength + len - 1;
+	size_t i = strLength + len - 1;
 	while (input > 9)
 	{
 		std::make_unsigned<T>::type x = input / 100;
@@ -282,9 +314,10 @@ void MyStringAnsi::operator += (T number)
 		this->str[i] = '-';
 	}
 
-	this->strLength += len;
+	strLength += len;
 
-	this->str[this->strLength] = 0;
+	this->str[strLength] = 0;
+	this->SetLengthInternal(strLength);
 };
 
 /// <summary>
@@ -300,20 +333,23 @@ void MyStringAnsi::operator += (T number)
 	//sizeof(T) = 8 => 21 (20 + sign)
 
 	size_t curSize = this->capacity();
-	if (curSize <= this->strLength + len)
+	size_t strLength = this->length();
+
+	if (curSize <= strLength + len)
 	{
-		curSize = CalcNewBufferSize(curSize, this->strLength + len);
+		curSize = CalcNewBufferSize(curSize, strLength + len);
 		this->ResizeBuffer(curSize);
 	}
 
 	if (len == 1)
 	{
-		this->str[this->strLength++] = static_cast<char>(number + '0');
-		this->str[this->strLength] = 0;
+		this->str[strLength++] = static_cast<char>(number + '0');
+		this->str[strLength] = 0;
+		this->SetLengthInternal(strLength);
 		return;
 	}
 	
-	size_t i = this->strLength + len - 1;
+	size_t i = strLength + len - 1;
 	while (number > 9)
 	{
 		T x = number / 100;
@@ -328,10 +364,10 @@ void MyStringAnsi::operator += (T number)
 		this->str[i] = static_cast<char>(number + '0');
 	}
 	
-	
-	this->strLength += len;
+	strLength += len;
 
-	this->str[this->strLength] = 0;
+	this->str[strLength] = 0;
+	this->SetLengthInternal(strLength);
 };
 
 

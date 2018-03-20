@@ -146,13 +146,19 @@ private:
 
 };
 
+MyStringAnsi tmpFunc()
+{
+	MyStringAnsi o = "ahoj xxxxxxxxxxxxxxxx";
+
+	return o;
+}
 
 int main(int argc, char ** argv)
 {
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);
 
-	
+
 	/*
 	std::string xx = "";
 	size_t lastC = 0;
@@ -181,6 +187,23 @@ int main(int argc, char ** argv)
 	}
 	*/
 	
+
+	char m[16];
+	memset(m, 0, 16);
+	uint64_t v = 456456456;
+	memcpy(m, &v, sizeof(uint64_t));
+	
+	size_t u = 0;
+	memcpy(&u, m, sizeof(size_t));
+
+	size_t u2 = (uint8_t(m[3]) << 24) + (uint8_t(m[2]) << 16) + (uint8_t(m[1]) << 8) + uint8_t(m[0]);
+
+	if (v != u)
+	{
+		printf("x");
+	}
+
+	MyStringAnsi oosx = tmpFunc();
 
 	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
 	//oo1t.RemoveMultipleChars('x');
@@ -238,6 +261,48 @@ int main(int argc, char ** argv)
 		}
 	});
 	*/
+
+	std::random_device r;
+	std::default_random_engine e(r());
+	std::uniform_int_distribution<uint64_t> uniform_dist(std::numeric_limits<uint64_t>::min(),
+		std::numeric_limits<uint64_t>::max());
+
+	/*
+	std::vector<std::array<char, 16>> d;
+	for (int i = 0; i < 10000'000; i++)
+	{
+		std::array<char, 16> a;
+		
+		uint64_t v = uniform_dist(e);
+		memcpy(a.data(), &v, sizeof(uint64_t));
+
+
+		d.push_back(a);
+	}
+
+	sb.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{			
+			size_t u = 0;
+			memcpy(&u, d[i].data(), sizeof(size_t));
+			
+			r[i] += u;
+		}
+	});
+
+	sb.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{
+			const char * m = d[i].data();
+			
+			size_t u = (uint8_t(m[3]) << 24) + (uint8_t(m[2]) << 16) + (uint8_t(m[1]) << 8) + uint8_t(m[0]);
+
+			
+			r[i] += u;
+		}
+	});
+	*/
+
 	//sb.TestShortStrAllocation();
 	//sb.TestStringToInt();
 	//sb.TestStringToDouble();

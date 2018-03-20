@@ -87,6 +87,23 @@ void StringBenchmarks::TestShortStrAllocation()
 		rnd.push_back(std::to_string(uniform_dist(e)).c_str());
 	}
 
+	this->Start("MyStringAnsi (literal)");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyStringAnsi x = "xxxxxxx";
+		res[i] += x.length();
+	}
+	this->Finish();
+
+	this->Start("std::string (literal)");
+	for (int i = 0; i < COUNT; i++)
+	{
+		std::string x = "xxxxxxx";
+		res[i] += x.length();
+	}
+	this->Finish();
+
+
 	this->Start("MyStringAnsi");
 	for (int i = 0; i < COUNT; i++)
 	{

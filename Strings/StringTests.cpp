@@ -36,6 +36,8 @@ void StringTests::TestCtors()
 	{
 		StringTests::error("ctor not working");
 	}
+
+	printf(" OK \n");
 }
 
 void StringTests::TestStringToIntNumber()
@@ -253,6 +255,7 @@ void StringTests::TestAppendNumberAll()
 
 void StringTests::TestMethods()
 {
+	//========================================================================
 	//for trim
 	std::vector<const char *> inputs = {" 1111 111 ", "xxxx    ", "   ", " 11", 
 		"xxxxxxxxxxxxxxxx", " xxxxxxxxxxxxxxxx   "};
@@ -270,10 +273,10 @@ void StringTests::TestMethods()
 		}
 	}
 
-
+	//========================================================================
 	//for reverse
-	inputs = { "kobylamamalybok", "hello world", "x", "xax" };
-	outputs = { "kobylamamalybok", "dlrow olleh", "x", "xax" };
+	inputs = { "kobylamamalybok", "hello world", "x", "xax", "pepa" };
+	outputs = { "kobylamamalybok", "dlrow olleh", "x", "xax", "apep" };
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
@@ -285,5 +288,56 @@ void StringTests::TestMethods()
 			StringTests::error("Reverse not working");
 		}
 	}
+	
+	//========================================================================
+	//for remove multiple chars
+	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx" };
+	outputs = { " x x ", "hellox hello", "x", "xax", "xaxax" };
+
+	for (size_t i = 0; i < inputs.size(); i++)
+	{
+		MyStringAnsi x1 = inputs[i];
+		x1.RemoveMultipleChars('x');		
+
+		if (strcmp(x1.c_str(), outputs[i]) != 0)
+		{
+			StringTests::error("Reverse not working");
+		}
+	}
+
+	//========================================================================
+	//for split (not keep empty)
+	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx", " xx xx   xx" };
+	std::vector<int> outputs2 = { 2, 2, 1, 1, 1, 3 };
+
+	for (size_t i = 0; i < inputs.size(); i++)
+	{
+		MyStringAnsi x1 = inputs[i];
+		auto v = x1.Split(' ');
+
+		if (v.size() != outputs2[i])
+		{
+			StringTests::error("Reverse not working");
+		}
+	}
+
+	//========================================================================
+	//for split (keep empty)
+	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx", " xx xx   xx" };
+	outputs2 = { 4, 2, 1, 1, 1, 6 };
+
+	for (size_t i = 0; i < inputs.size(); i++)
+	{
+		MyStringAnsi x1 = inputs[i];
+		auto v = x1.Split(' ', true);
+
+		if (v.size() != outputs2[i])
+		{
+			StringTests::error("Reverse not working");
+		}
+	}
+
+	//========================================================================
+	//
 }
 
