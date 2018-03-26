@@ -5,14 +5,17 @@
 
 struct StringTests 
 {
+	static std::string CreateRandomString(int len);
+
 	static void TestCtors();
 	static void TestStringToIntNumber();
 	static void TestStringToRealNumber();
 
 	template <typename T>
 	static void TestAppendIntNumber();
-
 	static void TestAppendNumberAll();
+
+	static void TestAppendString();
 
 	static void TestMethods();
 

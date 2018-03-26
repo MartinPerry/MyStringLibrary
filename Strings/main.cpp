@@ -153,11 +153,38 @@ MyStringAnsi tmpFunc()
 	return o;
 }
 
+
+template <typename T>
+FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t offset)
+{
+	static const uint64_t MASK = 0x00000000000000ff;
+
+	T val = 0;
+	memcpy(&val, data + offset, sizeof(T));
+
+
+	std::array<uint8_t, sizeof(T)> v;
+	v[0] = (val & MASK);
+	v[1] = (val & MASK << 8) >> 8;
+	v[2] = (val & MASK << 16) >> 16;
+	v[3] = (val & MASK << 24) >> 24;
+	v[4] = (val & MASK << 32) >> 32;
+	v[5] = (val & MASK << 40) >> 40;
+	v[6] = (val & MASK << 48) >> 48;
+	v[7] = (val & MASK << 56) >> 56;
+
+	return std::move(v);
+};
+
+//vyhozeni sfinae z headeru
+//https://stackoverflow.com/questions/48480469/function-implementation-with-enable-if-outside-of-class-definition
+
 int main(int argc, char ** argv)
 {
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);
 
+	
 
 	/*
 	std::string xx = "";
@@ -187,6 +214,7 @@ int main(int argc, char ** argv)
 	}
 	*/
 	
+	int oioi = sizeof(MyStringAnsi);
 
 	char m[16];
 	memset(m, 0, 16);
@@ -207,13 +235,19 @@ int main(int argc, char ** argv)
 
 	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
 	//oo1t.RemoveMultipleChars('x');
-	auto ss1 = oo1t.Split(' ');
-	auto ss = oo1t.Split(' ', true);
+	auto ss1 = oo1t.Split<MyStringAnsi>(' ');
+	auto ss = oo1t.Split<MyStringAnsi>(' ', true);
 
 	MyStringAnsi oo1 = "1";
 	MyStringAnsi oo14 = "abcdefghijklmo";
 	MyStringAnsi oo15 = "abcdefghijklmop";
 	MyStringAnsi oo16 = "abcdefghijklmopq";
+
+	oo1 += "ahoj";
+	oo1 += "ahojahoj";
+	oo1 += "ahojahoj";
+
+	auto x = oo1.c_str();
 
 	oo1.capacity();
 	oo16.capacity();
@@ -232,18 +266,22 @@ int main(int argc, char ** argv)
 	int ii = sizeof(po);
 	printf("%s\n", oo.c_str());
 
+	
 
 	MyStringAnsi str("xax");
 
 	//double ix = MyStringUtils::ToNumber<double>("3.14159e+001");
 	
+	/*
 	StringTests::TestCtors();
 	StringTests::TestMethods();
 	StringTests::TestStringToIntNumber();
 	StringTests::TestStringToRealNumber();
-	StringTests::TestAppendNumberAll();
+	StringTests::TestAppendNumberAll();	
+	StringTests::TestAppendString();
+	*/
 
-	StringBenchmarks sb(10000'000);
+	StringBenchmarks sb(1000'000);
 	/*
 	sb.RunExternalTest([&](int count, double * r) -> void{
 		for (int i = 0; i < count; i++)
@@ -307,6 +345,8 @@ int main(int argc, char ** argv)
 	//sb.TestStringToInt();
 	//sb.TestStringToDouble();
 	//sb.TestAppendNumberAll();
+	//sb.TestAppendSmallString();
+	//sb.TestAppendString();
 
 	return 0;
 }

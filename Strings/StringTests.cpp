@@ -3,11 +3,28 @@
 #include <string>
 #include <random>
 #include <assert.h> 
-#include <vector>>
+#include <vector>
+#include <time.h>
 
 #include "MyString.h"
 #include "MyStringUtils.h"
 
+std::string StringTests::CreateRandomString(int len)
+{
+	srand(time(0));
+
+	static const char alphanum[] =
+		"0123456789"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"abcdefghijklmnopqrstuvwxyz";
+
+	std::string r = "";
+	for (int i = 0; i < len; ++i) {
+		r += alphanum[rand() % (sizeof(alphanum) - 1)];
+	}
+
+	return r;
+}
 
 void StringTests::TestCtors()
 {
@@ -253,6 +270,46 @@ void StringTests::TestAppendNumberAll()
 	StringTests::TestAppendIntNumber<uint64_t>();
 }
 
+void StringTests::TestAppendString()
+{
+	printf("==== Append string (%s) ==== ", __func__);
+
+	// Seed with a real random value, if available
+	std::random_device r;
+	std::default_random_engine e(r());
+
+	std::uniform_int_distribution<int> uniform_dist(1, 1000);
+
+	std::vector<std::string> rnd;	
+	for (int i = 0; i < 500; i++)
+	{
+		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+	}
+	
+	rnd.push_back("");
+	rnd.push_back(" ");
+	
+	MyStringAnsi r1 = "";
+	std::string r2 = "";
+
+	for (size_t i = 0; i < rnd.size(); i++)
+	{
+		r1 += rnd[i];
+	}
+	for (size_t i = 0; i < rnd.size(); i++)
+	{
+		r2 += rnd[i];
+	}
+
+
+	if (strcmp(r1.c_str(), r2.c_str()) != 0)
+	{
+		StringTests::error("String append not working");
+	}
+
+	printf(" OK \n");
+}
+
 void StringTests::TestMethods()
 {
 	//========================================================================
@@ -313,7 +370,7 @@ void StringTests::TestMethods()
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
 		MyStringAnsi x1 = inputs[i];
-		auto v = x1.Split(' ');
+		auto v = x1.Split<MyStringAnsi>(' ');
 
 		if (v.size() != outputs2[i])
 		{
@@ -329,7 +386,7 @@ void StringTests::TestMethods()
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
 		MyStringAnsi x1 = inputs[i];
-		auto v = x1.Split(' ', true);
+		auto v = x1.Split<MyStringAnsi>(' ', true);
 
 		if (v.size() != outputs2[i])
 		{

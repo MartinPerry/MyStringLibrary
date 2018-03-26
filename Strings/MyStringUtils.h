@@ -1,7 +1,6 @@
 #ifndef MY_STRING_UTILS
 #define MY_STRING_UTILS
 
-class MyStringAnsi;
 
 #include <stdint.h>
 #include <type_traits>

@@ -1,2 +1,0 @@
-No memory leaks detected.
-Visual Leak Detector is now exiting.

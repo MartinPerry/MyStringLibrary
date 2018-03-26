@@ -17,10 +17,13 @@ struct StringBenchmarks
 
 	template <typename T>
 	void TestAppendIntNumber();
-
 	void TestAppendNumberAll();
 
+	void TestAppendSmallString();
+	void TestAppendString();
+
 	void RunExternalTest(std::function<void(int c, double *)> f);
+		
 
 private:
 	const int COUNT;

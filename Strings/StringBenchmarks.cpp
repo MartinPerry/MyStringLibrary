@@ -6,6 +6,7 @@
 #include <ctime>
 #include <random>
 
+#include "StringTests.h"
 #include "MyString.h"
 
 StringBenchmarks::StringBenchmarks(int count)
@@ -244,4 +245,94 @@ void StringBenchmarks::TestAppendNumberAll()
 	this->TestAppendIntNumber<uint16_t>();
 	this->TestAppendIntNumber<uint32_t>();
 	this->TestAppendIntNumber<uint64_t>();
+}
+
+
+void StringBenchmarks::TestAppendSmallString()
+{
+	std::cout << __func__ << std::endl;
+
+	// Seed with a real random value, if available
+	std::random_device r;
+	std::default_random_engine e(r());
+
+	std::uniform_int_distribution<int> uniform_dist(1, 10);
+
+	std::vector<std::string> rnd;
+	for (int i = 0; i < COUNT; i++)
+	{
+		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+	}
+
+	rnd.push_back("");
+	rnd.push_back(" ");
+		
+
+	this->Start("MyString +=");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyStringAnsi tmp = "";
+		tmp += rnd[i];
+		res[i] = tmp.length();
+	}
+	this->Finish();
+
+	this->Start("std::string += ");
+	for (int i = 0; i < COUNT; i++)
+	{
+		std::string tmp2 = "";
+		tmp2 += rnd[i];
+		res[i] = tmp2.length();
+	}
+	this->Finish();
+
+
+}
+
+
+void StringBenchmarks::TestAppendString()
+{
+	std::cout << __func__ << std::endl;
+
+	// Seed with a real random value, if available
+	std::random_device r;
+	std::default_random_engine e(r());
+
+	std::uniform_int_distribution<int> uniform_dist(1, 100);
+
+	std::vector<std::string> rnd;
+	for (int i = 0; i < COUNT; i++)
+	{
+		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+	}
+
+	rnd.push_back("");
+	rnd.push_back(" ");
+
+	MyStringAnsi tmp = "";
+	std::string tmp2 = "";
+
+
+	this->Start("MyString +=");
+	for (int i = 0; i < COUNT; i++)
+	{
+		tmp += rnd[i];
+	}
+	this->End();
+	this->PrintTime();
+
+	this->Start("std::string += ");
+	for (int i = 0; i < COUNT; i++)
+	{
+		tmp2 += rnd[i];
+	}
+	this->End();
+	this->PrintTime();
+
+
+	if (strcmp(tmp.c_str(), tmp2.c_str()) != 0)
+	{
+		printf("String append failed");
+	}
+
 }

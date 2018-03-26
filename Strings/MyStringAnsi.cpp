@@ -22,82 +22,54 @@
 // ctors / dtors
 //====================================================================
 
-MyStringAnsi::MyStringAnsi()
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
+
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi()
+	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	this->Ctor(nullptr);
+	static_cast<Type *>(this)->CtorInternal(nullptr);
 }
 
-MyStringAnsi::MyStringAnsi(size_t bufferSize)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
+
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(size_t bufferSize)
+	: hashCode(std::numeric_limits<uint32_t>::max())
 {
 	if (bufferSize > BUFFER_SIZE)
 	{
-		this->SetBufferSizeInternal(bufferSize);		
+		static_cast<Type *>(this)->SetBufferSizeInternal(bufferSize);
 	}
-	this->Ctor(nullptr);
+	static_cast<Type *>(this)->CtorInternal(nullptr);
 }
 
-MyStringAnsi::MyStringAnsi(char * str)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(char * str)
+	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	this->Ctor(str);
+	static_cast<Type *>(this)->CtorInternal(str);
 }
 
-MyStringAnsi::MyStringAnsi(const char * str)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(const char * str)
+	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	this->Ctor(str);
+	static_cast<Type *>(this)->CtorInternal(str);
 }
 
-MyStringAnsi::MyStringAnsi(const char * str, size_t length)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
+
+
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(const std::string & str)
+	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	size_t bufferSize = length + 1;
-
-	if (bufferSize > BUFFER_SIZE)
-	{			
-		this->str = new char[bufferSize];
-		this->SetBufferSizeInternal(bufferSize);		
-	}
-
-	memcpy(this->str, str, length);
-	this->str[length] = 0;
-
-	this->SetLengthInternal(length);
-}
-
-MyStringAnsi::MyStringAnsi(const std::string & str)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
-{
-	this->Ctor(str.c_str());
-}
-
-MyStringAnsi::MyStringAnsi(const MyStringAnsi &other)
-	: str(local), hashCode(std::numeric_limits<uint32_t>::max())
-{
-	this->Ctor(other.str);
-	this->hashCode = other.hashCode;
-}
-
-MyStringAnsi::MyStringAnsi(MyStringAnsi && other)  /* noexcept needed to enable optimizations in containers */
-	: str(other.str), hashCode(other.hashCode)
-{
-	//http://blog.smartbear.com/c-plus-plus/c11-tutorial-introducing-the-move-constructor-and-the-move-assignment-operator/
-
-	memcpy(local, other.local, BUFFER_SIZE);
-	if (other.str == other.local)
-	{
-		this->str = this->local;
-	}
-
-	other.str = nullptr;
-	other.hashCode = std::numeric_limits<uint32_t>::max();
+	static_cast<Type *>(this)->CtorInternal(str.c_str());
 }
 
 
 
-MyStringAnsi::~MyStringAnsi()
+
+template <typename Type>
+IStringAnsi<Type>::~IStringAnsi()
 {
 	this->Release();
 }
@@ -105,45 +77,12 @@ MyStringAnsi::~MyStringAnsi()
 /// <summary>
 /// Manually release current data
 /// </summary>
-void MyStringAnsi::Release()
+template <typename Type>
+void IStringAnsi<Type>::Release()
 {
-	if (this->str != this->local)
-	{
-		delete[] this->str;
-	}
-	this->str = local;
-	memset(this->local, 0, BUFFER_SIZE + 1);	
-	this->hashCode = std::numeric_limits<uint32_t>::max();
+	static_cast<Type *>(this)->ReleaseInternal();	
 }
 
-
-
-void MyStringAnsi::Ctor(const char * str)
-{
-	if (str == nullptr)
-	{			
-		this->str[0] = 0;
-		this->SetLengthInternal(0);
-		return;
-	}
-
-	size_t strLength = strlen(str);
-
-	//if strlen < 16 -> use local buffer, [15] = 0
-	//if strlen >= 16 -> use "heap"
-
-	if (strLength >= BUFFER_SIZE)
-	{		
-		size_t bufferSize = strLength + 1;
-		this->SetBufferSizeInternal(bufferSize);
-
-		this->str = new char[bufferSize];
-	}
-		
-	memcpy(this->str, str, strLength + 1);	//copy with "null-termination"	
-	this->hashCode = std::numeric_limits<uint32_t>::max();
-	this->SetLengthInternal(strLength);
-}
 
 
 /// <summary>
@@ -153,22 +92,24 @@ void MyStringAnsi::Ctor(const char * str)
 /// </summary>
 /// <param name="str"></param>
 /// <param name="length"></param> 
-void MyStringAnsi::CreateNew(const char * str, size_t length)
+template <typename Type>
+void IStringAnsi<Type>::CreateNew(const char * newStr, size_t length)
 {
-	if (str == nullptr)
+	char * str = static_cast<Type *>(this)->str();
+	if (newStr == nullptr)
 	{		
-		this->str[0] = 0;
-		this->SetLengthInternal(0);		
+		str[0] = 0;
+		static_cast<Type *>(this)->SetLengthInternal(0);
 		return;
 	}
 
 	size_t strLength = length;
 	if (length == 0)
 	{
-		strLength = strlen(str);
+		strLength = strlen(newStr);
 	}	
 
-	size_t curBufSize = this->capacity();
+	size_t curBufSize = static_cast<const Type *>(this)->capacity();
 	if (curBufSize < strLength + 1)
 	{		
 		//buffer size is always at least BUFFER_SIZE
@@ -177,17 +118,22 @@ void MyStringAnsi::CreateNew(const char * str, size_t length)
 		curBufSize = this->CalcNewBufferSize(curBufSize, strLength);
 		
 		//delete actuall buffer only if it is on "heap"
-		delete[] this->str;
-		this->str = new char[curBufSize];
+		if (static_cast<const Type *>(this)->IsLocal() == false)
+		{
+			delete[] str;
+		}
+		str = new char[curBufSize];
 
-		this->SetBufferSizeInternal(curBufSize);
+		static_cast<Type *>(this)->SetBufferSizeInternal(curBufSize);
 	}
+	static_cast<Type *>(this)->SetStrInternal(str);
 
-	memcpy(this->str, str, strLength);	
-	this->str[strLength] = 0;
+	memcpy(str, newStr, strLength);
+	str[strLength] = 0;
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 
-	this->SetLengthInternal(strLength);
+	static_cast<Type *>(this)->SetLengthInternal(strLength);
+	
 }
 
 /// <summary>
@@ -195,9 +141,10 @@ void MyStringAnsi::CreateNew(const char * str, size_t length)
 /// Current string is coppied to the resized one
 /// </summary>
 /// <param name="newBufferSize"></param>
-void MyStringAnsi::ResizeBuffer(size_t newBufferSize)
+template <typename Type>
+void IStringAnsi<Type>::ResizeBuffer(size_t newBufferSize)
 {
-	size_t curBufSize = this->capacity();
+	size_t curBufSize = static_cast<const Type *>(this)->capacity();
 
 	if (newBufferSize <= curBufSize)
 	{
@@ -211,17 +158,19 @@ void MyStringAnsi::ResizeBuffer(size_t newBufferSize)
 		return;
 	}
 
-	size_t strLength = this->length();
+	size_t strLength = static_cast<const Type *>(this)->length();
+	char * str = static_cast<Type *>(this)->str();
 
 	char * newStr = new char[newBufferSize];
 	memcpy(newStr, str, strLength + 1);	//copy with "null-termination"
-	if (this->str != this->local)
+	if (static_cast<const Type *>(this)->IsLocal() == false)
 	{
-		delete[] this->str;
+		delete[] str;
 	}
 	
-	this->SetBufferSizeInternal(newBufferSize);	
-	this->str = newStr;
+	static_cast<Type *>(this)->SetStrInternal(newStr);
+	static_cast<Type *>(this)->SetBufferSizeInternal(newBufferSize);
+	
 }
 
 
@@ -234,13 +183,15 @@ void MyStringAnsi::ResizeBuffer(size_t newBufferSize)
 /// </summary>
 /// <param name="fileName"></param>
 /// <returns></returns>
-MyStringAnsi MyStringAnsi::LoadFromFile(const MyStringAnsi & fileName)
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 {
 	FILE *f = nullptr;  //pointer to file we will read in
-	my_fopen(&f, fileName.c_str(), "rb");
+	my_fopen(&f, fileName, "rb");
 	if (f == nullptr)
 	{
-		printf("Failed to open file: \"%s\"\n", fileName.c_str());
+		printf("Failed to open file: \"%s\"\n", fileName);
 		return "";
 	}
 
@@ -253,7 +204,7 @@ MyStringAnsi MyStringAnsi::LoadFromFile(const MyStringAnsi & fileName)
 	fclose(f);
 
 	data[size] = 0;
-	MyStringAnsi tmp = MyStringAnsi(data);
+	RetVal tmp = RetVal(data);
 	SAFE_DELETE_ARRAY(data);
 
 	return tmp;
@@ -268,11 +219,13 @@ MyStringAnsi MyStringAnsi::LoadFromFile(const MyStringAnsi & fileName)
 /// <param name="str"></param>
 /// <param name=""></param>
 /// <returns></returns>
-MyStringAnsi MyStringAnsi::CreateFormated(const char * str, ...)
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 {
-	if (str == nullptr)
+	if (newStrFormat == nullptr)
 	{
-		return "";
+		return RetVal("");
 	}
 
 	va_list vl;
@@ -282,19 +235,21 @@ MyStringAnsi MyStringAnsi::CreateFormated(const char * str, ...)
 	int appendLength = -1;
 	while (appendLength < 0)
 	{
-		va_start(vl, str);
+		va_start(vl, newStrFormat);
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, str, vl);
+		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, vl);
 		va_end(vl);
 	}
 			
 	
 	//always store in heap
 	size_t bufferSize = appendLength + 16;
-	MyStringAnsi newStr = MyStringAnsi(bufferSize);
+	RetVal newStr = RetVal(bufferSize);
 	
-	va_start(vl, str);
-	int written = my_vsnprintf(newStr.str, bufferSize, bufferSize - 1, str, vl);
+	char * str = newStr.str();
+	
+	va_start(vl, newStrFormat);
+	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, vl);
 	va_end(vl);
 	
 	if (written == -1)
@@ -303,10 +258,11 @@ MyStringAnsi MyStringAnsi::CreateFormated(const char * str, ...)
 	}
 
 
-	size_t strLength = strlen(newStr.str);
-	newStr.str[strLength] = 0;
+	size_t strLength = strlen(str);
+	str[strLength] = 0;	
+
 	newStr.hashCode = std::numeric_limits<uint32_t>::max();
-	newStr.SetLengthInternal(strLength);
+	newStr.SetLengthInternal(strLength);	
 	return newStr;
 }
 
@@ -315,18 +271,20 @@ MyStringAnsi MyStringAnsi::CreateFormated(const char * str, ...)
 //====================================================================
 // Helper methods
 //====================================================================
-
-bool MyStringAnsi::SaveToFile(const MyStringAnsi & fileName) const
+template <typename Type>
+bool IStringAnsi<Type>::SaveToFile(const char * fileName) const
 {
 
 	FILE *f = nullptr;  //pointer to file we will read in
-	my_fopen(&f, fileName.c_str(), "wb");
+	my_fopen(&f, fileName, "wb");
 	if (f == nullptr)
 	{
 		return false;
 	}
 
-	fwrite(this->c_str(), sizeof(char), this->length(), f);
+	fwrite(static_cast<const Type *>(this)->c_str(), 
+		sizeof(char), 
+		static_cast<const Type *>(this)->length(), f);
 	fclose(f);
 
 	return true;
@@ -337,45 +295,100 @@ bool MyStringAnsi::SaveToFile(const MyStringAnsi & fileName) const
 // Methods for string manipulation
 //====================================================================
 
+template <typename Type>
+void IStringAnsi<Type>::Append(const char * appendStr)
+{
+	if (appendStr == nullptr)
+	{
+		return;
+	}
+
+	size_t len = strlen(appendStr);
+	size_t curSize = static_cast<const Type *>(this)->capacity();
+	size_t strLength = static_cast<const Type *>(this)->length();
+
+	if (curSize <= strLength + len)
+	{
+		curSize = CalcNewBufferSize(curSize, strLength + len);
+		this->ResizeBuffer(curSize);
+	}
+
+	char * str = static_cast<Type *>(this)->str();
+
+	memcpy(str + strLength, appendStr, len);
+
+	strLength += len;
+	str[strLength] = 0;
+	static_cast<Type *>(this)->SetLengthInternal(strLength);
+	
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
+/*-----------------------------------------------------------
+Function:    AppendFormat
+Parameters:
+[in] str - text to find
+[in] ... - input elements
+
+Append new formated string
+Really SLOW !!!! - because of used vsnprintf
+eg ("Formated %d %d", 10, 20) => "Formated 10, 20"
+-------------------------------------------------------------*/
+template <typename Type>
+template<typename... Args>
+void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
+{
+	IStringAnsi<Type> tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
+	this->Append(tmp.c_str());	
+}
+
+
+
+
 /// <summary>
 /// Trim string from left and right
 /// </summary>
-void MyStringAnsi::Trim()
+template <typename Type>
+void IStringAnsi<Type>::Trim()
 {
-	size_t newLength = this->length();
-	char * start = this->str;
-	while ((*this->str > 0) && isspace(*this->str))
+	size_t newLength = static_cast<const Type *>(this)->length();
+	char * start = static_cast<Type *>(this)->str();
+	char * tmp = start;
+
+	while ((*tmp > 0) && isspace(*tmp))
 	{
-		this->str++;
+		tmp++;
 		newLength--;
 	}
 
-	char * end = this->str + newLength - 1;
-	while ((end > this->str) && (*end > 0) && isspace(*end))
+	char * end = tmp + newLength - 1;
+	while ((end > tmp) && (*end > 0) && isspace(*end))
 	{
 		end--;
 		newLength--;
 	}
 	
-	memmove(start, this->str, newLength);
+	memmove(start, tmp, newLength);
 
-	this->str = start;
-	this->str[newLength] = 0;
+	start[newLength] = 0;	
+	
 
-	this->SetLengthInternal(newLength);
+	static_cast<Type *>(this)->SetLengthInternal(newLength);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
 /// <summary>
 /// Reverse string
 /// </summary>
-void MyStringAnsi::Reverse()
+template <typename Type>
+void IStringAnsi<Type>::Reverse()
 {
-	size_t length = this->length();
+	char * str = static_cast<Type *>(this)->str();
+	size_t length = static_cast<const Type *>(this)->length();
 	size_t halfLen = length >> 1;
-	for (int i = 0; i < halfLen; i++)
+	for (size_t i = 0; i < halfLen; i++)
 	{
-		SWAP(this->str[i], this->str[length - i - 1]);
+		SWAP(str[i], str[length - i - 1]);
 	}
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
@@ -387,11 +400,13 @@ void MyStringAnsi::Reverse()
 /// 
 /// </summary>
 /// <param name="t"></param>
-void MyStringAnsi::RemoveMultipleChars(char t)
+template <typename Type>
+void IStringAnsi<Type>::RemoveMultipleChars(char t)
 {
+	char * str = static_cast<Type *>(this)->str();
 	size_t j = 1;
-	char lastC = this->str[0];
-	char * start = this->str + 1;
+	char lastC = str[0];
+	char * start = str + 1;
 	char c = 0;
 	while ((c = *start) != 0)
 	{		
@@ -402,14 +417,14 @@ void MyStringAnsi::RemoveMultipleChars(char t)
 			continue;
 		}
 		
-		this->str[j] = c;
+		str[j] = c;
 		j++;
 
 		lastC = c;
 	}
-	this->str[j] = 0;
+	str[j] = 0;
 		
-	this->SetLengthInternal(j - 1);
+	static_cast<Type *>(this)->SetLengthInternal(j - 1);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
@@ -417,77 +432,20 @@ void MyStringAnsi::RemoveMultipleChars(char t)
 // Methods for obtaining new data from string
 //====================================================================
 
-/// <summary>
-/// Split string by a char delimeter
-/// Eg: 11  11  22 -> ' ' => {11,11,22}
-/// Eg: 11  11  22 -> ' ', keepEmptyValues => {11,,11,,22}
-/// 
-/// </summary>
-/// <param name="delimeter"></param>
-/// <param name="keepEmptyValues">if we want to keep empty values (default: false)</param>
-/// <returns></returns>
-std::vector<MyStringAnsi> MyStringAnsi::Split(char delimeter, bool keepEmptyValues) const
-{
-	std::vector<MyStringAnsi> splited;
-
-	char * end = this->str;
-	char * start = end;
-	char c = 0;
-	while ( (c = *end) != 0)
-	{		
-		if (c == delimeter)
-		{
-			//splitting
-			size_t len = end - start;
-			if (len == 0)
-			{
-				if (keepEmptyValues)
-				{
-					MyStringAnsi s;
-					splited.push_back(s);
-				}
-			}
-			else
-			{
-				MyStringAnsi s(start, len);
-				splited.push_back(s);
-			}
-
-			start = end + 1;
-		}
-
-		end++;
-	}
 
 
-	size_t len = end - start;
-	if (len == 0)
-	{
-		if (keepEmptyValues)
-		{
-			MyStringAnsi s;
-			splited.push_back(s);
-		}
-	}
-	else
-	{
-		MyStringAnsi s(start, len);
-		splited.push_back(s);
-	}
-	
-	return splited;
-}
 
 /// <summary>
 /// Count number of char occurences in string
 /// </summary>
 /// <param name="f"></param>
 /// <returns></returns>
-size_t MyStringAnsi::Count(const char f) const
+template <typename Type>
+size_t IStringAnsi<Type>::Count(const char f) const
 {
 	size_t count = 0;
 
-	char * end = this->str;
+	const char * end = static_cast<const Type *>(this)->c_str();
 	char c = 0;
 	while ((c = *end) != 0)
 	{
@@ -521,11 +479,13 @@ in "last". If "last" is NULL, last function is calculated
 and filled to "last" array
 !Important! "last" array must be freed outside this method
 -------------------------------------------------------------*/
-int MyStringAnsi::BoyerMoore(const char * needle, int * &last, int start) const
+template <typename Type>
+int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start) const
 {
+	const char * str = static_cast<const Type *>(this)->c_str();
 	int needleLen = static_cast<int>(strlen(needle));
 
-	size_t strLength = this->length();
+	size_t strLength = static_cast<const Type *>(this)->length();
 
 	if (last == nullptr)
 	{
@@ -533,7 +493,7 @@ int MyStringAnsi::BoyerMoore(const char * needle, int * &last, int start) const
 		memset(last, -1, std::numeric_limits<uint8_t>::max());
 		for (size_t i = 0; i < strLength; i++)
 		{
-			last[static_cast<unsigned char>(this->str[i])] = i;
+			last[static_cast<unsigned char>(str[i])] = i;
 		}
 	}
 	int index = needleLen - 1;
@@ -541,7 +501,7 @@ int MyStringAnsi::BoyerMoore(const char * needle, int * &last, int start) const
 	index += start;
 	while (index < strLength)
 	{
-		if (this->str[index] == needle[cmpIndex])
+		if (str[index] == needle[cmpIndex])
 		{
 			index--;
 			cmpIndex--;
@@ -553,7 +513,7 @@ int MyStringAnsi::BoyerMoore(const char * needle, int * &last, int start) const
 		}
 		else
 		{
-			int offset = last[static_cast<int>(this->str[index])];
+			int offset = last[static_cast<int>(str[index])];
 			index = index + needleLen - ((cmpIndex < offset + 1) ? cmpIndex : offset + 1);
 			cmpIndex = needleLen - 1;
 		}
@@ -578,13 +538,15 @@ in "last". If "last" is NULL, last function is calculated
 and filled to "last" array
 !Important! "last" array must be freed outside this method
 -------------------------------------------------------------*/
-int MyStringAnsi::KnuthMorisPrat(const char * needle, int * &last, int start) const
+template <typename Type>
+int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t start) const
 {
 	int index = 1;
 	int cmpIndex = 0;
 	int needleLen = static_cast<int>(strlen(needle));
 	int * failFce = last;
-	size_t strLen = this->length();
+	size_t strLen = static_cast<const Type *>(this)->length();
+	const char * str = static_cast<const Type *>(this)->c_str();
 
 	if (failFce == nullptr)
 	{
@@ -618,7 +580,7 @@ int MyStringAnsi::KnuthMorisPrat(const char * needle, int * &last, int start) co
 	cmpIndex = 0;
 	while (index < strLen)
 	{
-		if (this->str[index] == needle[cmpIndex])
+		if (str[index] == needle[cmpIndex])
 		{
 			index++;
 			cmpIndex++;
@@ -656,20 +618,22 @@ position of occurence needle in haystack
 
 Perfrom BF searching. Suitable for small strings
 -------------------------------------------------------------*/
-int MyStringAnsi::BruteForce(const char * needle, int start) const
+template <typename Type>
+int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 {
 	int needleLen = static_cast<int>(strlen(needle));
-	int i = start;
+	size_t i = start;
 	int j = 0;
 	int lastPos = -1;
-	size_t strLen = this->length();
+	size_t strLen = static_cast<const Type *>(this)->length();
+	const char * str = static_cast<const Type *>(this)->c_str();
 
 	while (i < strLen)
 	{
 		j = 0;
 		while (j < needleLen)
 		{
-			if (this->str[i] == needle[j])
+			if (str[i] == needle[j])
 			{
 				i++;
 				j++;
@@ -701,12 +665,19 @@ position of occurence needle in haystack
 
 Perfrom searching using strstr - standard C library
 -------------------------------------------------------------*/
-int MyStringAnsi::CLib(const char * needle, int start) const
+template <typename Type>
+int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 {
-	char * found = strstr(this->str + start, needle);
+	const char * str = static_cast<const Type *>(this)->c_str();
+	const char * found = strstr(str + start, needle);
 	if (found == nullptr)
 	{
 		return -1;
 	}
-	return static_cast<int>(found - this->str);
+	return static_cast<int>(found - str);
 }
+
+
+
+template class IStringAnsi<MyStringAnsi>;
+//template std::vector<MyStringAnsi> IStringAnsi<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;
