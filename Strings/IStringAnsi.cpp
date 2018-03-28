@@ -1,4 +1,4 @@
-#include "./MyStringAnsi.h"
+#include "./IStringAnsi.h"
 
 #include "./MyString.h"
 #include "./MurmurHash3.h"
@@ -35,7 +35,7 @@ template <typename Type>
 IStringAnsi<Type>::IStringAnsi(size_t bufferSize)
 	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	if (bufferSize > BUFFER_SIZE)
+	if (bufferSize > Type::BUFFER_SIZE)
 	{
 		static_cast<Type *>(this)->SetBufferSizeInternal(bufferSize);
 	}
@@ -680,4 +680,5 @@ int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 
 
 template class IStringAnsi<MyStringAnsi>;
+template class IStringAnsi<MySmallStringAnsi>;
 //template std::vector<MyStringAnsi> IStringAnsi<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;

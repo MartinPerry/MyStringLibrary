@@ -39,6 +39,12 @@
     <ClInclude Include="StringBenchmarks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IStringAnsi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySmallStringAnsi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">
@@ -52,9 +58,6 @@
     <ClCompile Include="MurmurHash3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MyStringAnsi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MyStringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -65,6 +68,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StringBenchmarks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IStringAnsi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

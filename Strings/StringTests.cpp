@@ -11,7 +11,7 @@
 
 std::string StringTests::CreateRandomString(int len)
 {
-	srand(time(0));
+	srand(static_cast<unsigned int>(time(0)));
 
 	static const char alphanum[] =
 		"0123456789"
@@ -213,8 +213,8 @@ void StringTests::TestAppendIntNumber()
 	}
 	rnd.push_back(std::numeric_limits<T>::min());
 	rnd.push_back(std::numeric_limits<T>::max());
-	rnd.push_back(100001);
-	rnd.push_back(10001);
+	rnd.push_back(T(100001));
+	rnd.push_back(T(10001));
 
 	//if it fails - index is in x
 	std::vector<T> x;
@@ -249,7 +249,7 @@ void StringTests::TestAppendIntNumber()
 	{		
 		if (r1[i] != r2[i])
 		{			
-			printf("Failed: %ll", x[i]);
+			//printf("Failed: %ll", x[i]);
 			StringTests::error("Number conversion not working");
 		}
 	}

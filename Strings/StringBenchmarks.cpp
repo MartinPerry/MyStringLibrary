@@ -9,6 +9,33 @@
 #include "StringTests.h"
 #include "MyString.h"
 
+#define NOMINMAX
+
+#ifdef _WIN32
+#include <windows.h>   // WinApi header
+#endif
+
+static const int COLOR_RED = 12;
+static const int COLOR_GREEN = 10;
+static const int COLOR_YELLOW = 14;
+static const int COLOR_WHITE = 15;
+
+void StartColor(int colorID)
+{
+#ifdef _WIN32
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, colorID);
+#endif
+}
+
+void EndColor(int colorID)
+{
+#ifdef _WIN32
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, colorID);
+#endif
+}
+
 StringBenchmarks::StringBenchmarks(int count)
 	: COUNT(count)
 {
@@ -20,6 +47,13 @@ StringBenchmarks::StringBenchmarks(int count)
 StringBenchmarks::~StringBenchmarks()
 {
 	delete[] res;
+}
+
+void StringBenchmarks::LogTestStart(const char * name)
+{
+	StartColor(COLOR_GREEN);
+	std::cout << name << std::endl;
+	EndColor(COLOR_WHITE);
 }
 
 void StringBenchmarks::ResetArray()
@@ -61,13 +95,15 @@ void StringBenchmarks::Finish()
 
 void StringBenchmarks::PrintTime()
 {
+	StartColor(COLOR_YELLOW);
 	std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count() << " ms" << std::endl;
+	EndColor(COLOR_WHITE);
 	std::cout << " ======= " << std::endl;
 }
 
 void StringBenchmarks::RunExternalTest(std::function<void(int c, double *)> f)
 {
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	this->Start("");
 	f(COUNT, res);
@@ -77,7 +113,7 @@ void StringBenchmarks::RunExternalTest(std::function<void(int c, double *)> f)
 
 void StringBenchmarks::TestShortStrAllocation()
 {
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	std::uniform_int_distribution<short> uniform_dist(std::numeric_limits<short>::min(),
 		std::numeric_limits<short>::max());
@@ -92,6 +128,14 @@ void StringBenchmarks::TestShortStrAllocation()
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyStringAnsi x = "xxxxxxx";
+		res[i] += x.length();
+	}
+	this->Finish();
+
+	this->Start("MySmallStringAnsi (literal)");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MySmallStringAnsi x = "xxxxxxx";
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -113,6 +157,14 @@ void StringBenchmarks::TestShortStrAllocation()
 	}
 	this->Finish();
 
+	this->Start("MySmallStringAnsi");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MySmallStringAnsi x = rnd[i].c_str();
+		res[i] += x.length();
+	}
+	this->Finish();
+
 	this->Start("std::string");
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -124,8 +176,7 @@ void StringBenchmarks::TestShortStrAllocation()
 
 void StringBenchmarks::TestStringToInt()
 {
-	
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	std::uniform_int_distribution<long long> uniform_dist(std::numeric_limits<long long>::min(), 
 		std::numeric_limits<long long>::max());
@@ -154,8 +205,7 @@ void StringBenchmarks::TestStringToInt()
 
 void StringBenchmarks::TestStringToDouble()
 {
-	
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	std::uniform_real_distribution<double> uniform_dist2(-1.0, 1.0);
 
@@ -191,7 +241,8 @@ void StringBenchmarks::TestStringToDouble()
 template <typename T>
 void StringBenchmarks::TestAppendIntNumber()
 {
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
+	
 
 	std::uniform_int_distribution<T> uniform_dist(std::numeric_limits<T>::min(),
 		std::numeric_limits<T>::max());
@@ -207,13 +258,22 @@ void StringBenchmarks::TestAppendIntNumber()
 	//tmp2.reserve(COUNT * 20);
 	
 	MyStringAnsi tmp = "";
+	MySmallStringAnsi tmp1 = "";
 	std::string tmp2 = "";
 	
 	
-	this->Start("MyString +=");
+	this->Start("MyStringAnsi +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		tmp += rnd[i];		
+	}
+	this->End();
+	this->PrintTime();
+
+	this->Start("MySmallStringAnsi +=");
+	for (int i = 0; i < COUNT; i++)
+	{
+		tmp1 += rnd[i];
 	}
 	this->End();
 	this->PrintTime();
@@ -228,6 +288,10 @@ void StringBenchmarks::TestAppendIntNumber()
 
 
 	if (strcmp(tmp.c_str(), tmp2.c_str()) != 0)
+	{
+		printf("Number conversion failed");
+	}
+	if (strcmp(tmp1.c_str(), tmp2.c_str()) != 0)
 	{
 		printf("Number conversion failed");
 	}
@@ -247,10 +311,9 @@ void StringBenchmarks::TestAppendNumberAll()
 	this->TestAppendIntNumber<uint64_t>();
 }
 
-
 void StringBenchmarks::TestAppendSmallString()
 {
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	// Seed with a real random value, if available
 	std::random_device r;
@@ -268,12 +331,21 @@ void StringBenchmarks::TestAppendSmallString()
 	rnd.push_back(" ");
 		
 
-	this->Start("MyString +=");
+	this->Start("MyStringAnsi +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyStringAnsi tmp = "";
 		tmp += rnd[i];
 		res[i] = tmp.length();
+	}
+	this->Finish();
+
+	this->Start("MySmallStringAnsi +=");
+	for (int i = 0; i < COUNT; i++)
+	{
+		MySmallStringAnsi tmp1 = "";
+		tmp1 += rnd[i];
+		res[i] = tmp1.length();
 	}
 	this->Finish();
 
@@ -289,10 +361,9 @@ void StringBenchmarks::TestAppendSmallString()
 
 }
 
-
 void StringBenchmarks::TestAppendString()
 {
-	std::cout << __func__ << std::endl;
+	LogTestStart(__func__);
 
 	// Seed with a real random value, if available
 	std::random_device r;
@@ -310,13 +381,22 @@ void StringBenchmarks::TestAppendString()
 	rnd.push_back(" ");
 
 	MyStringAnsi tmp = "";
+	MySmallStringAnsi tmp1 = "";
 	std::string tmp2 = "";
 
 
-	this->Start("MyString +=");
+	this->Start("MyStringAnsi +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		tmp += rnd[i];
+	}
+	this->End();
+	this->PrintTime();
+
+	this->Start("MySmallStringAnsi +=");
+	for (int i = 0; i < COUNT; i++)
+	{
+		tmp1 += rnd[i];
 	}
 	this->End();
 	this->PrintTime();
@@ -331,6 +411,10 @@ void StringBenchmarks::TestAppendString()
 
 
 	if (strcmp(tmp.c_str(), tmp2.c_str()) != 0)
+	{
+		printf("String append failed");
+	}
+	if (strcmp(tmp1.c_str(), tmp2.c_str()) != 0)
 	{
 		printf("String append failed");
 	}

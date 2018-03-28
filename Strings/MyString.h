@@ -7,6 +7,7 @@
 
 #include "./MyStringMacros.h"
 #include "./MyStringAnsi.h"
+#include "./MySmallStringAnsi.h"
 #include "./MyStringUtils.h"
 #include "./md5.h"
 #include "./MurmurHash3.h"

@@ -5,6 +5,7 @@
 #include <random>
 #include <functional>
 
+
 struct StringBenchmarks
 {
 
@@ -41,6 +42,7 @@ private:
 	void End();
 	void PrintTime();
 	void Finish();
+	void LogTestStart(const char * name);
 };
 
 #endif // !_STRING_BENCHMARKS_H_

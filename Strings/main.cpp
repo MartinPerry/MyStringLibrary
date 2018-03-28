@@ -234,6 +234,10 @@ int main(int argc, char ** argv)
 	MyStringAnsi oosx = tmpFunc();
 
 	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
+
+	oo1t += 1567;
+	oo1t += 'a';
+	
 	//oo1t.RemoveMultipleChars('x');
 	auto ss1 = oo1t.Split<MyStringAnsi>(' ');
 	auto ss = oo1t.Split<MyStringAnsi>(' ', true);
@@ -341,12 +345,12 @@ int main(int argc, char ** argv)
 	});
 	*/
 
-	//sb.TestShortStrAllocation();
-	//sb.TestStringToInt();
-	//sb.TestStringToDouble();
-	//sb.TestAppendNumberAll();
-	//sb.TestAppendSmallString();
-	//sb.TestAppendString();
+	sb.TestShortStrAllocation();
+	sb.TestStringToInt();
+	sb.TestStringToDouble();
+	sb.TestAppendNumberAll();
+	sb.TestAppendSmallString();
+	sb.TestAppendString();
 
 	return 0;
 }

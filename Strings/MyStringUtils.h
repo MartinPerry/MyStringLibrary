@@ -5,8 +5,7 @@
 #include <stdint.h>
 #include <type_traits>
 
-#define RET_VAL(T, enable_cond) \
-	typename std::enable_if<enable_cond<T>::value, T>::type
+#include "MyStringMacros.h"
 
 
 struct MyStringUtils 
@@ -23,7 +22,7 @@ struct MyStringUtils
 	/// <param name="ret">out: if not null, pointer where we ended</param>
 	/// <returns>converte number</returns>
 	template <typename T>
-	static RET_VAL(T, std::is_floating_point) ToNumber(const char * str, const char * ret = nullptr)
+	static RET_VAL(T, std::is_floating_point<T>) ToNumber(const char * str, const char * ret = nullptr)
 	{
 		//skip leading whitespace
 		while ((*str <= ' ') && (*str != 0))
@@ -124,7 +123,7 @@ struct MyStringUtils
 	/// <param name="ret">out: if not null, pointer where we ended</param>
 	/// <returns>converte number</returns>
 	template <typename T>
-	static RET_VAL(T, std::is_integral) ToNumber(const char * str, const char * ret = nullptr)
+	static RET_VAL(T, std::is_integral<T>) ToNumber(const char * str, const char * ret = nullptr)
 	{
 		//skip leading whitespace
 		while ((*str <= ' ') && (*str != 0))
