@@ -21,12 +21,14 @@ static const char* const conversions[] = {
 	"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
 };
 
+typedef enum SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 } SearchAlgorithm;
+typedef enum StringConstants { REPLACE_ALL = -1 } StringConstants;
+
 template <typename Type>
 class IStringAnsi
 {
 public:
-	typedef enum SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 } SearchAlgorithm;
-
+		
 	static const int npos = -1;
 
 	IStringAnsi();
@@ -62,23 +64,24 @@ public:
 
 	size_t Count(const char str) const;
 
-	void Append(const char * str);
+	void Append(const char * str, size_t len = 0);
 
 	template<typename... Args>
 	void AppendFormat(const char * str, Args... args);
 
-	/*
-	template <typename T,
-		typename = typename std::enable_if <std::is_integral<T>::value>::type* = nullptr,
-		typename = typename std::enable_if <std::is_signed<T>::value>::type* = nullptr
-	>
-		void operator += (T number);
 
-	template <typename T,
-		typename = typename std::enable_if <std::is_unsigned<T>::value>::type* = nullptr
-	>
-		void operator += (T number);
-	*/
+
+
+	void Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue);
+	void Replace(const char * oldValue, const char * newValue);
+	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
+	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);
+
+
+
+
+
+
 
 	template <typename T>	
 	RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>) operator += (T number);
@@ -295,13 +298,13 @@ return newStr;
 template <typename Type>
 void IStringAnsi<Type>::operator += (const MyStringAnsi & str)
 {
-	this->Append(str.c_str());
+	this->Append(str.c_str(), str.length());
 };
 
 template <typename Type>
 void IStringAnsi<Type>::operator += (const std::string & str)
 {
-	this->Append(str.c_str());
+	this->Append(str.c_str(), str.length());
 };
 
 template <typename Type>

@@ -296,14 +296,17 @@ bool IStringAnsi<Type>::SaveToFile(const char * fileName) const
 //====================================================================
 
 template <typename Type>
-void IStringAnsi<Type>::Append(const char * appendStr)
+void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 {
 	if (appendStr == nullptr)
 	{
 		return;
 	}
 
-	size_t len = strlen(appendStr);
+	if (len == 0)
+	{
+		len = strlen(appendStr);
+	}
 	size_t curSize = static_cast<const Type *>(this)->capacity();
 	size_t strLength = static_cast<const Type *>(this)->length();
 
@@ -427,6 +430,162 @@ void IStringAnsi<Type>::RemoveMultipleChars(char t)
 	static_cast<Type *>(this)->SetLengthInternal(j - 1);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
+
+
+template <typename Type>
+void IStringAnsi<Type>::Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue)
+{
+	this->Replace(oldValue.c_str(), newValue.c_str(), REPLACE_ALL);
+}
+
+template <typename Type>
+void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue)
+{
+	this->Replace(oldValue, newValue, REPLACE_ALL);
+}
+
+/*-----------------------------------------------------------
+Function:    Replace
+Parameters:
+[in] search - text to find (co)
+[in] replace - text to replace (za co)
+[in] replaceOffset - if multiple occurence of "search", which one to replace (-1 = all)
+
+Replace all "search" with "replace"
+Use KMP for finding "search" in text
+-------------------------------------------------------------*/
+template <typename Type>
+void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, int replaceOffset)
+{
+	size_t oldValueLen = strlen(oldValue);
+	int * last = nullptr;
+	int pos = 0;
+
+	std::vector<int> startPos;
+	int foundOffset = 0;
+
+	while (1)
+	{
+		pos = this->KnuthMorisPrat(oldValue, last, pos); //better use this, because BM skipping
+													   //is calculated from haystack, not needle
+		if (pos == IStringAnsi<Type>::npos)
+		{ 
+			break;  //not found
+		}     
+
+		if (replaceOffset == REPLACE_ALL)
+		{
+			startPos.push_back(pos);    //store all found start positions of search words
+		}
+		else if (foundOffset == replaceOffset)
+		{
+			startPos.push_back(pos);    //store found start positions of search words
+			break;
+		}
+		pos += oldValueLen;        //set new search start
+
+		foundOffset++;
+	}
+
+	SAFE_DELETE_ARRAY(last);
+
+	this->Replace(oldValue, newValue, startPos);
+}
+
+template <typename Type>
+void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos)
+{
+	if (searchStartPos.size() == 0)
+	{
+		//nothing found
+		return;
+	}
+
+	size_t oldValueLen = strlen(oldValue);
+	size_t newValueLen = strlen(newValue);
+
+	//new length can be smaller or larger than current length
+	size_t newLength = static_cast<const Type *>(this)->length() -
+		searchStartPos.size() * oldValueLen + 
+		searchStartPos.size() * newValueLen;
+
+	size_t curSize = static_cast<const Type *>(this)->capacity();
+	size_t curLen = static_cast<const Type *>(this)->length();
+	
+	char * str = nullptr;
+	char * tmpStr = nullptr;
+
+	char * newStr = nullptr;
+	char * tmpNewStr = nullptr;
+
+	bool enlarged = false;
+	if (curSize <= newLength)
+	{
+		curSize = CalcNewBufferSize(curSize, newLength);
+
+		str = static_cast<Type *>(this)->str();
+		tmpStr = str;
+
+		newStr = new char[curSize];
+		tmpNewStr = newStr;
+
+		enlarged = true;						
+	}
+	else 
+	{
+		newStr = static_cast<Type *>(this)->str();
+		tmpNewStr = newStr;
+
+		str = new char[curSize];
+		tmpStr = str;
+		memcpy(str, newStr, curSize);						
+	}
+
+	int lastPos = 0;
+
+	for (auto foundPos : searchStartPos)
+	{
+		int copyLen = foundPos - lastPos;
+
+		memcpy(newStr, str, copyLen);
+		newStr += copyLen;
+		str += copyLen;
+
+		memcpy(newStr, newValue, newValueLen);
+		newStr += newValueLen;
+		str += oldValueLen;
+
+		lastPos = foundPos + oldValueLen;
+	}
+
+	int copyLen = curLen - lastPos;
+	memcpy(newStr, str, copyLen);
+	newStr[copyLen] = 0;
+
+
+	if (enlarged)
+	{
+		if (static_cast<const Type *>(this)->IsLocal() == false)
+		{
+			delete[] tmpStr;
+		}
+	}
+	else 
+	{
+		delete[] tmpStr;
+	}
+
+
+	static_cast<Type *>(this)->SetLengthInternal(newLength);
+	static_cast<Type *>(this)->SetStrInternal(tmpNewStr);
+	if (curSize > Type::BUFFER_SIZE)
+	{
+		static_cast<Type *>(this)->SetBufferSizeInternal(curSize);
+	}
+
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
 
 //====================================================================
 // Methods for obtaining new data from string

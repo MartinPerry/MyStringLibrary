@@ -216,6 +216,9 @@ int main(int argc, char ** argv)
 	
 	int oioi = sizeof(MyStringAnsi);
 
+	std::string xx = "1231231321231231231";
+	xx += "xxx";
+
 	char m[16];
 	memset(m, 0, 16);
 	uint64_t v = 456456456;
@@ -233,13 +236,22 @@ int main(int argc, char ** argv)
 
 	MyStringAnsi oosx = tmpFunc();
 
+	MySmallStringAnsi tmpSmall = "ahoj vojle";
+	tmpSmall.Replace("oj", "voj");
+
+	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
+	tmpReplace.Replace("ahoj", "vol");
+
+	//MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
+	//tmpReplace.Replace("ahoj", "volej");
+
 	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
 
 	oo1t += 1567;
 	oo1t += 'a';
 	
 	//oo1t.RemoveMultipleChars('x');
-	auto ss1 = oo1t.Split<MyStringAnsi>(' ');
+	auto ss1 = oo1t.Split<std::string>(' ');
 	auto ss = oo1t.Split<MyStringAnsi>(' ', true);
 
 	MyStringAnsi oo1 = "1";
@@ -345,12 +357,12 @@ int main(int argc, char ** argv)
 	});
 	*/
 
-	sb.TestShortStrAllocation();
-	sb.TestStringToInt();
-	sb.TestStringToDouble();
-	sb.TestAppendNumberAll();
-	sb.TestAppendSmallString();
-	sb.TestAppendString();
+	//sb.TestShortStrAllocation();
+	//sb.TestStringToInt();
+	//sb.TestStringToDouble();
+	//sb.TestAppendNumberAll();
+	//sb.TestAppendSmallString();
+	//sb.TestAppendString();
 
 	return 0;
 }
