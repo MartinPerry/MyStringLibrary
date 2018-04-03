@@ -16,6 +16,7 @@ struct StringTests
 	static void TestAppendNumberAll();
 
 	static void TestAppendString();
+	static void TestSubstring();
 
 	static void TestMethods();
 

@@ -236,11 +236,14 @@ int main(int argc, char ** argv)
 
 	MyStringAnsi oosx = tmpFunc();
 
+	MyStringAnsi iin = "123 456.4";
+	auto numbr = iin.GetAllNumbers();
+
 	MySmallStringAnsi tmpSmall = "ahoj vojle";
 	tmpSmall.Replace("oj", "voj");
 
-	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
-	tmpReplace.Replace("ahoj", "vol");
+	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf ahoj";	
+	tmpReplace.Replace("ahoj", "vole");
 
 	//MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
 	//tmpReplace.Replace("ahoj", "volej");
@@ -295,7 +298,9 @@ int main(int argc, char ** argv)
 	StringTests::TestStringToRealNumber();
 	StringTests::TestAppendNumberAll();	
 	StringTests::TestAppendString();
+	StringTests::TestSubstring();
 	*/
+	
 
 	StringBenchmarks sb(1000'000);
 	/*

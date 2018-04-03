@@ -78,9 +78,16 @@ public:
 	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);
 
 
+	Type SubString(int start) const;
+	Type SubString(int start, size_t length) const;
+	void CopySubstring(int start, char ** destination) const;
+	void CopySubstring(int start, size_t length, char ** destination) const;
 
+	std::vector<double> GetAllNumbers() const;
 
-
+	bool IsNumber() const;
+	bool IsIntNumber() const;
+	bool IsFloatNumber() const;
 
 
 	template <typename T>	

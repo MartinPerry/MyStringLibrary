@@ -22,7 +22,7 @@ struct MyStringUtils
 	/// <param name="ret">out: if not null, pointer where we ended</param>
 	/// <returns>converte number</returns>
 	template <typename T>
-	static RET_VAL(T, std::is_floating_point<T>) ToNumber(const char * str, const char * ret = nullptr)
+	static RET_VAL(T, std::is_floating_point<T>) ToNumber(const char * str, const char ** ret = nullptr)
 	{
 		//skip leading whitespace
 		while ((*str <= ' ') && (*str != 0))
@@ -47,7 +47,7 @@ struct MyStringUtils
 
 		if ((*str != '.') && (*str != 'e'))
 		{
-			if (ret) ret = str;
+			if (ret) *ret = str;
 			return static_cast<T>(value) * sign;
 		}
 
@@ -112,7 +112,7 @@ struct MyStringUtils
 			}			
 		}
 		
-		if (ret) ret = str;
+		if (ret) *ret = str;
 		return val;
 	}
 

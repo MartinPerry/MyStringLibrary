@@ -310,6 +310,58 @@ void StringTests::TestAppendString()
 	printf(" OK \n");
 }
 
+void StringTests::TestSubstring()
+{
+	printf("==== Substring (%s) ==== ", __func__);
+
+	// Seed with a real random value, if available
+	std::random_device r;
+	std::default_random_engine e(r());
+
+	std::uniform_int_distribution<int> uniform_dist(1, 1000);
+
+	std::vector<std::string> rnd;
+	std::vector<int> starts;
+	std::vector<size_t> lens;
+	for (int i = 0; i < 500; i++)
+	{
+		int len = uniform_dist(e);
+		rnd.push_back(StringTests::CreateRandomString(len));
+
+		std::uniform_int_distribution<int> uniform_distStart(1, len);
+		int start = uniform_distStart(e);
+		starts.push_back(start);
+
+		std::uniform_int_distribution<int> uniform_distLen(0, len - start);
+		lens.push_back(uniform_distLen(e));
+	}
+
+	
+
+
+	MyStringAnsi r1 = "";
+	std::string r2 = "";
+
+	for (size_t i = 0; i < rnd.size(); i++)
+	{
+		MyStringAnsi s = rnd[i];
+		r1 += s.SubString(starts[i], lens[i]);
+	}
+	for (size_t i = 0; i < rnd.size(); i++)
+	{
+		std::string s = rnd[i];
+		r2 += s.substr(starts[i], lens[i]);
+	}
+
+
+	if (strcmp(r1.c_str(), r2.c_str()) != 0)
+	{
+		StringTests::error("String substring not working");
+	}
+
+	printf(" OK \n");
+}
+
 void StringTests::TestMethods()
 {
 	//========================================================================
@@ -395,6 +447,21 @@ void StringTests::TestMethods()
 	}
 
 	//========================================================================
-	//
+	//string replace	
+	MySmallStringAnsi tmpSmall = "ahoj vojle";
+	tmpSmall.Replace("oj", "voj");
+
+	if (strcmp(tmpSmall.c_str(), "ahvoj vvojle") != 0)
+	{
+		StringTests::error("Replace not working");
+	}
+
+	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf ahoj";
+	tmpReplace.Replace("ahoj", "vole");
+
+	if (strcmp(tmpSmall.c_str(), "vole babi ahoh vole baf vole") != 0)
+	{
+		StringTests::error("Replace not working");
+	}
 }
 

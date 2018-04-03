@@ -38,8 +38,17 @@ IStringAnsi<Type>::IStringAnsi(size_t bufferSize)
 	if (bufferSize > Type::BUFFER_SIZE)
 	{
 		static_cast<Type *>(this)->SetBufferSizeInternal(bufferSize);
+
+		char * str = new char[bufferSize];
+		str[0] = 0;
+
+		static_cast<Type *>(this)->SetLengthInternal(0);
+		static_cast<Type *>(this)->SetStrInternal(str);
 	}
-	static_cast<Type *>(this)->CtorInternal(nullptr);
+	else
+	{
+		static_cast<Type *>(this)->CtorInternal(nullptr);
+	}
 }
 
 template <typename Type>
@@ -327,16 +336,14 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
-/*-----------------------------------------------------------
-Function:    AppendFormat
-Parameters:
-[in] str - text to find
-[in] ... - input elements
 
-Append new formated string
-Really SLOW !!!! - because of used vsnprintf
-eg ("Formated %d %d", 10, 20) => "Formated 10, 20"
--------------------------------------------------------------*/
+/// <summary>
+/// Append new formated string
+/// Really SLOW !!!!- because of used vsnprintf
+/// eg("Formated %d %d", 10, 20) = > "Formated 10, 20"
+/// </summary>
+/// <param name="appendStr"></param>
+/// <param name="...args"></param>
 template <typename Type>
 template<typename... Args>
 void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
@@ -444,16 +451,12 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue)
 	this->Replace(oldValue, newValue, REPLACE_ALL);
 }
 
-/*-----------------------------------------------------------
-Function:    Replace
-Parameters:
-[in] search - text to find (co)
-[in] replace - text to replace (za co)
-[in] replaceOffset - if multiple occurence of "search", which one to replace (-1 = all)
-
-Replace all "search" with "replace"
-Use KMP for finding "search" in text
--------------------------------------------------------------*/
+/// <summary>
+/// Replace all "oldValue" with "newValue" Use KMP for finding "oldValue" in text
+/// </summary>
+/// <param name="oldValue"></param>
+/// <param name="newValue"></param>
+/// <param name="replaceOffset">if multiple occurence of "oldValue", which one to replace (-1 = all)</param>
 template <typename Type>
 void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, int replaceOffset)
 {
@@ -487,7 +490,7 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, in
 		foundOffset++;
 	}
 
-	SAFE_DELETE_ARRAY(last);
+	delete[] last;
 
 	this->Replace(oldValue, newValue, startPos);
 }
@@ -503,6 +506,19 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, co
 
 	size_t oldValueLen = strlen(oldValue);
 	size_t newValueLen = strlen(newValue);
+	
+	if (oldValueLen == newValueLen)
+	{
+		char * str = static_cast<Type *>(this)->str();
+		for (auto foundPos : searchStartPos)
+		{			
+			memcpy(str + foundPos, newValue, newValueLen);			
+		}
+
+		return;
+	}
+
+
 
 	//new length can be smaller or larger than current length
 	size_t newLength = static_cast<const Type *>(this)->length() -
@@ -591,6 +607,163 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, co
 // Methods for obtaining new data from string
 //====================================================================
 
+template <typename Type>
+std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
+{
+	std::vector<double> s;
+
+	const char * str = static_cast<const Type *>(this)->c_str();
+	
+	while (*str)
+	{
+		double n = MyStringUtils::ToNumber<double>(str, &str);
+		s.push_back(n);		
+	}
+
+	return s;
+}
+
+template <typename Type>
+bool IStringAnsi<Type>::IsNumber() const
+{
+	return this->IsFloatNumber();
+}
+
+template <typename Type>
+bool IStringAnsi<Type>::IsIntNumber() const
+{
+	size_t length = static_cast<const Type *>(this)->length();
+	if (length == 0)
+	{
+		return false;
+	}
+
+	const char * str = static_cast<const Type *>(this)->c_str();
+
+	size_t startPos = 0;
+	if (str[0] == '-')
+	{
+		startPos = 1;
+	}
+
+	for (size_t i = startPos; i < length; i++)
+	{
+		if ((str[i] > '9') || (str[i] < '0'))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+template <typename Type>
+bool IStringAnsi<Type>::IsFloatNumber() const
+{
+	size_t length = static_cast<const Type *>(this)->length();
+	if (length == 0)
+	{
+		return false;
+	}
+
+	const char * str = static_cast<const Type *>(this)->c_str();
+
+	size_t startPos = 0;
+	if (str[0] == '-')
+	{
+		startPos = 1;
+	}
+
+	int decCount = 0;
+	for (size_t i = startPos; i < length; i++)
+	{
+		if ((str[i] == '.') && (decCount == 0))
+		{
+			decCount++;
+			continue;
+		}
+
+		if ((str[i] < '0') || (str[i] > '9'))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+//====================================================================
+// Substrings
+//====================================================================
+
+/// <summary>
+/// Get substring within string
+/// </summary>
+/// <param name="start">start position</param>
+/// <returns>substring from string</returns>
+template <typename Type>
+Type IStringAnsi<Type>::SubString(int start) const
+{
+	size_t length = static_cast<const Type *>(this)->length() - start;
+
+	return this->SubString(start, length);
+}
+
+
+/// <summary>
+/// Get substring within string
+/// </summary>
+/// <param name="start">start position</param>
+/// <param name="length">length of substring</param>
+/// <returns>substring from string</returns>
+template <typename Type>
+Type IStringAnsi<Type>::SubString(int start, size_t length) const
+{	
+	if (start + length > static_cast<const Type *>(this)->length())
+	{
+		//to do ... hodit vyjimku
+	}
+
+	const char * str = static_cast<const Type *>(this)->c_str();
+
+	Type s(length + 1);
+
+	char * newStr = s.str();
+	memcpy(newStr, str + start, length);
+	newStr[length] = 0;
+
+	s.SetLengthInternal(length);
+
+	return s;
+}
+
+/// <summary>
+/// Get substring within string
+/// </summary>
+/// <param name="start">start position</param>
+/// <param name="destination">destination, where substring is copied</param>
+template <typename Type>
+void IStringAnsi<Type>::CopySubstring(int start, char ** destination) const
+{
+	size_t length = static_cast<const Type *>(this)->length() - start;
+
+	this->CopySubstring(start, length, destination);
+}
+
+template <typename Type>
+void IStringAnsi<Type>::CopySubstring(int start, size_t length, char ** destination) const
+{
+	/*
+	if (start + length > this->strLength)
+	{
+		//to do ... hodit vyjimku
+	}
+	*/
+
+	memcpy(*destination, static_cast<const Type *>(this)->c_str() + start, length);
+}
+
 
 
 
@@ -624,33 +797,29 @@ size_t IStringAnsi<Type>::Count(const char f) const
 // Searching
 //====================================================================
 
-/*-----------------------------------------------------------
-Function:    BoyerMoore
-Parameters:
-[in] needle - text to find
-[in/out] last - pointer to array of last function
-[in] start - start position of searching (default: 0)
-Returns:
-position of occurence needle in haystack
-
-Perfrom Boyer-Moore searching. Last function can be passed in
-in "last". If "last" is NULL, last function is calculated
-and filled to "last" array
-!Important! "last" array must be freed outside this method
--------------------------------------------------------------*/
+/// <summary>
+/// Perfrom Boyer-Moore searching. Last function can be passed in
+/// in "last".If "last" is NULL, last function is calculated
+/// and filled to "last" array
+/// !Important!"last" array must be freed outside this method
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <param name="last">pointer to array of last function (in / out)</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
 int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start) const
 {
 	const char * str = static_cast<const Type *>(this)->c_str();
 	int needleLen = static_cast<int>(strlen(needle));
 
-	size_t strLength = static_cast<const Type *>(this)->length();
+	int strLength = static_cast<int>(static_cast<const Type *>(this)->length());
 
 	if (last == nullptr)
 	{
 		last = new int[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
 		memset(last, -1, std::numeric_limits<uint8_t>::max());
-		for (size_t i = 0; i < strLength; i++)
+		for (int i = 0; i < strLength; i++)
 		{
 			last[static_cast<unsigned char>(str[i])] = i;
 		}
@@ -683,20 +852,16 @@ int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start
 
 }
 
-/*-----------------------------------------------------------
-Function:    KnuthMorisPrat
-Parameters:
-[in] needle - text to find
-[in/out] last - pointer to array of last function
-[in] start - start position of searching (default: 0)
-Returns:
-position of occurence needle in haystack
-
-Perfrom KMP searching. Last function can be passed in
-in "last". If "last" is NULL, last function is calculated
-and filled to "last" array
-!Important! "last" array must be freed outside this method
--------------------------------------------------------------*/
+/// <summary>
+/// Perfrom KMP (KnuthMorisPrat) searching. Last function can be passed in
+/// in "last".If "last" is NULL, last function is calculated
+/// and filled to "last" array
+/// !Important!"last" array must be freed outside this method
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <param name="last">pointer to array of last function (in / out)</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
 int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t start) const
 {
@@ -704,7 +869,7 @@ int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t s
 	int cmpIndex = 0;
 	int needleLen = static_cast<int>(strlen(needle));
 	int * failFce = last;
-	size_t strLen = static_cast<const Type *>(this)->length();
+	int strLen = static_cast<int>(static_cast<const Type *>(this)->length());
 	const char * str = static_cast<const Type *>(this)->c_str();
 
 	if (failFce == nullptr)
@@ -767,16 +932,12 @@ int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t s
 	return -1;
 }
 
-/*-----------------------------------------------------------
-Function:    BruteForce
-Parameters:
-[in] needle - text to find
-[in] start - start position of searching (default: 0)
-Returns:
-position of occurence needle in haystack
-
-Perfrom BF searching. Suitable for small strings
--------------------------------------------------------------*/
+/// <summary>
+/// Perfrom BF searching. Suitable for small strings
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
 int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 {
@@ -814,16 +975,13 @@ int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 	return -1;
 }
 
-/*-----------------------------------------------------------
-Function:    CLib
-Parameters:
-[in] needle - text to find
-[in] start - start position of searching (default: 0)
-Returns:
-position of occurence needle in haystack
 
-Perfrom searching using strstr - standard C library
--------------------------------------------------------------*/
+/// <summary>
+/// Perfrom searching using strstr - standard C library
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
 int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 {
