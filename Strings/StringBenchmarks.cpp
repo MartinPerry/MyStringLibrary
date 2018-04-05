@@ -324,7 +324,7 @@ void StringBenchmarks::TestAppendSmallString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<MyStringAnsi>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");
@@ -374,7 +374,7 @@ void StringBenchmarks::TestAppendString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<MyStringAnsi>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");

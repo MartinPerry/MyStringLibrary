@@ -157,6 +157,7 @@
     <ClInclude Include="MyStringMacros.h" />
     <ClInclude Include="MyStringUtils.h" />
     <ClInclude Include="StringBenchmarks.h" />
+    <ClInclude Include="MyStringID.h" />
     <ClInclude Include="StringTests.h" />
   </ItemGroup>
   <ItemGroup>

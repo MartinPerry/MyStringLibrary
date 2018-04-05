@@ -45,6 +45,9 @@
     <ClInclude Include="MySmallStringAnsi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyStringID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">

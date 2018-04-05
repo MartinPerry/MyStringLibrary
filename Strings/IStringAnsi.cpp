@@ -277,6 +277,27 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 
 //====================== Methods ===============================
 
+template <typename Type>
+uint32_t IStringAnsi<Type>::GetHashCode() const
+{
+	if (this->hashCode != std::numeric_limits<uint32_t>::max())
+	{
+		return this->hashCode;
+	}
+
+	uint32_t hash = MurmurHash3_x86_32(static_cast<const Type *>(this)->c_str(), 
+		static_cast<const Type *>(this)->length());
+
+	this->hashCode = hash;
+
+	//const volatile uint32_t * ptr = &this->hashCode;
+	//(*const_cast<uint32_t*>(ptr)) = hash;
+
+	return this->hashCode;
+}
+
+
+
 //====================================================================
 // Helper methods
 //====================================================================
@@ -438,6 +459,17 @@ void IStringAnsi<Type>::RemoveMultipleChars(char t)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+template <typename Type>
+void IStringAnsi<Type>::PopBack()
+{
+	char * str = static_cast<Type *>(this)->str();
+	size_t length = static_cast<const Type *>(this)->length();
+
+	str[length - 1] = 0;
+		
+	static_cast<Type *>(this)->SetLengthInternal(length - 1);
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
 
 template <typename Type>
 void IStringAnsi<Type>::Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue)
@@ -691,6 +723,165 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 
 	return true;
 }
+
+
+/// <summary>
+/// Fill current string to "const str"
+/// !Important!str must be freed
+/// </summary>
+/// <param name="str">filled const string (out)</param>
+template <typename Type>
+void IStringAnsi<Type>::FillString(char * &str) const
+{
+	size_t length = static_cast<const Type *>(this)->length();
+	const char * cstr = static_cast<const Type *>(this)->c_str();
+
+	str = new char[length + 1];
+	memcpy(str, cstr, length + 1);	
+}
+
+/// <summary>
+/// Fill current string to "const str"
+/// !Important!str must be freed
+/// </summary>
+/// <param name="str">filled const string (out)</param>
+template <typename Type>
+void IStringAnsi<Type>::FillString(const char * &str) const
+{
+	size_t length = static_cast<const Type *>(this)->length();
+	const char * cstr = static_cast<const Type *>(this)->c_str();
+
+	char * tmp = new char[length + 1];
+	memcpy(tmp, cstr, length + 1);	
+	str = my_strdup(tmp);
+	delete[] tmp;
+}
+
+
+//====================================================================
+// Finding
+//====================================================================
+
+/// <summary>
+/// Find str within this string and return first position of
+/// occurence
+/// </summary>
+/// <param name="str">text to find</param>
+/// <param name="algo">specify searching algorithm (default: CLib)</param>
+/// <returns>position of occurence needle in haystack</returns>
+template <typename Type>
+int IStringAnsi<Type>::Find(const Type & str, SearchAlgorithm algo) const
+{
+	return this->Find(str.c_str(), algo);
+}
+
+/// <summary>
+/// Find str within this string and return first position of
+/// occurence
+/// </summary>
+/// <param name="str">text to find</param>
+/// <param name="algo">specify searching algorithm (default: CLib)</param>
+/// <returns>position of occurence needle in haystack</returns>
+template <typename Type>
+int IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
+{
+	int pos = IStringAnsi<Type>::npos;
+
+	if (str == nullptr)
+	{
+		return pos;
+	}
+
+	int * last = nullptr;
+	if (algo == BM)
+	{
+		pos = this->BoyerMoore(str, last);
+	}
+	else if (algo == KMP)
+	{
+		pos = this->KnuthMorisPrat(str, last);
+	}
+	else if (algo == BF)
+	{
+		pos = this->BruteForce(str);
+	}
+	else if (algo == C_LIB)
+	{
+		pos = this->CLib(str);
+	}
+
+	if (last != nullptr)
+	{
+		delete[] last;
+	}
+
+	return pos;
+}
+
+
+template <typename Type>
+int IStringAnsi<Type>::Find(const char * str, int offset) const
+{
+	int count = 0;	
+	size_t searchLength = strlen(str);
+	int * last = nullptr;
+	int pos = 0;
+
+	while (1)
+	{
+		pos = this->KnuthMorisPrat(str, last, pos); //better use this, because BM skipping
+													//is calculated from haystack, not needle
+		if (pos == IStringAnsi<Type>::npos)
+		{ 
+			//not found
+			break; 
+		}       
+
+		if (count == offset)
+		{
+			break;
+		}
+
+		count++;
+		pos += searchLength;        //set new search start
+	}
+
+	delete[] last;
+
+	return pos;
+}
+
+template <typename Type>
+std::vector<int> IStringAnsi<Type>::FindAll(const char * str) const
+{
+	size_t searchLength = strlen(str);
+	int * last = nullptr;
+	int pos = 0;
+
+	std::vector<int> startPos;
+	int foundOffset = 0;
+
+	while (1)
+	{
+		pos = this->KnuthMorisPrat(str, last, pos); //better use this, because BM skipping
+													//is calculated from haystack, not needle
+		if (pos == IStringAnsi<Type>::npos)
+		{ 
+			//not found
+			break; 
+		}        
+		startPos.push_back(pos);    //store found start positions of serach words
+
+		pos += searchLength;        //set new search start
+
+		foundOffset++;
+	}
+
+	delete[] last;
+
+	return startPos;
+}
+
 
 
 //====================================================================

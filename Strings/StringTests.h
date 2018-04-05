@@ -3,6 +3,7 @@
 
 #include <string>
 
+template <typename T>
 struct StringTests 
 {
 	static std::string CreateRandomString(int len);
@@ -11,7 +12,7 @@ struct StringTests
 	static void TestStringToIntNumber();
 	static void TestStringToRealNumber();
 
-	template <typename T>
+	template <typename N>
 	static void TestAppendIntNumber();
 	static void TestAppendNumberAll();
 

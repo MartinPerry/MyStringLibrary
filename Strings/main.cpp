@@ -234,6 +234,12 @@ int main(int argc, char ** argv)
 		printf("x");
 	}
 
+	MD5 md5;
+	MyStringAnsi md5Hash = md5.digestString("ahoj vole");
+
+	std::string hh = "xxx";
+	MyStringAnsi oxoxo = hh;
+
 	MyStringAnsi oosx = tmpFunc();
 
 	MyStringAnsi iin = "123 456.4";
@@ -242,8 +248,13 @@ int main(int argc, char ** argv)
 	MySmallStringAnsi tmpSmall = "ahoj vojle";
 	tmpSmall.Replace("oj", "voj");
 
+	tmpSmall.PopBack();
+	char last = tmpSmall.GetLastChar();
+
 	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf ahoj";	
 	tmpReplace.Replace("ahoj", "vole");
+
+	tmpReplace.PopBack();
 
 	//MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
 	//tmpReplace.Replace("ahoj", "volej");
@@ -291,15 +302,23 @@ int main(int argc, char ** argv)
 
 	//double ix = MyStringUtils::ToNumber<double>("3.14159e+001");
 	
-	/*
-	StringTests::TestCtors();
-	StringTests::TestMethods();
-	StringTests::TestStringToIntNumber();
-	StringTests::TestStringToRealNumber();
-	StringTests::TestAppendNumberAll();	
-	StringTests::TestAppendString();
-	StringTests::TestSubstring();
-	*/
+	
+	StringTests<MySmallStringAnsi>::TestCtors();
+	StringTests<MySmallStringAnsi>::TestMethods();
+	StringTests<MySmallStringAnsi>::TestStringToIntNumber();
+	StringTests<MySmallStringAnsi>::TestStringToRealNumber();
+	StringTests<MySmallStringAnsi>::TestAppendNumberAll();
+	StringTests<MySmallStringAnsi>::TestAppendString();
+	StringTests<MySmallStringAnsi>::TestSubstring();
+
+	StringTests<MyStringAnsi>::TestCtors();
+	StringTests<MyStringAnsi>::TestMethods();
+	StringTests<MyStringAnsi>::TestStringToIntNumber();
+	StringTests<MyStringAnsi>::TestStringToRealNumber();
+	StringTests<MyStringAnsi>::TestAppendNumberAll();
+	StringTests<MyStringAnsi>::TestAppendString();
+	StringTests<MyStringAnsi>::TestSubstring();
+	
 	
 
 	StringBenchmarks sb(1000'000);

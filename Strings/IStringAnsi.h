@@ -53,23 +53,41 @@ public:
 	bool SaveToFile(const char * fileName) const;
 
 
+	uint32_t GetHashCode() const;
+	uint32_t GetRawHashCode() const
+	{
+		return this->hashCode;
+	}
+
+	char GetLastChar() const
+	{
+		size_t length = static_cast<const Type *>(this)->length();
+		return this->operator[](length - 1);
+	}
 
 
 	void Trim();
 	void Reverse();
 	void RemoveMultipleChars(char t);
+	void PopBack();
 
 	template <typename RetVal>
 	std::vector<RetVal> Split(char delimeter, bool keepEmptyValues = false) const;
 
 	size_t Count(const char str) const;
 
+
+	int Find(const Type & str, SearchAlgorithm algo = C_LIB) const;
+	int Find(const char * str, SearchAlgorithm algo = C_LIB) const;
+	int Find(const char * str, int offset) const;
+	std::vector<int> FindAll(const char * str) const;
+
+
+
 	void Append(const char * str, size_t len = 0);
 
 	template<typename... Args>
 	void AppendFormat(const char * str, Args... args);
-
-
 
 
 	void Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue);
@@ -82,6 +100,10 @@ public:
 	Type SubString(int start, size_t length) const;
 	void CopySubstring(int start, char ** destination) const;
 	void CopySubstring(int start, size_t length, char ** destination) const;
+
+	void FillString(char * &str) const;
+	void FillString(const char * &str) const;
+
 
 	std::vector<double> GetAllNumbers() const;
 
@@ -147,21 +169,6 @@ protected:
 
 
 
-/*
-//For use in std::unordered_map
-//http://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
-namespace std
-{
-	template <>
-	struct hash<IStringAnsi>
-	{
-		std::size_t operator()(const IStringAnsi & k) const
-		{
-			return k.GetHashCode();
-		};
-	};
-};
-*/
 
 
 

@@ -9,7 +9,8 @@
 #include "MyString.h"
 #include "MyStringUtils.h"
 
-std::string StringTests::CreateRandomString(int len)
+template <typename T>
+std::string StringTests<T>::CreateRandomString(int len)
 {
 	srand(static_cast<unsigned int>(time(0)));
 
@@ -26,13 +27,14 @@ std::string StringTests::CreateRandomString(int len)
 	return r;
 }
 
-void StringTests::TestCtors()
+template <typename T>
+void StringTests<T>::TestCtors()
 {
 	printf("==== Ctors (%s) ==== ", __func__);
 
-	MyStringAnsi m14 = "abcdefghijklmo"; //use local
-	MyStringAnsi m15 = "abcdefghijklmop"; //use local
-	MyStringAnsi m16 = "abcdefghijklmopq"; //use "heap"
+	T m14 = "abcdefghijklmo"; //use local
+	T m15 = "abcdefghijklmop"; //use local
+	T m16 = "abcdefghijklmopq"; //use "heap"
 
 
 	std::string s14 = "abcdefghijklmo";
@@ -41,23 +43,24 @@ void StringTests::TestCtors()
 
 	if (strcmp(m14.c_str(), s14.c_str()) != 0)
 	{
-		StringTests::error("ctor not working");
+		StringTests<T>::error("ctor not working");
 	}
 
 	if (strcmp(m15.c_str(), s15.c_str()) != 0)
 	{
-		StringTests::error("ctor not working");
+		StringTests<T>::error("ctor not working");
 	}
 
 	if (strcmp(m16.c_str(), s16.c_str()) != 0)
 	{
-		StringTests::error("ctor not working");
+		StringTests<T>::error("ctor not working");
 	}
 
 	printf(" OK \n");
 }
 
-void StringTests::TestStringToIntNumber()
+template <typename T>
+void StringTests<T>::TestStringToIntNumber()
 {
 	printf("==== String to number (%s) ==== ", __func__);
 	
@@ -78,7 +81,7 @@ void StringTests::TestStringToIntNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
@@ -92,14 +95,15 @@ void StringTests::TestStringToIntNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
 	printf(" OK \n");
 }
 
-void StringTests::TestStringToRealNumber()
+template <typename T>
+void StringTests<T>::TestStringToRealNumber()
 {
 	printf("==== String to number (%s) ==== ", __func__);
 
@@ -120,7 +124,7 @@ void StringTests::TestStringToRealNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
@@ -134,7 +138,7 @@ void StringTests::TestStringToRealNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
@@ -150,7 +154,7 @@ void StringTests::TestStringToRealNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
@@ -166,7 +170,7 @@ void StringTests::TestStringToRealNumber()
 
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 
@@ -180,7 +184,7 @@ void StringTests::TestStringToRealNumber()
 		
 		if (r1 != r2)
 		{
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 	*/
@@ -190,7 +194,8 @@ void StringTests::TestStringToRealNumber()
 }
 
 template <typename T>
-void StringTests::TestAppendIntNumber()
+template <typename N>
+void StringTests<T>::TestAppendIntNumber()
 {
 	printf("==== Append number (%s) ==== ", __func__);
 
@@ -198,10 +203,10 @@ void StringTests::TestAppendIntNumber()
 	std::random_device r;
 	std::default_random_engine e(r());
 
-	std::uniform_int_distribution<T> uniform_dist(std::numeric_limits<T>::min(),
-		std::numeric_limits<T>::max());
+	std::uniform_int_distribution<N> uniform_dist(std::numeric_limits<N>::min(),
+		std::numeric_limits<N>::max());
 
-	std::vector<T> rnd;
+	std::vector<N> rnd;
 	//for (int i = 0; i < 500; i++)
 	for (int i = 0; i < 500; i++)
 	{
@@ -209,15 +214,15 @@ void StringTests::TestAppendIntNumber()
 	}
 	for (int i = -250; i < 250; i++)
 	{
-		rnd.push_back(static_cast<T>(i));
+		rnd.push_back(static_cast<N>(i));
 	}
-	rnd.push_back(std::numeric_limits<T>::min());
-	rnd.push_back(std::numeric_limits<T>::max());
-	rnd.push_back(T(100001));
-	rnd.push_back(T(10001));
+	rnd.push_back(std::numeric_limits<N>::min());
+	rnd.push_back(std::numeric_limits<N>::max());
+	rnd.push_back(N(100001));
+	rnd.push_back(N(10001));
 
 	//if it fails - index is in x
-	std::vector<T> x;
+	std::vector<N> x;
 	for (size_t i = 0; i < rnd.size(); i++)
 	{
 		int j = MyStringUtils::GetNumDigits(rnd[i]);
@@ -227,7 +232,7 @@ void StringTests::TestAppendIntNumber()
 		}
 	}
 
-	MyStringAnsi r1 = "";
+	T r1 = "";
 	std::string r2 = "";
 
 	for (size_t i = 0; i < rnd.size(); i++)
@@ -242,7 +247,7 @@ void StringTests::TestAppendIntNumber()
 
 	if (r1.length() != r2.length())
 	{
-		StringTests::error("Number conversion not working");
+		StringTests<T>::error("Number conversion not working");
 	}
 
 	for (size_t i = 0; i < r1.length(); i++)
@@ -250,27 +255,29 @@ void StringTests::TestAppendIntNumber()
 		if (r1[i] != r2[i])
 		{			
 			//printf("Failed: %ll", x[i]);
-			StringTests::error("Number conversion not working");
+			StringTests<T>::error("Number conversion not working");
 		}
 	}
 	
 	printf(" OK \n");
 }
 
-void StringTests::TestAppendNumberAll()
+template <typename T>
+void StringTests<T>::TestAppendNumberAll()
 {
 	//this->TestAppendNumber<int8_t>();
-	StringTests::TestAppendIntNumber<int16_t>();	
-	StringTests::TestAppendIntNumber<int32_t>();
-	StringTests::TestAppendIntNumber<int64_t>();
+	StringTests<T>::TestAppendIntNumber<int16_t>();	
+	StringTests<T>::TestAppendIntNumber<int32_t>();
+	StringTests<T>::TestAppendIntNumber<int64_t>();
 	
 	//this->TestAppendNumber<uint8_t>();
-	StringTests::TestAppendIntNumber<uint16_t>();
-	StringTests::TestAppendIntNumber<uint32_t>();
-	StringTests::TestAppendIntNumber<uint64_t>();
+	StringTests<T>::TestAppendIntNumber<uint16_t>();
+	StringTests<T>::TestAppendIntNumber<uint32_t>();
+	StringTests<T>::TestAppendIntNumber<uint64_t>();
 }
 
-void StringTests::TestAppendString()
+template <typename T>
+void StringTests<T>::TestAppendString()
 {
 	printf("==== Append string (%s) ==== ", __func__);
 
@@ -283,13 +290,13 @@ void StringTests::TestAppendString()
 	std::vector<std::string> rnd;	
 	for (int i = 0; i < 500; i++)
 	{
-		rnd.push_back(StringTests::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<T>::CreateRandomString(uniform_dist(e)));
 	}
 	
 	rnd.push_back("");
 	rnd.push_back(" ");
 	
-	MyStringAnsi r1 = "";
+	T r1 = "";
 	std::string r2 = "";
 
 	for (size_t i = 0; i < rnd.size(); i++)
@@ -304,13 +311,14 @@ void StringTests::TestAppendString()
 
 	if (strcmp(r1.c_str(), r2.c_str()) != 0)
 	{
-		StringTests::error("String append not working");
+		StringTests<T>::error("String append not working");
 	}
 
 	printf(" OK \n");
 }
 
-void StringTests::TestSubstring()
+template <typename T>
+void StringTests<T>::TestSubstring()
 {
 	printf("==== Substring (%s) ==== ", __func__);
 
@@ -326,7 +334,7 @@ void StringTests::TestSubstring()
 	for (int i = 0; i < 500; i++)
 	{
 		int len = uniform_dist(e);
-		rnd.push_back(StringTests::CreateRandomString(len));
+		rnd.push_back(StringTests<T>::CreateRandomString(len));
 
 		std::uniform_int_distribution<int> uniform_distStart(1, len);
 		int start = uniform_distStart(e);
@@ -339,7 +347,7 @@ void StringTests::TestSubstring()
 	
 
 
-	MyStringAnsi r1 = "";
+	T r1 = "";
 	std::string r2 = "";
 
 	for (size_t i = 0; i < rnd.size(); i++)
@@ -356,13 +364,14 @@ void StringTests::TestSubstring()
 
 	if (strcmp(r1.c_str(), r2.c_str()) != 0)
 	{
-		StringTests::error("String substring not working");
+		StringTests<T>::error("String substring not working");
 	}
 
 	printf(" OK \n");
 }
 
-void StringTests::TestMethods()
+template <typename T>
+void StringTests<T>::TestMethods()
 {
 	//========================================================================
 	//for trim
@@ -373,12 +382,12 @@ void StringTests::TestMethods()
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
-		MyStringAnsi x1 = inputs[i];
+		T x1 = inputs[i];
 		x1.Trim();
 
 		if (strcmp(x1.c_str(), outputs[i]) != 0)
 		{
-			StringTests::error("Trim not working");
+			StringTests<T>::error("Trim not working");
 		}
 	}
 
@@ -389,12 +398,12 @@ void StringTests::TestMethods()
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
-		MyStringAnsi x1 = inputs[i];
+		T x1 = inputs[i];
 		x1.Reverse();
 
 		if (strcmp(x1.c_str(), outputs[i]) != 0)
 		{
-			StringTests::error("Reverse not working");
+			StringTests<T>::error("Reverse not working");
 		}
 	}
 	
@@ -405,12 +414,12 @@ void StringTests::TestMethods()
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
-		MyStringAnsi x1 = inputs[i];
+		T x1 = inputs[i];
 		x1.RemoveMultipleChars('x');		
 
 		if (strcmp(x1.c_str(), outputs[i]) != 0)
 		{
-			StringTests::error("Reverse not working");
+			StringTests<T>::error("Reverse not working");
 		}
 	}
 
@@ -421,12 +430,12 @@ void StringTests::TestMethods()
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
-		MyStringAnsi x1 = inputs[i];
-		auto v = x1.Split<MyStringAnsi>(' ');
+		T x1 = inputs[i];
+		auto v = x1.Split<T>(' ');
 
 		if (v.size() != outputs2[i])
 		{
-			StringTests::error("Reverse not working");
+			StringTests<T>::error("Reverse not working");
 		}
 	}
 
@@ -437,31 +446,34 @@ void StringTests::TestMethods()
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
-		MyStringAnsi x1 = inputs[i];
-		auto v = x1.Split<MyStringAnsi>(' ', true);
+		T x1 = inputs[i];
+		auto v = x1.Split<T>(' ', true);
 
 		if (v.size() != outputs2[i])
 		{
-			StringTests::error("Reverse not working");
+			StringTests<T>::error("Reverse not working");
 		}
 	}
 
 	//========================================================================
 	//string replace	
-	MySmallStringAnsi tmpSmall = "ahoj vojle";
+	T tmpSmall = "ahoj vojle";
 	tmpSmall.Replace("oj", "voj");
 
 	if (strcmp(tmpSmall.c_str(), "ahvoj vvojle") != 0)
 	{
-		StringTests::error("Replace not working");
+		StringTests<T>::error("Replace not working");
 	}
 
-	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf ahoj";
+	T tmpReplace = "ahoj babi ahoh ahoj baf ahoj";
 	tmpReplace.Replace("ahoj", "vole");
 
 	if (strcmp(tmpSmall.c_str(), "vole babi ahoh vole baf vole") != 0)
 	{
-		StringTests::error("Replace not working");
+		StringTests<T>::error("Replace not working");
 	}
 }
 
+
+template struct StringTests<MyStringAnsi>;
+template struct StringTests<MySmallStringAnsi>;
