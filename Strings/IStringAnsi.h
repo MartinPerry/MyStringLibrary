@@ -124,6 +124,13 @@ public:
 	void operator += (const char letter);
 
 
+	//Type & operator = (const Type & str);
+	//Type & operator = (const char * str);
+	//Type & operator = (const std::string & str);
+
+	//Type & operator = (Type&& other);
+
+
 	inline char operator [](const int index) const;
 	inline char & operator [](const int index);
 
@@ -369,7 +376,6 @@ inline char & IStringAnsi<Type>::operator [](const int index)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 	return static_cast<Type *>(this)->str()[index];
 }
-
 
 
 /// <summary>

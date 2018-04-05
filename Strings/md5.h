@@ -328,8 +328,8 @@ public:
     int pos ;
 
 	for (pos = 0; pos < 16; pos++) {
-#ifdef _MSC_VER //_not_working
-		sprintf_s(digestChars + (pos * 2), sizeof(digestChars), "%02x", digestRaw[pos]);
+#ifdef _MSC_VER//_not_working
+		sprintf_s(digestChars + (pos * 2), sizeof(digestChars) - (pos * 2), "%02x", digestRaw[pos]);
 #else		
 		sprintf(digestChars + (pos * 2), "%02x", digestRaw[pos]);
 #endif

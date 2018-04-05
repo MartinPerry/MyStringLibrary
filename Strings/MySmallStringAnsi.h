@@ -94,6 +94,30 @@ public:
 			uint8_t(local[0]);
 	};
 
+
+	MySmallStringAnsi & operator = (const MySmallStringAnsi & str)
+	{
+		if (this == &str) //they are same
+		{
+			return *this;
+		}
+
+		this->CreateNew(str.c_str(), str.length());
+		return *this;
+	};
+
+	MySmallStringAnsi & operator =(const char * str)
+	{
+		this->CreateNew(str, 0);
+		return *this;
+	};
+
+	MySmallStringAnsi & operator = (const std::string & str)
+	{
+		this->CreateNew(str.c_str(), str.length());
+		return *this;
+	};
+
 	friend class IStringAnsi<MySmallStringAnsi>;
 
 protected:

@@ -66,6 +66,53 @@ public:
 		return this->bufferCapacity;
 	};
 
+		
+	MyStringAnsi & operator = (const MyStringAnsi & str)
+	{
+		if (this == &str) //they are same
+		{			
+			return *this;
+		}
+
+		this->CreateNew(str.c_str(), str.length());
+		return *this;
+	};
+
+	MyStringAnsi & operator =(const char * str)
+	{
+		this->CreateNew(str, 0);
+		return *this;
+	};
+	
+	MyStringAnsi & operator = (const std::string & str)
+	{
+		this->CreateNew(str.c_str(), str.length());
+		return *this;
+	};
+
+	MyStringAnsi & operator = (MyStringAnsi&& other)
+	{
+		// release the current object’s resources
+		this->Release();
+
+		// pilfer other’s resource
+
+		this->SetLengthInternal(other.length());
+		this->SetStrInternal(other.str());
+		this->SetBufferSizeInternal(other.capacity());
+
+		this->hashCode = other.hashCode;
+
+		// reset other
+		other.SetLengthInternal(0);
+		other.SetStrInternal(nullptr);
+		other.SetBufferSizeInternal(0);
+		other.hashCode = std::numeric_limits<uint32_t>::max();
+
+		return *this;
+	};
+
+
 	friend class IStringAnsi<MyStringAnsi>;
 
 protected:

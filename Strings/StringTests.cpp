@@ -468,9 +468,26 @@ void StringTests<T>::TestMethods()
 	T tmpReplace = "ahoj babi ahoh ahoj baf ahoj";
 	tmpReplace.Replace("ahoj", "vole");
 
-	if (strcmp(tmpSmall.c_str(), "vole babi ahoh vole baf vole") != 0)
+	if (strcmp(tmpReplace.c_str(), "vole babi ahoh vole baf vole") != 0)
 	{
 		StringTests<T>::error("Replace not working");
+	}
+
+	//========================================================================
+	//MD5
+
+	MD5 md5;
+	T md5Hash = md5.digestString("ahoj vole");
+	if (strcmp(md5Hash.c_str(), "53a94a062714c8f28de90400642e142c") != 0)
+	{
+		StringTests<T>::error("MD5 not working");
+	}
+	
+
+	md5Hash = md5.digestString("123456 lokomotiva");
+	if (strcmp(md5Hash.c_str(), "8ac48676dae783798450238c37bebd93") != 0)
+	{
+		StringTests<T>::error("MD5 not working");
 	}
 }
 

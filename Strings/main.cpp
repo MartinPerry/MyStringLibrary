@@ -214,6 +214,7 @@ int main(int argc, char ** argv)
 	}
 	*/
 	
+	/*
 	int oioi = sizeof(MyStringAnsi);
 
 	std::string xx = "1231231321231231231";
@@ -233,14 +234,16 @@ int main(int argc, char ** argv)
 	{
 		printf("x");
 	}
-
-	MD5 md5;
-	MyStringAnsi md5Hash = md5.digestString("ahoj vole");
-
+	*/
+	
+	
 	std::string hh = "xxx";
+	
 	MyStringAnsi oxoxo = hh;
 
 	MyStringAnsi oosx = tmpFunc();
+	oosx = std::move(oxoxo);
+
 
 	MyStringAnsi iin = "123 456.4";
 	auto numbr = iin.GetAllNumbers();
