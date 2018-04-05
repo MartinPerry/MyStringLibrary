@@ -19,8 +19,9 @@ public:
 	static const size_t BUFFER_SIZE = 19;
 
 	using IStringAnsi<MySmallStringAnsi>::IStringAnsi;
+	using IStringAnsi<MySmallStringAnsi>::operator=;
 
-	MySmallStringAnsi::MySmallStringAnsi(const char * newStr, size_t length)
+	MySmallStringAnsi(const char * newStr, size_t length)
 	{
 		memset(local, 0, sizeof(local));
 		size_t bufferSize = length + 1;
@@ -41,7 +42,7 @@ public:
 		hashCode = std::numeric_limits<uint32_t>::max();
 	}
 
-	MySmallStringAnsi::MySmallStringAnsi(const MySmallStringAnsi &other)
+	MySmallStringAnsi(const MySmallStringAnsi &other)
 	{
 		memcpy(local, other.local, sizeof(local));
 		if (this->IsLocal() == false)
@@ -51,7 +52,7 @@ public:
 		this->hashCode = other.hashCode;
 	};
 
-	MySmallStringAnsi::MySmallStringAnsi(MySmallStringAnsi && other)  /* noexcept needed to enable optimizations in containers */
+	MySmallStringAnsi(MySmallStringAnsi && other)  /* noexcept needed to enable optimizations in containers */
 	{
 		//http://blog.smartbear.com/c-plus-plus/c11-tutorial-introducing-the-move-constructor-and-the-move-assignment-operator/
 		memcpy(local, other.local, sizeof(local));
@@ -95,28 +96,7 @@ public:
 	};
 
 
-	MySmallStringAnsi & operator = (const MySmallStringAnsi & str)
-	{
-		if (this == &str) //they are same
-		{
-			return *this;
-		}
 
-		this->CreateNew(str.c_str(), str.length());
-		return *this;
-	};
-
-	MySmallStringAnsi & operator =(const char * str)
-	{
-		this->CreateNew(str, 0);
-		return *this;
-	};
-
-	MySmallStringAnsi & operator = (const std::string & str)
-	{
-		this->CreateNew(str.c_str(), str.length());
-		return *this;
-	};
 
 	friend class IStringAnsi<MySmallStringAnsi>;
 
@@ -208,7 +188,6 @@ protected:
 		memcpy(local + 8, &addr, sizeof(uintptr_t));
 
 		local[BUFFER_SIZE] = std::numeric_limits<char>::min();
-
 	};
 };
 

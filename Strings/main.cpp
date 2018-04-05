@@ -154,6 +154,32 @@ MyStringAnsi tmpFunc()
 }
 
 
+template <class T>
+struct IFoo 
+{
+	IFoo() {}
+	IFoo(const char * x) {}
+
+	T & operator=(const char * x){ return *static_cast<T *>(this); }
+
+	void Test() { static_cast<T *>(this)->TestInternal(); }
+};
+
+
+struct IBar : public IFoo<IBar>
+{
+	using IFoo<IBar>::IFoo;
+	using IFoo<IBar>::operator=;
+
+	IBar(const IBar & b) {}
+	IBar(const IBar && b) {}
+	
+	//IBar & operator=(const char * x){ return *this;}
+
+	void TestInternal(){}
+};
+
+
 template <typename T>
 FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t offset)
 {
@@ -182,9 +208,11 @@ FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t of
 int main(int argc, char ** argv)
 {
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
-	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);
-
+	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);	
 	
+	IBar bar = "bar";
+	bar = "bar2";
+	bar.Test();
 
 	/*
 	std::string xx = "";

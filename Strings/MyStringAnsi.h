@@ -16,8 +16,9 @@ public:
 	static const size_t BUFFER_SIZE = 0;
 
 	using IStringAnsi<MyStringAnsi>::IStringAnsi;
-	
-	MyStringAnsi::MyStringAnsi(const char * newStr, size_t length)	
+	using IStringAnsi<MyStringAnsi>::operator=;
+
+	MyStringAnsi(const char * newStr, size_t length)	
 		: bufferCapacity(length + 1),
 		strLength(length)
 	{				
@@ -29,13 +30,13 @@ public:
 		hashCode = std::numeric_limits<uint32_t>::max();
 	}
 
-	MyStringAnsi::MyStringAnsi(const MyStringAnsi &other)
+	MyStringAnsi(const MyStringAnsi &other)
 	{
 		this->CtorInternal(other.c_str());		
 		this->hashCode = other.hashCode;
 	};
 	
-	MyStringAnsi::MyStringAnsi(MyStringAnsi && other)  :
+	MyStringAnsi(MyStringAnsi && other)  :
 		strPtr(other.strPtr), 
 		bufferCapacity(other.bufferCapacity),
 		strLength(other.strLength)
@@ -67,52 +68,7 @@ public:
 	};
 
 		
-	MyStringAnsi & operator = (const MyStringAnsi & str)
-	{
-		if (this == &str) //they are same
-		{			
-			return *this;
-		}
-
-		this->CreateNew(str.c_str(), str.length());
-		return *this;
-	};
-
-	MyStringAnsi & operator =(const char * str)
-	{
-		this->CreateNew(str, 0);
-		return *this;
-	};
-	
-	MyStringAnsi & operator = (const std::string & str)
-	{
-		this->CreateNew(str.c_str(), str.length());
-		return *this;
-	};
-
-	MyStringAnsi & operator = (MyStringAnsi&& other)
-	{
-		// release the current object’s resources
-		this->Release();
-
-		// pilfer other’s resource
-
-		this->SetLengthInternal(other.length());
-		this->SetStrInternal(other.str());
-		this->SetBufferSizeInternal(other.capacity());
-
-		this->hashCode = other.hashCode;
-
-		// reset other
-		other.SetLengthInternal(0);
-		other.SetStrInternal(nullptr);
-		other.SetBufferSizeInternal(0);
-		other.hashCode = std::numeric_limits<uint32_t>::max();
-
-		return *this;
-	};
-
-
+			
 	friend class IStringAnsi<MyStringAnsi>;
 
 protected:

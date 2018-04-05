@@ -124,11 +124,10 @@ public:
 	void operator += (const char letter);
 
 
-	//Type & operator = (const Type & str);
-	//Type & operator = (const char * str);
-	//Type & operator = (const std::string & str);
-
-	//Type & operator = (Type&& other);
+	Type & operator = (const Type & str);
+	Type & operator = (const char * str);
+	Type & operator = (const std::string & str);
+	Type & operator = (Type && other);
 
 
 	inline char operator [](const int index) const;
@@ -377,6 +376,52 @@ inline char & IStringAnsi<Type>::operator [](const int index)
 	return static_cast<Type *>(this)->str()[index];
 }
 
+template <typename Type>
+Type & IStringAnsi<Type>::operator = (const Type & str)
+{
+	if (this == &str) //they are same
+	{
+		return *static_cast<Type *>(this);
+	}
+
+	this->CreateNew(str.c_str(), str.length());
+	return *static_cast<Type *>(this);
+};
+
+
+template <typename Type>
+Type & IStringAnsi<Type>::operator =(const char * str)
+{
+	this->CreateNew(str, 0);
+	return *static_cast<Type *>(this);
+};
+
+template <typename Type>
+Type & IStringAnsi<Type>::operator = (const std::string & str)
+{
+	this->CreateNew(str.c_str(), str.length());
+	return *static_cast<Type *>(this);
+};
+
+template <typename Type>
+Type & IStringAnsi<Type>::operator = (Type && other)
+{
+	this->Release();
+	
+	static_cast<Type *>(this)->SetLengthInternal(other.length());
+	static_cast<Type *>(this)->SetStrInternal(other.str());
+	static_cast<Type *>(this)->SetBufferSizeInternal(other.capacity());
+
+	this->hashCode = other.hashCode;
+
+	// reset other
+	other.SetLengthInternal(0);
+	other.SetStrInternal(nullptr);
+	other.SetBufferSizeInternal(0);
+	other.hashCode = std::numeric_limits<uint32_t>::max();
+
+	return *static_cast<Type *>(this);
+};
 
 /// <summary>
 /// Split string by a char delimeter
