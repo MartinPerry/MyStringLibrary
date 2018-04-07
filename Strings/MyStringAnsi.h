@@ -1,8 +1,9 @@
 #ifndef MY_STRING_ANSI_H
 #define MY_STRING_ANSI_H
 
-
+#include <string.h>
 #include <vector>
+#include <limits>
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
@@ -39,8 +40,10 @@ public:
 	MyStringAnsi(MyStringAnsi && other)  :
 		strPtr(other.strPtr), 
 		bufferCapacity(other.bufferCapacity),
-		strLength(other.strLength)
+		strLength(other.strLength)		
 	{				
+		this->hashCode = other.hashCode;
+
 		other.strPtr = nullptr;
 		other.bufferCapacity = 0;
 		other.strLength = 0;
@@ -67,7 +70,10 @@ public:
 		return this->bufferCapacity;
 	};
 
-		
+	MyStringAnsi & operator = (const MyStringAnsi & str)
+	{
+		return IStringAnsi<MyStringAnsi>::operator=(str);
+	};
 			
 	friend class IStringAnsi<MyStringAnsi>;
 
@@ -94,10 +100,10 @@ protected:
 	{		
 		if (newStr == nullptr)
 		{
-			this->strPtr = new char[1];
-			this->strPtr[0] = 0;
+			this->strPtr = nullptr;
+			//this->strPtr[0] = 0;
 			this->strLength = 0;
-			this->bufferCapacity = 1;
+			this->bufferCapacity = 0;
 			return;
 		}
 

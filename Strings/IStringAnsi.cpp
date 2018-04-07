@@ -1,22 +1,20 @@
 #include "./IStringAnsi.h"
 
-#include "./MyString.h"
-#include "./MurmurHash3.h"
-
-
 
 #include <cstdio>
 #include <cstdlib>
-#include <climits>
-#include <wctype.h>
 #include <cctype>
 #include <stdarg.h>
 
-#include <cstring>
+#include <string.h>
 #include <locale>
 #include <cmath>
 
 
+#include "./MurmurHash3.h"
+
+#include "./MyStringAnsi.h"
+#include "./MySmallStringAnsi.h"
 
 //====================================================================
 // ctors / dtors
@@ -214,7 +212,7 @@ RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 
 	data[size] = 0;
 	RetVal tmp = RetVal(data);
-	SAFE_DELETE_ARRAY(data);
+	delete[] data;
 
 	return tmp;
 
@@ -403,7 +401,6 @@ void IStringAnsi<Type>::Trim()
 
 	start[newLength] = 0;	
 	
-
 	static_cast<Type *>(this)->SetLengthInternal(newLength);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
@@ -472,7 +469,7 @@ void IStringAnsi<Type>::PopBack()
 }
 
 template <typename Type>
-void IStringAnsi<Type>::Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue)
+void IStringAnsi<Type>::Replace(const Type & oldValue, const Type & newValue)
 {
 	this->Replace(oldValue.c_str(), newValue.c_str(), REPLACE_ALL);
 }

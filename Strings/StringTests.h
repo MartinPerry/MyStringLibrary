@@ -2,6 +2,7 @@
 #define _STRING_TESTS_H_
 
 #include <string>
+#include <stdexcept>
 
 template <typename T>
 struct StringTests 

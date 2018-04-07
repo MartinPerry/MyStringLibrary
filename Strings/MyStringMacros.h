@@ -10,13 +10,6 @@
 	#define SWAP(a, b)  do { a ^= b; b ^= a; a ^= b; } while ( 0 )
 #endif
 
-#ifndef SAFE_DELETE
-	#define SAFE_DELETE(a) {if (a != nullptr) { delete   a; a = nullptr; }};
-#endif
-
-#ifndef SAFE_DELETE_ARRAY
-	#define SAFE_DELETE_ARRAY(a) {if (a != nullptr) { delete[] a; a = nullptr; }};
-#endif
 
 
 
@@ -103,6 +96,6 @@ inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 
 
 #define RET_VAL(T, enable_cond) \
-	typename std::enable_if<enable_cond::value, T>::type
+	typename std::enable_if<enable_cond, T>::type
 
 #endif

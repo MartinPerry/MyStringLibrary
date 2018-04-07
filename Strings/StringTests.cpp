@@ -6,8 +6,11 @@
 #include <vector>
 #include <time.h>
 
-#include "MyString.h"
-#include "MyStringUtils.h"
+
+#include "./MyStringAnsi.h"
+#include "./MySmallStringAnsi.h"
+#include "./md5.h"
+#include "./MyStringUtils.h"
 
 template <typename T>
 std::string StringTests<T>::CreateRandomString(int len)
@@ -352,7 +355,7 @@ void StringTests<T>::TestSubstring()
 
 	for (size_t i = 0; i < rnd.size(); i++)
 	{
-		MyStringAnsi s = rnd[i];
+		T s = rnd[i];
 		r1 += s.SubString(starts[i], lens[i]);
 	}
 	for (size_t i = 0; i < rnd.size(); i++)
@@ -372,18 +375,21 @@ void StringTests<T>::TestSubstring()
 
 template <typename T>
 void StringTests<T>::TestMethods()
-{
+{	
 	//========================================================================
 	//for trim
+
+	printf("==== Trim (%s) ==== ", __func__);
+
 	std::vector<const char *> inputs = {" 1111 111 ", "xxxx    ", "   ", " 11", 
 		"xxxxxxxxxxxxxxxx", " xxxxxxxxxxxxxxxx   "};
 	std::vector<const char *> outputs = { "1111 111", "xxxx", "", "11",
 		"xxxxxxxxxxxxxxxx", "xxxxxxxxxxxxxxxx"};
 
 	for (size_t i = 0; i < inputs.size(); i++)
-	{
+	{		
 		T x1 = inputs[i];
-		x1.Trim();
+		x1.Trim();		
 
 		if (strcmp(x1.c_str(), outputs[i]) != 0)
 		{
@@ -391,8 +397,13 @@ void StringTests<T>::TestMethods()
 		}
 	}
 
+	printf("OK\n");
+
 	//========================================================================
 	//for reverse
+
+	printf("==== Reverse (%s) ==== ", __func__);
+
 	inputs = { "kobylamamalybok", "hello world", "x", "xax", "pepa" };
 	outputs = { "kobylamamalybok", "dlrow olleh", "x", "xax", "apep" };
 
@@ -407,8 +418,13 @@ void StringTests<T>::TestMethods()
 		}
 	}
 	
+	printf("OK\n");
+
 	//========================================================================
 	//for remove multiple chars
+	
+	printf("==== Remove multiple chars (%s) ==== ", __func__);
+
 	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx" };
 	outputs = { " x x ", "hellox hello", "x", "xax", "xaxax" };
 
@@ -423,15 +439,20 @@ void StringTests<T>::TestMethods()
 		}
 	}
 
+	printf("OK\n");
+
 	//========================================================================
 	//for split (not keep empty)
+	
+	printf("==== Split (not keep empty) (%s) ==== ", __func__);
+
 	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx", " xx xx   xx" };
 	std::vector<int> outputs2 = { 2, 2, 1, 1, 1, 3 };
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
 		T x1 = inputs[i];
-		auto v = x1.Split<T>(' ');
+		auto v = x1.template Split<T>(' ');
 
 		if (v.size() != outputs2[i])
 		{
@@ -439,15 +460,20 @@ void StringTests<T>::TestMethods()
 		}
 	}
 
+	printf("OK\n");
+
 	//========================================================================
 	//for split (keep empty)
+
+	printf("==== Split (keep empty) (%s) ==== ", __func__);
+
 	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx", " xx xx   xx" };
 	outputs2 = { 4, 2, 1, 1, 1, 6 };
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{
 		T x1 = inputs[i];
-		auto v = x1.Split<T>(' ', true);
+		auto v = x1.template Split<T>(' ', true);
 
 		if (v.size() != outputs2[i])
 		{
@@ -455,8 +481,13 @@ void StringTests<T>::TestMethods()
 		}
 	}
 
+	printf("OK\n");
+
 	//========================================================================
 	//string replace	
+
+	printf("==== Replace (%s) ==== ", __func__);
+
 	T tmpSmall = "ahoj vojle";
 	tmpSmall.Replace("oj", "voj");
 
@@ -473,22 +504,29 @@ void StringTests<T>::TestMethods()
 		StringTests<T>::error("Replace not working");
 	}
 
+	printf("OK\n");
+
 	//========================================================================
 	//MD5
+#ifdef _WIN32
+	printf("==== MD5 (%s) ==== ", __func__);
 
 	MD5 md5;
 	T md5Hash = md5.digestString("ahoj vole");
 	if (strcmp(md5Hash.c_str(), "53a94a062714c8f28de90400642e142c") != 0)
 	{
-		StringTests<T>::error("MD5 not working");
+		StringTests<T>::error(std::string("MD5 not working ") + md5Hash.c_str());
 	}
 	
 
 	md5Hash = md5.digestString("123456 lokomotiva");
 	if (strcmp(md5Hash.c_str(), "8ac48676dae783798450238c37bebd93") != 0)
 	{
-		StringTests<T>::error("MD5 not working");
+		StringTests<T>::error(std::string("MD5 not working ") + md5Hash.c_str());
 	}
+
+	printf("OK\n");
+#endif
 }
 
 

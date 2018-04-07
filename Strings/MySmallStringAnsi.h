@@ -1,8 +1,9 @@
 #ifndef MY_SMALL_STRING_ANSI_H
 #define MY_SMALL_STRING_ANSI_H
 
-
+#include <string.h>
 #include <vector>
+#include <limits>
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
@@ -96,7 +97,10 @@ public:
 	};
 
 
-
+	MySmallStringAnsi & operator = (const MySmallStringAnsi & str)
+	{
+		return IStringAnsi<MySmallStringAnsi>::operator=(str);
+	};
 
 	friend class IStringAnsi<MySmallStringAnsi>;
 
@@ -171,13 +175,21 @@ protected:
 
 	void SetBufferSizeInternal(size_t s)
 	{
-		memcpy(this->local, &s, sizeof(size_t));
+		uint32_t tmp = static_cast<uint32_t>(s);
+		memcpy(this->local, &tmp, sizeof(uint32_t));
 	};
 
 	void SetLengthInternal(size_t s)
 	{
-		if (this->IsLocal()) local[BUFFER_SIZE] = static_cast<char>(s);
-		else memcpy(this->local + 4, &s, sizeof(size_t));
+		if (this->IsLocal())
+		{
+			local[BUFFER_SIZE] = static_cast<char>(s);
+		}
+		else
+		{
+			uint32_t tmp = static_cast<uint32_t>(s);
+			memcpy(this->local + 4, &tmp, sizeof(uint32_t));
+		}
 	};
 
 	void SetStrInternal(char * s)
@@ -187,7 +199,7 @@ protected:
 		uintptr_t addr = reinterpret_cast<uintptr_t>(s);
 		memcpy(local + 8, &addr, sizeof(uintptr_t));
 
-		local[BUFFER_SIZE] = std::numeric_limits<char>::min();
+		local[BUFFER_SIZE] = -1;
 	};
 };
 

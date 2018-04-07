@@ -1,7 +1,9 @@
 
+#ifdef _WIN32
 #include <vld.h>
+#endif
 
-
+#include <cstdlib>
 #include <cstdio>
 #include <chrono>
 #include <ctime>
@@ -17,6 +19,95 @@
 
 using namespace std;
 
+#ifndef _WIN32
+
+//http://stackoverflow.com/questions/77005/how-to-generate-a-stacktrace-when-my-gcc-c-app-crashes
+
+/// <summary>
+/// https://github.com/JPNaude/dev_notes/wiki/Produce-a-stacktrace-when-something-goes-wrong-in-your-application
+/// </summary>
+
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#ifndef __USE_GNU
+#define __USE_GNU
+#endif
+
+#include <execinfo.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ucontext.h>
+#include <unistd.h>
+
+/* This structure mirrors the one found in /usr/include/asm/ucontext.h */
+typedef struct _sig_ucontext {
+	unsigned long     uc_flags;
+	struct ucontext   *uc_link;
+	stack_t           uc_stack;
+	struct sigcontext uc_mcontext;
+	sigset_t          uc_sigmask;
+} sig_ucontext_t;
+
+void crit_err_hdlr(int sig_num, siginfo_t * info, void * ucontext) {
+	void *             array[50];
+	void *             caller_address;
+	char **            messages;
+	int                size, i;
+	sig_ucontext_t *   uc;
+
+	uc = (sig_ucontext_t *)ucontext;
+
+	/* Get the address at the time the signal was raised */
+#if defined(__i386__) // gcc specific
+	caller_address = (void *)uc->uc_mcontext.eip; // EIP: x86 specific
+#elif defined(__x86_64__) // gcc specific
+	caller_address = (void *)uc->uc_mcontext.rip; // RIP: x86_64 specific
+#else
+#error Unsupported architecture. // TODO: Add support for other arch.
+#endif
+
+	fprintf(stderr, "\n");
+	//FILE * backtraceFile;
+
+	// In this example we write the stacktrace to a file. However, we can also just fprintf to stderr (or do both).
+	//QString backtraceFilePath = "/home/my_user/stacktrace.txt;
+	//backtraceFile = fopen(backtraceFilePath.toUtf8().data(), "w");
+
+	if (sig_num == SIGSEGV)
+		printf("signal %d (%s), address is %p from %p\n", sig_num, strsignal(sig_num), info->si_addr, (void *)caller_address);
+	else
+		printf("signal %d (%s)\n", sig_num, strsignal(sig_num));
+
+	size = backtrace(array, 50);
+	/* overwrite sigaction with caller's address */
+	array[1] = caller_address;
+	messages = backtrace_symbols(array, size);
+	/* skip first stack frame (points here) */
+	for (i = 1; i < size && messages != NULL; ++i) {
+		printf("[bt]: (%d) %s\n", i, messages[i]);
+	}
+
+	//fclose(backtraceFile);
+	free(messages);
+
+	exit(EXIT_FAILURE);
+}
+
+void installSignal(int __sig) {
+	struct sigaction sigact;
+	sigact.sa_sigaction = crit_err_hdlr;
+	sigact.sa_flags = SA_RESTART | SA_SIGINFO;
+	if (sigaction(__sig, &sigact, (struct sigaction *)NULL) != 0) {
+		fprintf(stderr, "error setting signal handler for %d (%s)\n", __sig, strsignal(__sig));
+		exit(EXIT_FAILURE);
+	}
+}
+
+
+#endif
 
 /*
 //Exponents range from -1022 to +1023
@@ -153,6 +244,7 @@ MyStringAnsi tmpFunc()
 	return o;
 }
 
+struct IBar;
 
 template <class T>
 struct IFoo 
@@ -160,7 +252,9 @@ struct IFoo
 	IFoo() {}
 	IFoo(const char * x) {}
 
-	T & operator=(const char * x){ return *static_cast<T *>(this); }
+	template <typename U>
+	typename std::enable_if<std::is_same<U, IBar>::value, IBar &>::type
+	operator=(const U & x){ return *static_cast<T *>(this); }
 
 	void Test() { static_cast<T *>(this)->TestInternal(); }
 };
@@ -169,15 +263,17 @@ struct IFoo
 struct IBar : public IFoo<IBar>
 {
 	using IFoo<IBar>::IFoo;
+	
 	using IFoo<IBar>::operator=;
-
+	
 	IBar(const IBar & b) {}
 	IBar(const IBar && b) {}
 	
-	//IBar & operator=(const char * x){ return *this;}
+	IBar & operator=(const IBar & x) { return IFoo<IBar>::operator=(x); }
 
 	void TestInternal(){}
 };
+
 
 
 template <typename T>
@@ -207,11 +303,20 @@ FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t of
 
 int main(int argc, char ** argv)
 {
+#ifdef _WIN32
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);	
-	
+#endif	
+
+#ifndef _WIN32
+	// For crashes, SIGSEV should be enough.
+	installSignal(SIGSEGV);
+#endif
+
+	IBar bar0 = "bar";
+
 	IBar bar = "bar";
-	bar = "bar2";
+	bar = bar0;
 	bar.Test();
 
 	/*
@@ -264,14 +369,20 @@ int main(int argc, char ** argv)
 	}
 	*/
 	
-	
+
+
 	std::string hh = "xxx";
 	
 	MyStringAnsi oxoxo = hh;
-
+	MySmallStringAnsi oxoxos = hh;
+	
 	MyStringAnsi oosx = tmpFunc();
-	oosx = std::move(oxoxo);
-
+	//oosx = std::move(oxoxo);
+	oosx = hh;
+	oosx = oxoxo;
+	oosx = oxoxos;
+	oosx += oxoxo;
+	oosx += oxoxos;
 
 	MyStringAnsi iin = "123 456.4";
 	auto numbr = iin.GetAllNumbers();
@@ -298,6 +409,8 @@ int main(int argc, char ** argv)
 	//oo1t.RemoveMultipleChars('x');
 	auto ss1 = oo1t.Split<std::string>(' ');
 	auto ss = oo1t.Split<MyStringAnsi>(' ', true);
+
+	//return 0;
 
 	MyStringAnsi oo1 = "1";
 	MyStringAnsi oo14 = "abcdefghijklmo";
@@ -341,7 +454,7 @@ int main(int argc, char ** argv)
 	StringTests<MySmallStringAnsi>::TestAppendNumberAll();
 	StringTests<MySmallStringAnsi>::TestAppendString();
 	StringTests<MySmallStringAnsi>::TestSubstring();
-
+	
 	StringTests<MyStringAnsi>::TestCtors();
 	StringTests<MyStringAnsi>::TestMethods();
 	StringTests<MyStringAnsi>::TestStringToIntNumber();
@@ -352,7 +465,7 @@ int main(int argc, char ** argv)
 	
 	
 
-	StringBenchmarks sb(1000'000);
+	StringBenchmarks sb(1000000);
 	/*
 	sb.RunExternalTest([&](int count, double * r) -> void{
 		for (int i = 0; i < count; i++)
@@ -411,13 +524,13 @@ int main(int argc, char ** argv)
 		}
 	});
 	*/
-
-	//sb.TestShortStrAllocation();
-	//sb.TestStringToInt();
-	//sb.TestStringToDouble();
-	//sb.TestAppendNumberAll();
-	//sb.TestAppendSmallString();
-	//sb.TestAppendString();
-
+	/*
+	sb.TestShortStrAllocation();
+	sb.TestStringToInt();
+	sb.TestStringToDouble();
+	sb.TestAppendNumberAll();
+	sb.TestAppendSmallString();
+	sb.TestAppendString();
+	*/
 	return 0;
 }

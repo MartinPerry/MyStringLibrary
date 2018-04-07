@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <type_traits>
 
-#include "MyStringMacros.h"
+#include "./MyStringMacros.h"
 
 
 struct MyStringUtils 
@@ -22,7 +22,7 @@ struct MyStringUtils
 	/// <param name="ret">out: if not null, pointer where we ended</param>
 	/// <returns>converte number</returns>
 	template <typename T>
-	static RET_VAL(T, std::is_floating_point<T>) ToNumber(const char * str, const char ** ret = nullptr)
+	static RET_VAL(T, std::is_floating_point<T>::value) ToNumber(const char * str, const char ** ret = nullptr)
 	{
 		//skip leading whitespace
 		while ((*str <= ' ') && (*str != 0))
@@ -123,7 +123,7 @@ struct MyStringUtils
 	/// <param name="ret">out: if not null, pointer where we ended</param>
 	/// <returns>converte number</returns>
 	template <typename T>
-	static RET_VAL(T, std::is_integral<T>) ToNumber(const char * str, const char * ret = nullptr)
+	static RET_VAL(T, std::is_integral<T>::value) ToNumber(const char * str, const char * ret = nullptr)
 	{
 		//skip leading whitespace
 		while ((*str <= ' ') && (*str != 0))
@@ -167,132 +167,130 @@ struct MyStringUtils
 			digits++;
 		}
 		return digits;
-	}
-
-	/// <summary>
-	/// Calculate number of digits in uint8_t
-	/// </summary>
-	/// <param name="number"></param>
-	/// <returns></returns>
-	template <>
-	static int GetNumDigits(uint8_t x)
-	{		
-		if (x >= 10)
-		{
-			if (x >= 100) return 3;
-			return 2;
-		}
-		return 1;
-	}
-	
-	/// <summary>
-	/// Calculate number of digits in uint16_t
-	/// </summary>
-	/// <param name="number"></param>
-	/// <returns></returns>
-	template <>
-	static int GetNumDigits(uint16_t x)
-	{		
-		if (x >= 1000)
-		{
-			if (x >= 10000) return 5;
-			return 4;
-		}
-		
-		if (x >= 10)
-		{
-			if (x >= 100) return 3;
-			return 2;
-		}
-		
-		return 1;
-	}
-
-	/// <summary>
-	/// Calculate number of digits in uint32_t
-	/// </summary>
-	/// <param name="number"></param>
-	/// <returns></returns>
-	template <>
-	static int GetNumDigits(uint32_t x)
-	{		
-		if (x >= 10000) {
-			if (x >= 10000000) {
-				if (x >= 100000000) {
-					if (x >= 1000000000) return 10;
-					return 9;
-				}
-				return 8;
-			}
-			if (x >= 100000) {
-				if (x >= 1000000) return 7;
-				return 6;
-			}
-			return 5;
-		}
-		if (x >= 100) {
-			if (x >= 1000) return 4;
-			return 3;
-		}
-		if (x >= 10) return 2;
-		return 1;
-	}
-
-	/// <summary>
-	/// Calculate number of digits in uint64_t
-	/// </summary>
-	/// <param name="number"></param>
-	/// <returns></returns>
-	template <>
-	static int GetNumDigits(uint64_t x)
-	{
-		if (x >= 10000000000) { //11
-			if (x >= 100000000000000) { //15
-				if (x >= 100000000000000000) { //18
-					if (x >= 1000000000000000000) { //19
-						if (x >= 10000000000000000000) return 20;
-						return 19;
-					}
-					return 18;
-				}
-				if (x >= 1000000000000000) { //16
-					if (x >= 10000000000000000) return 17;
-					return 16;
-				}
-				return 15;
-			}
-			if (x >= 1000000000000) { //13
-				if (x >= 10000000000000) return 14;
-				return 13;
-			}
-			if (x >= 100000000000) return 12;
-			return 11;
-		}
-
-		if (x >= 10000) { //5
-			if (x >= 10000000) { //8
-				if (x >= 100000000) { //9
-					if (x >= 1000000000) return 10;
-					return 9;
-				}
-				return 8;
-			}
-			if (x >= 100000) { //6
-				if (x >= 1000000) return 7;
-				return 6;
-			}
-			return 5;
-		}
-		if (x >= 100) { //3
-			if (x >= 1000) return 4;
-			return 3;
-		}
-		if (x >= 10) return 2;
-		return 1;
-	}
-
-	
-
+	}		
 };
+
+
+/// <summary>
+/// Calculate number of digits in uint8_t
+/// </summary>
+/// <param name="number"></param>
+/// <returns></returns>
+template <>
+inline int MyStringUtils::GetNumDigits(uint8_t x)
+{
+	if (x >= 10U)
+	{
+		if (x >= 100U) return 3;
+		return 2;
+	}
+	return 1;
+}
+
+/// <summary>
+/// Calculate number of digits in uint16_t
+/// </summary>
+/// <param name="number"></param>
+/// <returns></returns>
+template <>
+inline int MyStringUtils::GetNumDigits(uint16_t x)
+{
+	if (x >= 1000U)
+	{
+		if (x >= 10000U) return 5;
+		return 4;
+	}
+
+	if (x >= 10U)
+	{
+		if (x >= 100U) return 3;
+		return 2;
+	}
+
+	return 1;
+}
+
+/// <summary>
+/// Calculate number of digits in uint32_t
+/// </summary>
+/// <param name="number"></param>
+/// <returns></returns>
+template <>
+inline int MyStringUtils::GetNumDigits(uint32_t x)
+{
+	if (x >= 10000U) {
+		if (x >= 10000000U) {
+			if (x >= 100000000U) {
+				if (x >= 1000000000U) return 10;
+				return 9;
+			}
+			return 8;
+		}
+		if (x >= 100000U) {
+			if (x >= 1000000U) return 7;
+			return 6;
+		}
+		return 5;
+	}
+	if (x >= 100U) {
+		if (x >= 1000U) return 4;
+		return 3;
+	}
+	if (x >= 10U) return 2;
+	return 1;
+}
+
+/// <summary>
+/// Calculate number of digits in uint64_t
+/// </summary>
+/// <param name="number"></param>
+/// <returns></returns>
+template <>
+inline int MyStringUtils::GetNumDigits(uint64_t x)
+{
+	if (x >= 10000000000U) { //11
+		if (x >= 100000000000000U) { //15
+			if (x >= 100000000000000000U) { //18
+				if (x >= 1000000000000000000U) { //19
+					if (x >= 10000000000000000000U) return 20;
+					return 19;
+				}
+				return 18;
+			}
+			if (x >= 1000000000000000U) { //16
+				if (x >= 10000000000000000U) return 17;
+				return 16;
+			}
+			return 15;
+		}
+		if (x >= 1000000000000U) { //13
+			if (x >= 10000000000000U) return 14;
+			return 13;
+		}
+		if (x >= 100000000000U) return 12;
+		return 11;
+	}
+
+	if (x >= 10000U) { //5
+		if (x >= 10000000U) { //8
+			if (x >= 100000000U) { //9
+				if (x >= 1000000000U) return 10;
+				return 9;
+			}
+			return 8;
+		}
+		if (x >= 100000U) { //6
+			if (x >= 1000000U) return 7;
+			return 6;
+		}
+		return 5;
+	}
+	if (x >= 100U) { //3
+		if (x >= 1000U) return 4;
+		return 3;
+	}
+	if (x >= 10U) return 2;
+	return 1;
+}
 
 #endif

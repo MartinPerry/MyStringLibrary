@@ -2,11 +2,15 @@
 #define INTERFACE_STRING_ANSI_H
 
 class MyStringAnsi;
+class MySmallStringAnsi;
 
+#include <limits>
 #include <vector>
+#include <string> //std::string
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
+
 
 static const char* const conversions[] = {
 	"00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
@@ -90,7 +94,7 @@ public:
 	void AppendFormat(const char * str, Args... args);
 
 
-	void Replace(const MyStringAnsi & oldValue, const MyStringAnsi & newValue);
+	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
 	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
 	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);
@@ -113,18 +117,25 @@ public:
 
 
 	template <typename T>	
-	RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>) operator += (T number);
+	RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) operator += (T number);
 
 	template <typename T>	
-	RET_VAL(void, std::is_unsigned<T>) operator += (T number);
+	RET_VAL(void, std::is_unsigned<T>::value) operator += (T number);
 
-	void operator += (const MyStringAnsi & str);
+	template <typename T>
+	typename std::enable_if<
+		std::is_same<T, MyStringAnsi>::value ||
+		std::is_same<T, MySmallStringAnsi>::value, void
+	>::type operator += (const T & str);
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
 
-
-	Type & operator = (const Type & str);
+	template <typename T>
+	typename std::enable_if<
+		std::is_same<T, MyStringAnsi>::value ||
+		std::is_same<T, MySmallStringAnsi>::value, Type &
+	>::type operator = (const T & str);
 	Type & operator = (const char * str);
 	Type & operator = (const std::string & str);
 	Type & operator = (Type && other);
@@ -184,10 +195,10 @@ protected:
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>) IStringAnsi<Type>::operator += (T number)
+RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) IStringAnsi<Type>::operator += (T number)
 {
 	//uint64_t input = number;
-	std::make_unsigned<T>::type input = number;
+	typename std::make_unsigned<T>::type input = number;
 
 	int sign = 0;
 	if (number < 0)
@@ -225,7 +236,7 @@ RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>) IStringAnsi<Type>
 	size_t i = strLength + len - 1;
 	while (input > 9)
 	{
-		std::make_unsigned<T>::type x = input / 100;
+		typename std::make_unsigned<T>::type x = input / 100;
 		const char * t = conversions[input - 100 * x];
 		str[i--] = t[1];
 		str[i--] = t[0];
@@ -253,7 +264,7 @@ RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>) IStringAnsi<Type>
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, std::is_unsigned<T>) IStringAnsi<Type>::operator += (T number)
+RET_VAL(void, std::is_unsigned<T>::value) IStringAnsi<Type>::operator += (T number)
 {
 	size_t len = MyStringUtils::GetNumDigits(number);
 	//sizeof(T) = 1 => 4 (3 + sign)
@@ -316,13 +327,18 @@ return newStr;
 */
 
 template <typename Type>
-void IStringAnsi<Type>::operator += (const MyStringAnsi & str)
+template <typename T>
+inline typename std::enable_if<
+	std::is_same<T, MyStringAnsi>::value ||
+	std::is_same<T, MySmallStringAnsi>::value, void
+>::type
+IStringAnsi<Type>::operator += (const T & str)
 {
 	this->Append(str.c_str(), str.length());
 };
 
 template <typename Type>
-void IStringAnsi<Type>::operator += (const std::string & str)
+inline void IStringAnsi<Type>::operator += (const std::string & str)
 {
 	this->Append(str.c_str(), str.length());
 };
@@ -377,12 +393,19 @@ inline char & IStringAnsi<Type>::operator [](const int index)
 }
 
 template <typename Type>
-Type & IStringAnsi<Type>::operator = (const Type & str)
+template <typename T>
+inline typename std::enable_if<
+	std::is_same<T, MyStringAnsi>::value ||
+	std::is_same<T, MySmallStringAnsi>::value, Type &
+>::type 
+IStringAnsi<Type>::operator = (const T & str)
 {
+	/*
 	if (this == &str) //they are same
 	{
 		return *static_cast<Type *>(this);
 	}
+	*/
 
 	this->CreateNew(str.c_str(), str.length());
 	return *static_cast<Type *>(this);
@@ -390,21 +413,21 @@ Type & IStringAnsi<Type>::operator = (const Type & str)
 
 
 template <typename Type>
-Type & IStringAnsi<Type>::operator =(const char * str)
+inline Type & IStringAnsi<Type>::operator =(const char * str)
 {
 	this->CreateNew(str, 0);
 	return *static_cast<Type *>(this);
 };
 
 template <typename Type>
-Type & IStringAnsi<Type>::operator = (const std::string & str)
+inline Type & IStringAnsi<Type>::operator = (const std::string & str)
 {
 	this->CreateNew(str.c_str(), str.length());
 	return *static_cast<Type *>(this);
 };
 
 template <typename Type>
-Type & IStringAnsi<Type>::operator = (Type && other)
+inline Type & IStringAnsi<Type>::operator = (Type && other)
 {
 	this->Release();
 	
@@ -450,15 +473,13 @@ std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValue
 			if (len == 0)
 			{
 				if (keepEmptyValues)
-				{
-					RetVal s("");
-					splited.push_back(s);
+				{					
+					splited.push_back("");
 				}
 			}
 			else
-			{
-				RetVal s(start, len);
-				splited.push_back(s);
+			{				
+				splited.push_back(RetVal(start, len));
 			}
 
 			start = end + 1;
@@ -472,15 +493,13 @@ std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValue
 	if (len == 0)
 	{
 		if (keepEmptyValues)
-		{
-			RetVal s("");
-			splited.push_back(s);
+		{			
+			splited.push_back("");
 		}
 	}
 	else
-	{
-		RetVal s(start, len);
-		splited.push_back(s);
+	{		
+		splited.push_back(RetVal(start, len));
 	}
 
 	return splited;
