@@ -8,6 +8,7 @@ class MySmallStringAnsi;
 #include <vector>
 #include <string> //std::string
 #include <functional>
+#include <stdarg.h>
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
@@ -35,8 +36,7 @@ class IStringAnsi
 public:
 		
 	static const int npos = -1;
-
-	IStringAnsi();
+	
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
 	IStringAnsi(const std::string & str);
@@ -45,14 +45,13 @@ public:
 
 	virtual ~IStringAnsi();
 
-	template <typename RetVal>
+	template <typename RetVal = Type>
 	static RetVal LoadFromFile(const char * fileName);
 
-	template <typename RetVal>
+	template <typename RetVal = Type>
 	static RetVal CreateFormated(const char * str, ...);
 
-	//IStringAnsi CreateReplaced(const char * src, const char * dest) const;
-
+	
 	//======================================================================
 	void Release();
 	bool SaveToFile(const char * fileName) const;
@@ -76,10 +75,10 @@ public:
 	void RemoveMultipleChars(char t);
 	void PopBack();
 
-	template <typename RetVal>
+	template <typename RetVal = Type>
 	std::vector<RetVal> Split(char delimeter, bool keepEmptyValues = false) const;
 
-	template <typename RetVal>
+	template <typename RetVal = Type>
 	std::vector<RetVal> Split(const std::vector<char> & delimeters, bool keepEmptyValues = false) const;
 
 	size_t Count(const char str) const;
@@ -100,8 +99,8 @@ public:
 	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
 	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
-	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);
-
+	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);	
+	Type CreateReplaced(const char * src, const char * dest) const;
 
 	Type SubString(int start) const;
 	Type SubString(int start, size_t length) const;
@@ -125,6 +124,9 @@ public:
 
 	template <typename T>	
 	RET_VAL(void, std::is_unsigned<T>::value) operator += (T number);
+
+	template <typename T>
+	RET_VAL(void, std::is_floating_point<T>::value) operator += (T number);
 
 	template <typename T>
 	typename std::enable_if<
@@ -166,6 +168,8 @@ protected:
 
 	mutable uint32_t hashCode;
 
+	IStringAnsi();
+
 	size_t CalcNewBufferSize(size_t forLen) const
 	{
 		return CalcNewBufferSize(static_cast<const Type *>(this)->capacity(), forLen);
@@ -197,8 +201,103 @@ protected:
 
 
 
+//====================================================================
+// Static methods
+//====================================================================
+
+/// <summary>
+/// Load string from file "fileName"
+/// </summary>
+/// <param name="fileName"></param>
+/// <returns></returns>
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
+{
+	FILE *f = nullptr;  //pointer to file we will read in
+	my_fopen(&f, fileName, "rb");
+	if (f == nullptr)
+	{
+		printf("Failed to open file: \"%s\"\n", fileName);
+		return "";
+	}
+
+	fseek(f, 0L, SEEK_END);
+	long size = ftell(f);
+	fseek(f, 0L, SEEK_SET);
+
+	char * data = new char[size + 1];
+	fread(data, sizeof(char), size, f);
+	fclose(f);
+
+	data[size] = 0;
+	RetVal tmp = RetVal(data);
+	delete[] data;
+
+	return tmp;
+
+}
+
+/// <summary>
+/// Create new string based on formatted string
+/// ("%s %i", "kuk", 145)
+/// This is quite slow
+/// </summary>
+/// <param name="str"></param>
+/// <param name=""></param>
+/// <returns></returns>
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
+{
+	if (newStrFormat == nullptr)
+	{
+		return RetVal("");
+	}
+
+	va_list vl;
+
+	//calculate length of new string
+	std::vector<char> localBuffer;
+	int appendLength = -1;
+	while (appendLength < 0)
+	{
+		va_start(vl, newStrFormat);
+		localBuffer.resize(localBuffer.size() + 256);
+		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, vl);
+		va_end(vl);
+	}
 
 
+	//always store in heap
+	size_t bufferSize = appendLength + 16;
+	RetVal newStr = RetVal(bufferSize);
+
+	char * str = newStr.str();
+
+	va_start(vl, newStrFormat);
+	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, vl);
+	va_end(vl);
+
+	if (written == -1)
+	{
+		return "";
+	}
+
+
+	size_t strLength = strlen(str);
+	str[strLength] = 0;
+
+	newStr.hashCode = std::numeric_limits<uint32_t>::max();
+	newStr.SetLengthInternal(strLength);
+	return newStr;
+}
+
+
+
+//====================================================================
+// Operators
+//====================================================================
 
 
 /// <summary>
@@ -326,6 +425,19 @@ RET_VAL(void, std::is_unsigned<T>::value) IStringAnsi<Type>::operator += (T numb
 };
 
 
+/// <summary>
+/// Append float number
+/// </summary>
+template <typename Type>
+template <typename T>
+RET_VAL(void, std::is_floating_point<T>::value) IStringAnsi<Type>::operator += (T number)
+{
+	//to do - create manuall solution that correspond to MyStringUtils::ToNumber instead of this
+	std::string tmp = std::to_string(number);
+	this->Append(tmp.c_str(), tmp.length());
+};
+
+
 /*
 template <typename Type>
 template <typename T>
@@ -399,7 +511,8 @@ inline typename std::enable_if<
 >::type
 IStringAnsi<Type>::operator + (const T & str) const
 {
-	T newStr = T(static_cast<const Type *>(this)->c_str(), static_cast<const Type *>(this)->length());
+	T newStr = T(static_cast<const Type *>(this)->c_str(), 
+		static_cast<const Type *>(this)->length());
 	newStr.Append(str.c_str(), str.length());
 	
 	return newStr;
@@ -409,7 +522,8 @@ IStringAnsi<Type>::operator + (const T & str) const
 template <typename Type>
 inline Type IStringAnsi<Type>::operator + (const char * str) const
 {
-	Type newStr = Type(static_cast<const Type *>(this)->c_str(), static_cast<const Type *>(this)->length());
+	Type newStr = Type(static_cast<const Type *>(this)->c_str(), 
+		static_cast<const Type *>(this)->length());
 	newStr.Append(str);
 
 	return newStr;
@@ -465,7 +579,7 @@ inline Type & IStringAnsi<Type>::operator = (const std::string & str)
 template <typename Type>
 inline Type & IStringAnsi<Type>::operator = (Type && other)
 {
-	this->Release();
+	static_cast<Type *>(this)->ReleaseInternal();
 	
 	static_cast<Type *>(this)->SetLengthInternal(other.length());
 	static_cast<Type *>(this)->SetStrInternal(other.str());
@@ -481,6 +595,11 @@ inline Type & IStringAnsi<Type>::operator = (Type && other)
 
 	return *static_cast<Type *>(this);
 };
+
+//====================================================================
+// Other methods
+//====================================================================
+
 
 /// <summary>
 /// Split string by a char delimeter

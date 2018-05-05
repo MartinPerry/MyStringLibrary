@@ -22,9 +22,9 @@ public:
 	using IStringAnsi<MySmallStringAnsi>::IStringAnsi;
 	using IStringAnsi<MySmallStringAnsi>::operator=;
 
-	MySmallStringAnsi()
-		: IStringAnsi<MySmallStringAnsi>()
+	MySmallStringAnsi()		
 	{
+		this->CtorInternal(nullptr);
 	}
 
 	MySmallStringAnsi(const char * newStr, size_t length)
@@ -44,8 +44,6 @@ public:
 
 		this->SetStrInternal(str);
 		this->SetLengthInternal(length);
-
-		hashCode = std::numeric_limits<uint32_t>::max();
 	}
 
 	MySmallStringAnsi(const MySmallStringAnsi &other)
@@ -128,9 +126,13 @@ protected:
 		}
 
 		memset(this->local, 0, sizeof(local));
-		this->hashCode = std::numeric_limits<uint32_t>::max();
-		this->SetStrInternal(str);
+		this->hashCode = std::numeric_limits<uint32_t>::max();		
 	};
+
+	void DefaultInit()
+	{
+		memset(this->local, 0, sizeof(local));		
+	}
 
 	void CtorInternal(const char * newStr)
 	{

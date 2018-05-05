@@ -94,7 +94,7 @@ inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 
 #endif
 
-
+#define SAFE_STRDUP(s) (s != nullptr) ? my_strdup(s) : my_strdup("")
 
 #define RET_VAL(T, enable_cond) \
 	typename std::enable_if<enable_cond, T>::type

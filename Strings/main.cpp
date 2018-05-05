@@ -253,6 +253,7 @@ struct IFoo
 {
 	IFoo() { printf("parent"); }
 	IFoo(const char * x) {}
+	
 
 	template <typename U>
 	typename std::enable_if<std::is_same<U, IBar>::value, IBar &>::type
@@ -277,24 +278,8 @@ struct IBar : public IFoo<IBar>
 	void TestInternal(){}
 };
 
-class TestClass 
-{
-public:
-	int r;
-	std::vector<int> o;
-	MyStringAnsi text;
 
 
-};
-
-bool fff(const MyStringAnsi & f)
-{
-	if (f == "max")
-	{
-		return false;
-	}
-	return true;
-}
 
 template <typename T>
 FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t offset)
@@ -333,10 +318,25 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
-	TestClass xxx7;
+	MyStringAnsi ex;
+
+	MyStringAnsi ee;
+
+	ee = ex;
+
+	//MyStringAnsi ooxxx = MyStringAnsi::CreateFormated("xx %i km", 40);
+	MyStringAnsi ooxxx = "1sada-sd-1sadasd0";
+	
+	auto nm = ooxxx.GetAllNumbers();
 
 	IBar ibar = IBar("x");
 	IBar ibar2 = IBar();
+
+	//MyStringAnsi ooxxx;
+
+	ooxxx += "ahjoj";
+	
+	ooxxx += 5.1;
 
 	std::map<MyStringAnsi, int> ooo;
 
@@ -588,7 +588,7 @@ int main(int argc, char ** argv)
 	});
 	*/
 
-	/*
+	
 	sb.TestShortStrAllocation();
 	sb.TestStringToInt();
 	sb.TestStringToDouble();
@@ -596,7 +596,7 @@ int main(int argc, char ** argv)
 	sb.TestAppendSmallString();
 	sb.TestAppendString();	
 	sb.TestHashing();
-	*/
+	
 
 	
 	return 0;

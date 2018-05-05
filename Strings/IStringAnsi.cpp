@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
-#include <stdarg.h>
+
 
 #include <string.h>
 #include <locale>
@@ -25,7 +25,8 @@ template <typename Type>
 IStringAnsi<Type>::IStringAnsi()
 	: hashCode(std::numeric_limits<uint32_t>::max())
 {
-	static_cast<Type *>(this)->CtorInternal(nullptr);
+	//static_cast<Type *>(this)->CtorInternal(nullptr);
+	static_cast<Type *>(this)->DefaultInit();
 }
 
 
@@ -78,16 +79,18 @@ IStringAnsi<Type>::IStringAnsi(const std::string & str)
 template <typename Type>
 IStringAnsi<Type>::~IStringAnsi()
 {
-	this->Release();
+	static_cast<Type *>(this)->ReleaseInternal();
 }
 
 /// <summary>
 /// Manually release current data
+/// and allocate back to "empty" string
 /// </summary>
 template <typename Type>
 void IStringAnsi<Type>::Release()
 {
-	static_cast<Type *>(this)->ReleaseInternal();	
+	static_cast<Type *>(this)->ReleaseInternal();
+	static_cast<Type *>(this)->CtorInternal(nullptr);
 }
 
 
@@ -105,6 +108,11 @@ void IStringAnsi<Type>::CreateNew(const char * newStr, size_t length)
 	char * str = static_cast<Type *>(this)->str();
 	if (newStr == nullptr)
 	{		
+		if (str == nullptr)
+		{
+			//both strings are null
+			return;
+		}
 		str[0] = 0;
 		static_cast<Type *>(this)->SetLengthInternal(0);
 		return;
@@ -165,113 +173,29 @@ void IStringAnsi<Type>::ResizeBuffer(size_t newBufferSize)
 		return;
 	}
 
-	size_t strLength = static_cast<const Type *>(this)->length();
-	char * str = static_cast<Type *>(this)->str();
-
 	char * newStr = new char[newBufferSize];
-	memcpy(newStr, str, strLength + 1);	//copy with "null-termination"
-	if (static_cast<const Type *>(this)->IsLocal() == false)
+
+	char * str = static_cast<Type *>(this)->str();	
+	if (str != nullptr)
 	{
-		delete[] str;
+		size_t strLength = static_cast<const Type *>(this)->length();
+		if (strLength != 0)
+		{
+			memcpy(newStr, str, strLength + 1);	//copy with "null-termination"
+		}
+
+		if (static_cast<const Type *>(this)->IsLocal() == false)
+		{
+			delete[] str;
+		}
 	}
-	
+
 	static_cast<Type *>(this)->SetStrInternal(newStr);
 	static_cast<Type *>(this)->SetBufferSizeInternal(newBufferSize);
 	
 }
 
 
-//====================================================================
-// Static methods
-//====================================================================
-
-/// <summary>
-/// Load string from file "fileName"
-/// </summary>
-/// <param name="fileName"></param>
-/// <returns></returns>
-template <typename Type>
-template <typename RetVal>
-RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
-{
-	FILE *f = nullptr;  //pointer to file we will read in
-	my_fopen(&f, fileName, "rb");
-	if (f == nullptr)
-	{
-		printf("Failed to open file: \"%s\"\n", fileName);
-		return "";
-	}
-
-	fseek(f, 0L, SEEK_END);
-	long size = ftell(f);
-	fseek(f, 0L, SEEK_SET);
-
-	char * data = new char[size + 1];
-	fread(data, sizeof(char), size, f);
-	fclose(f);
-
-	data[size] = 0;
-	RetVal tmp = RetVal(data);
-	delete[] data;
-
-	return tmp;
-
-}
-
-/// <summary>
-/// Create new string based on formatted string
-/// ("%s %i", "kuk", 145)
-/// This is quite slow
-/// </summary>
-/// <param name="str"></param>
-/// <param name=""></param>
-/// <returns></returns>
-template <typename Type>
-template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
-{
-	if (newStrFormat == nullptr)
-	{
-		return RetVal("");
-	}
-
-	va_list vl;
-	
-	//calculate length of new string
-	std::vector<char> localBuffer;
-	int appendLength = -1;
-	while (appendLength < 0)
-	{
-		va_start(vl, newStrFormat);
-		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, vl);
-		va_end(vl);
-	}
-			
-	
-	//always store in heap
-	size_t bufferSize = appendLength + 16;
-	RetVal newStr = RetVal(bufferSize);
-	
-	char * str = newStr.str();
-	
-	va_start(vl, newStrFormat);
-	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, vl);
-	va_end(vl);
-	
-	if (written == -1)
-	{
-		return "";
-	}
-
-
-	size_t strLength = strlen(str);
-	str[strLength] = 0;	
-
-	newStr.hashCode = std::numeric_limits<uint32_t>::max();
-	newStr.SetLengthInternal(strLength);	
-	return newStr;
-}
 
 //====================== Methods ===============================
 
@@ -631,6 +555,14 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, co
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+template <typename Type>
+Type IStringAnsi<Type>::CreateReplaced(const char * src, const char * dest) const
+{
+	Type newStr = Type(static_cast<const Type *>(this)->c_str(),
+		static_cast<const Type *>(this)->length());
+	newStr.Replace(src, dest);
+	return newStr;
+}
 
 //====================================================================
 // Methods for obtaining new data from string
@@ -642,9 +574,23 @@ std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
 	std::vector<double> s;
 
 	const char * str = static_cast<const Type *>(this)->c_str();
-	
+	const char * start = str;
 	while (*str)
-	{
+	{		
+		while (*str && ((*str < '0') || (*str > '9')))
+		{
+			str++;
+		}
+
+		if (!*str)
+		{
+			break;
+		}
+		else if ((str != start) && (*(str - 1) == '-'))
+		{
+			str--;
+		}
+
 		double n = MyStringUtils::ToNumber<double>(str, &str);
 		s.push_back(n);		
 	}
