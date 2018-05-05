@@ -23,7 +23,9 @@ struct StringBenchmarks
 	void TestAppendSmallString();
 	void TestAppendString();
 
-	void RunExternalTest(std::function<void(int c, double *)> f);
+	void TestHashing();
+
+	void RunExternalTest(std::function<void(int, double *)> f);
 		
 
 private:

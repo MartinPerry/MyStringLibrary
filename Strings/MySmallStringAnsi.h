@@ -22,6 +22,11 @@ public:
 	using IStringAnsi<MySmallStringAnsi>::IStringAnsi;
 	using IStringAnsi<MySmallStringAnsi>::operator=;
 
+	MySmallStringAnsi()
+		: IStringAnsi<MySmallStringAnsi>()
+	{
+	}
+
 	MySmallStringAnsi(const char * newStr, size_t length)
 	{
 		memset(local, 0, sizeof(local));

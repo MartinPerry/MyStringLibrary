@@ -721,6 +721,22 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 	return true;
 }
 
+template <typename Type>
+void IStringAnsi<Type>::Transform(std::function<char(char)> t)
+{
+	size_t count = 0;
+
+	char * end = static_cast<Type *>(this)->str();
+	char c = 0;
+	while ((c = *end) != 0)
+	{
+		*end = t(c);
+
+		end++;
+	}
+
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
 
 /// <summary>
 /// Fill current string to "const str"

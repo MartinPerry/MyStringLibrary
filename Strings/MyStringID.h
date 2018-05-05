@@ -1,5 +1,5 @@
-#ifndef _MY_ID_H_
-#define _MY_ID_H_
+#ifndef _MY_STRING_ID_H_
+#define _MY_STRING_ID_H_
 
 //ID_DEBUG - in this mode, string is stored together with ID
 //-> this mode can not be used together with constexpr !!!

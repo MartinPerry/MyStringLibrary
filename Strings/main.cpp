@@ -12,6 +12,8 @@
 #include <array>
 #include <string>
 #include <random>
+#include <unordered_map>
+#include <map>
 
 #include "MyString.h"
 #include "StringTests.h"
@@ -249,7 +251,7 @@ struct IBar;
 template <class T>
 struct IFoo 
 {
-	IFoo() {}
+	IFoo() { printf("parent"); }
 	IFoo(const char * x) {}
 
 	template <typename U>
@@ -266,6 +268,7 @@ struct IBar : public IFoo<IBar>
 	
 	using IFoo<IBar>::operator=;
 	
+	IBar() : IFoo() {}
 	IBar(const IBar & b) {}
 	IBar(const IBar && b) {}
 	
@@ -274,7 +277,24 @@ struct IBar : public IFoo<IBar>
 	void TestInternal(){}
 };
 
+class TestClass 
+{
+public:
+	int r;
+	std::vector<int> o;
+	MyStringAnsi text;
 
+
+};
+
+bool fff(const MyStringAnsi & f)
+{
+	if (f == "max")
+	{
+		return false;
+	}
+	return true;
+}
 
 template <typename T>
 FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t offset)
@@ -312,6 +332,16 @@ int main(int argc, char ** argv)
 	// For crashes, SIGSEV should be enough.
 	installSignal(SIGSEGV);
 #endif
+
+	TestClass xxx7;
+
+	IBar ibar = IBar("x");
+	IBar ibar2 = IBar();
+
+	std::map<MyStringAnsi, int> ooo;
+
+	ooo.insert(std::make_pair(MyStringAnsi("xxx"), 0));
+	ooo[MyStringAnsi("xxxxx")] = 1;
 
 	IBar bar0 = "bar";
 
@@ -368,14 +398,29 @@ int main(int argc, char ** argv)
 		printf("x");
 	}
 	*/
-	
 
+	const MyStringAnsi kuk = "kuk";
+	MyStringAnsi baf = "baf kuk x haf";
+	
+	auto rr = baf.Split<MyStringAnsi>(' ');
+
+	MyStringAnsi kukbaf = kuk + baf;	
+	//kukbaf = kuk + "ahoj";
+
+	if (kuk == "ahh")
+	{
+	}
+
+	kukbaf.Transform([&](char x) -> char {
+		return x + 1;
+	});
 
 	std::string hh = "xxx";
 	
 	MyStringAnsi oxoxo = hh;
 	MySmallStringAnsi oxoxos = hh;
 	
+	//std::vector<MyStringAnsi> xxx789 = oxoxo.Split('*');
 	MyStringAnsi oosx = tmpFunc();
 	//oosx = std::move(oxoxo);
 	oosx = hh;
@@ -524,13 +569,35 @@ int main(int argc, char ** argv)
 		}
 	});
 	*/
+	
+	/*
+	sb.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{
+			constexpr MyStringID id = "toto je muj dlouhy retezec pro ID";
+			r[i] += id.GetHashCode();
+		}
+	});
+
+	sb.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{
+			MyStringAnsi id = "toto je muj dlouhy retezec pro ID";
+			r[i] += id.GetHashCode();
+		}
+	});
+	*/
+
 	/*
 	sb.TestShortStrAllocation();
 	sb.TestStringToInt();
 	sb.TestStringToDouble();
 	sb.TestAppendNumberAll();
 	sb.TestAppendSmallString();
-	sb.TestAppendString();
+	sb.TestAppendString();	
+	sb.TestHashing();
 	*/
+
+	
 	return 0;
 }

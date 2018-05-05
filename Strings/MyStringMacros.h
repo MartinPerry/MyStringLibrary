@@ -2,7 +2,7 @@
 #define _MY_STRING_MACROS_H_
 
 
-#define CONSTEXPR_DISABLE 
+//#define CONSTEXPR_DISABLE 
 
 
 #ifndef SWAP
@@ -93,6 +93,7 @@ inline wchar_t* my_wcslwr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 0) { *it = towupper(*it); ++it; } return str; }
 
 #endif
+
 
 
 #define RET_VAL(T, enable_cond) \

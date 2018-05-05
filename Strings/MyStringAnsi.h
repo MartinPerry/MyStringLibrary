@@ -19,6 +19,11 @@ public:
 	using IStringAnsi<MyStringAnsi>::IStringAnsi;
 	using IStringAnsi<MyStringAnsi>::operator=;
 
+	MyStringAnsi() 
+		: IStringAnsi<MyStringAnsi>()
+	{
+	}
+
 	MyStringAnsi(const char * newStr, size_t length)	
 		: bufferCapacity(length + 1),
 		strLength(length)

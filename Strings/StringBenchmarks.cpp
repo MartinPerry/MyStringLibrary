@@ -5,6 +5,8 @@
 #include <iostream>
 #include <ctime>
 #include <random>
+#include <unordered_map>
+#include <vector>
 
 #include "StringTests.h"
 #include "MyString.h"
@@ -418,5 +420,46 @@ void StringBenchmarks::TestAppendString()
 	{
 		printf("String append failed");
 	}
+
+}
+
+
+void StringBenchmarks::TestHashing()
+{
+	LogTestStart(__func__);
+
+	std::unordered_map<MyStringID, int> dataId;
+	std::unordered_map<MyStringAnsi, int> dataString;
+
+	std::vector<MyStringAnsi> keys;
+	std::vector<MyStringID> keysId;
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyStringAnsi key = StringTests<MyStringAnsi>::CreateRandomString(10);
+		MyStringID keyId = key;
+
+		keys.push_back(key);
+		keysId.push_back(keyId);
+
+		dataId[keyId] = i;
+		dataString[key] = i;
+	}
+
+
+
+	this->Start("Hash MyStringAnsi");
+	for (int i = 0; i < COUNT; i++)
+	{		
+		res[i] = dataString[keys[i]];
+	}
+	this->Finish();
+
+
+	this->Start("Hash MyStringID");
+	for (int i = 0; i < COUNT; i++)
+	{
+		res[i] = dataId[keysId[i]];
+	}
+	this->Finish();
 
 }

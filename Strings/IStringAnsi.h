@@ -7,6 +7,7 @@ class MySmallStringAnsi;
 #include <limits>
 #include <vector>
 #include <string> //std::string
+#include <functional>
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
@@ -78,6 +79,9 @@ public:
 	template <typename RetVal>
 	std::vector<RetVal> Split(char delimeter, bool keepEmptyValues = false) const;
 
+	template <typename RetVal>
+	std::vector<RetVal> Split(const std::vector<char> & delimeters, bool keepEmptyValues = false) const;
+
 	size_t Count(const char str) const;
 
 
@@ -92,8 +96,7 @@ public:
 
 	template<typename... Args>
 	void AppendFormat(const char * str, Args... args);
-
-
+	
 	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
 	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
@@ -115,6 +118,7 @@ public:
 	bool IsIntNumber() const;
 	bool IsFloatNumber() const;
 
+	void Transform(std::function<char(char)> t);
 
 	template <typename T>	
 	RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) operator += (T number);
@@ -130,6 +134,13 @@ public:
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
+
+	template <typename T>
+	typename std::enable_if<
+		std::is_same<T, MyStringAnsi>::value ||
+		std::is_same<T, MySmallStringAnsi>::value, T
+	>::type operator + (const T & str) const;
+	Type operator + (const char * str) const;
 
 	template <typename T>
 	typename std::enable_if<
@@ -379,6 +390,31 @@ inline void IStringAnsi<Type>::operator+= (const char singleChar)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+
+template <typename Type>
+template <typename T>
+inline typename std::enable_if<
+	std::is_same<T, MyStringAnsi>::value ||
+	std::is_same<T, MySmallStringAnsi>::value, T
+>::type
+IStringAnsi<Type>::operator + (const T & str) const
+{
+	T newStr = T(static_cast<const Type *>(this)->c_str(), static_cast<const Type *>(this)->length());
+	newStr.Append(str.c_str(), str.length());
+	
+	return newStr;
+};
+
+
+template <typename Type>
+inline Type IStringAnsi<Type>::operator + (const char * str) const
+{
+	Type newStr = Type(static_cast<const Type *>(this)->c_str(), static_cast<const Type *>(this)->length());
+	newStr.Append(str);
+
+	return newStr;
+}
+
 template <typename Type>
 inline char IStringAnsi<Type>::operator [](const int index) const
 {
@@ -459,6 +495,22 @@ template <typename Type>
 template <typename RetVal>
 std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValues) const
 {
+	return this->Split<RetVal>(std::vector<char>({ delimeter }), keepEmptyValues);
+}
+
+/// <summary>
+/// Split string by a char delimeters
+/// Eg: 11  11 - 22 -> ' ', '-' => {11,11,22}
+/// Eg: 11  11 - 22 -> ' ', '-' keepEmptyValues => {11,,11,,22}
+/// 
+/// </summary>
+/// <param name="delimeters"></param>
+/// <param name="keepEmptyValues">if we want to keep empty values (default: false)</param>
+/// <returns></returns>
+template <typename Type>
+template <typename RetVal>
+std::vector<RetVal> IStringAnsi<Type>::Split(const std::vector<char> & delimeters, bool keepEmptyValues) const
+{
 	std::vector<RetVal> splited;
 
 	const char * end = static_cast<const Type *>(this)->c_str();
@@ -466,7 +518,8 @@ std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValue
 	char c = 0;
 	while ((c = *end) != 0)
 	{
-		if (c == delimeter)
+		//if (c == delimeter)
+		if (std::find(delimeters.begin(), delimeters.end(), c) != delimeters.end())
 		{
 			//splitting
 			size_t len = end - start;
