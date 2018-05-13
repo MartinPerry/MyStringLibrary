@@ -121,42 +121,50 @@ inline bool operator !=(const  MySmallStringAnsi &str1, const char * str2)
 
 inline bool operator <(const char * str1, const MyStringAnsi & str2)
 {
+	if (str1 == nullptr) return true;
 	return (strcmp(str1, str2.c_str()) < 0);
 };
 
 inline bool operator <(const MyStringAnsi &str1, const char * str2)
 {
+	if (str2 == nullptr) return false;
 	return (strcmp(str1.c_str(), str2) < 0);
 };
 
 inline bool operator <(const char * str1, const MySmallStringAnsi & str2)
 {	
+	if (str1 == nullptr) return true;
 	return (strcmp(str1, str2.c_str()) < 0);
 };
 
 inline bool operator <(const MySmallStringAnsi &str1, const char * str2)
 {	
+	if (str2 == nullptr) return false;
 	return (strcmp(str1.c_str(), str2) < 0);
 };
 
 
 inline bool operator >(const char * str1, const MyStringAnsi & str2)
 {
+	if (str1 == nullptr) return false;
 	return (strcmp(str1, str2.c_str()) > 0);
 };
 
 inline bool operator >(const MyStringAnsi &str1, const char * str2)
 {
+	if (str1 == nullptr) return true;
 	return (strcmp(str1.c_str(), str2) > 0);
 };
 
 inline bool operator >(const char * str1, const MySmallStringAnsi & str2)
 {
+	if (str2 == nullptr) return false;
 	return (strcmp(str1, str2.c_str()) > 0);
 };
 
 inline bool operator >(const MySmallStringAnsi &str1, const char * str2)
 {
+	if (str2 == nullptr) return true;
 	return (strcmp(str1.c_str(), str2) > 0);
 };
 
