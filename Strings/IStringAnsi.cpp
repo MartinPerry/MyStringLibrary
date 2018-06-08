@@ -684,37 +684,6 @@ void IStringAnsi<Type>::Transform(std::function<char(char)> t)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
-/// <summary>
-/// Fill current string to "const str"
-/// !Important!str must be freed
-/// </summary>
-/// <param name="str">filled const string (out)</param>
-template <typename Type>
-void IStringAnsi<Type>::FillString(char * &str) const
-{
-	size_t length = static_cast<const Type *>(this)->length();
-	const char * cstr = static_cast<const Type *>(this)->c_str();
-
-	str = new char[length + 1];
-	memcpy(str, cstr, length + 1);	
-}
-
-/// <summary>
-/// Fill current string to "const str"
-/// !Important!str must be freed
-/// </summary>
-/// <param name="str">filled const string (out)</param>
-template <typename Type>
-void IStringAnsi<Type>::FillString(const char * &str) const
-{
-	size_t length = static_cast<const Type *>(this)->length();
-	const char * cstr = static_cast<const Type *>(this)->c_str();
-
-	char * tmp = new char[length + 1];
-	memcpy(tmp, cstr, length + 1);	
-	str = my_strdup(tmp);
-	delete[] tmp;
-}
 
 
 //====================================================================

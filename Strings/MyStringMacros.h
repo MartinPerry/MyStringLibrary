@@ -96,7 +96,10 @@ inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 
 #define SAFE_STRDUP(s) (s != nullptr) ? my_strdup(s) : my_strdup("")
 
-#define RET_VAL(T, enable_cond) \
-	typename std::enable_if<enable_cond, T>::type
+//https://stackoverflow.com/questions/13842468/comma-in-c-c-macro
 
+#define UNPACK_ENABLE_COND( ... ) __VA_ARGS__
+
+#define RET_VAL(ret_type, enable_cond) \
+	typename std::enable_if<UNPACK_ENABLE_COND enable_cond, ret_type>::type
 #endif

@@ -36,7 +36,8 @@ class IStringAnsi
 public:
 		
 	static const int npos = -1;
-	
+
+	IStringAnsi();
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
 	IStringAnsi(const std::string & str);
@@ -107,9 +108,6 @@ public:
 	void CopySubstring(int start, char ** destination) const;
 	void CopySubstring(int start, size_t length, char ** destination) const;
 
-	void FillString(char * &str) const;
-	void FillString(const char * &str) const;
-
 
 	std::vector<double> GetAllNumbers() const;
 
@@ -120,42 +118,41 @@ public:
 	void Transform(std::function<char(char)> t);
 
 	template <typename T>	
-	RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) operator += (T number);
+	RET_VAL(void, (std::is_integral<T>::value && std::is_signed<T>::value)) operator += (T number);
 
 	template <typename T>	
-	RET_VAL(void, std::is_unsigned<T>::value) operator += (T number);
+	RET_VAL(void, (std::is_unsigned<T>::value)) operator += (T number);
 
 	template <typename T>
-	RET_VAL(void, std::is_floating_point<T>::value) operator += (T number);
+	RET_VAL(void, (std::is_floating_point<T>::value)) operator += (T number);
 
 	template <typename T>
-	typename std::enable_if<
-		std::is_same<T, MyStringAnsi>::value ||
-		std::is_same<T, MySmallStringAnsi>::value, void
-	>::type operator += (const T & str);
+    RET_VAL(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+    operator += (const T & str);
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
 
 	template <typename T>
-	typename std::enable_if<
-		std::is_same<T, MyStringAnsi>::value ||
-		std::is_same<T, MySmallStringAnsi>::value, T
-	>::type operator + (const T & str) const;
+	RET_VAL(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+    operator + (const T & str) const;
 	Type operator + (const char * str) const;
 
 	template <typename T>
-	typename std::enable_if<
-		std::is_same<T, MyStringAnsi>::value ||
-		std::is_same<T, MySmallStringAnsi>::value, Type &
-	>::type operator = (const T & str);
+	RET_VAL(Type &, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+    operator = (const T & str);
 	Type & operator = (const char * str);
 	Type & operator = (const std::string & str);
 	Type & operator = (Type && other);
 
 
-	inline char operator [](const int index) const;
-	inline char & operator [](const int index);
+	template <typename T>
+    RET_VAL(char, (std::is_integral<T>::value))
+    operator [](const T index) const;
+    
+    template <typename T>
+    RET_VAL(char&, (std::is_integral<T>::value))
+    operator [](const T index);
 
 
 	//template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>	
@@ -167,8 +164,6 @@ public:
 protected:
 
 	mutable uint32_t hashCode;
-
-	IStringAnsi();
 
 	size_t CalcNewBufferSize(size_t forLen) const
 	{
@@ -305,7 +300,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) IStringAnsi<Type>::operator += (T number)
+RET_VAL(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	//uint64_t input = number;
 	typename std::make_unsigned<T>::type input = number;
@@ -374,7 +369,7 @@ RET_VAL(void, std::is_integral<T>::value && std::is_signed<T>::value) IStringAns
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, std::is_unsigned<T>::value) IStringAnsi<Type>::operator += (T number)
+RET_VAL(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	size_t len = MyStringUtils::GetNumDigits(number);
 	//sizeof(T) = 1 => 4 (3 + sign)
@@ -430,7 +425,7 @@ RET_VAL(void, std::is_unsigned<T>::value) IStringAnsi<Type>::operator += (T numb
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, std::is_floating_point<T>::value) IStringAnsi<Type>::operator += (T number)
+RET_VAL(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	//to do - create manuall solution that correspond to MyStringUtils::ToNumber instead of this
 	std::string tmp = std::to_string(number);
@@ -451,10 +446,7 @@ return newStr;
 
 template <typename Type>
 template <typename T>
-inline typename std::enable_if<
-	std::is_same<T, MyStringAnsi>::value ||
-	std::is_same<T, MySmallStringAnsi>::value, void
->::type
+RET_VAL(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator += (const T & str)
 {
 	this->Append(str.c_str(), str.length());
@@ -505,10 +497,7 @@ inline void IStringAnsi<Type>::operator+= (const char singleChar)
 
 template <typename Type>
 template <typename T>
-inline typename std::enable_if<
-	std::is_same<T, MyStringAnsi>::value ||
-	std::is_same<T, MySmallStringAnsi>::value, T
->::type
+RET_VAL(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator + (const T & str) const
 {
 	T newStr = T(static_cast<const Type *>(this)->c_str(), 
@@ -530,13 +519,17 @@ inline Type IStringAnsi<Type>::operator + (const char * str) const
 }
 
 template <typename Type>
-inline char IStringAnsi<Type>::operator [](const int index) const
+template <typename T>
+RET_VAL(char, (std::is_integral<T>::value))
+IStringAnsi<Type>::operator [](const T index) const
 {
 	return static_cast<const Type *>(this)->c_str()[index];
 }
 
 template <typename Type>
-inline char & IStringAnsi<Type>::operator [](const int index)
+template <typename T>
+RET_VAL(char&, (std::is_integral<T>::value))
+IStringAnsi<Type>::operator [](const T index)
 {
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 	return static_cast<Type *>(this)->str()[index];
@@ -544,10 +537,7 @@ inline char & IStringAnsi<Type>::operator [](const int index)
 
 template <typename Type>
 template <typename T>
-inline typename std::enable_if<
-	std::is_same<T, MyStringAnsi>::value ||
-	std::is_same<T, MySmallStringAnsi>::value, Type &
->::type 
+RET_VAL(Type&, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator = (const T & str)
 {
 	/*
