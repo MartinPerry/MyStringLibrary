@@ -415,6 +415,9 @@ int main(int argc, char ** argv)
 		return x + 1;
 	});
 
+	kukbaf.AppendFormat("%s %s", kuk.c_str(), baf.c_str());
+	MyStringAnsi::CreateFormated("%s %s", kuk.c_str(), baf.c_str());
+
 	std::string hh = "xxx";
 	
 	MyStringAnsi oxoxo = hh;

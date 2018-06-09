@@ -100,6 +100,6 @@ inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 
 #define UNPACK_ENABLE_COND( ... ) __VA_ARGS__
 
-#define RET_VAL(ret_type, enable_cond) \
+#define RET_VAL_STR(ret_type, enable_cond) \
 	typename std::enable_if<UNPACK_ENABLE_COND enable_cond, ret_type>::type
 #endif

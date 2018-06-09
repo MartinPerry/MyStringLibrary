@@ -280,20 +280,6 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 }
 
 
-/// <summary>
-/// Append new formated string
-/// Really SLOW !!!!- because of used vsnprintf
-/// eg("Formated %d %d", 10, 20) = > "Formated 10, 20"
-/// </summary>
-/// <param name="appendStr"></param>
-/// <param name="...args"></param>
-template <typename Type>
-template<typename... Args>
-void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
-{
-	IStringAnsi<Type> tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
-	this->Append(tmp.c_str());	
-}
 
 
 

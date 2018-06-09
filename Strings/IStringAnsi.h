@@ -51,8 +51,7 @@ public:
 
 	template <typename RetVal = Type>
 	static RetVal CreateFormated(const char * str, ...);
-
-	
+		
 	//======================================================================
 	void Release();
 	bool SaveToFile(const char * fileName) const;
@@ -118,28 +117,28 @@ public:
 	void Transform(std::function<char(char)> t);
 
 	template <typename T>	
-	RET_VAL(void, (std::is_integral<T>::value && std::is_signed<T>::value)) operator += (T number);
+	RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) operator += (T number);
 
 	template <typename T>	
-	RET_VAL(void, (std::is_unsigned<T>::value)) operator += (T number);
+	RET_VAL_STR(void, (std::is_unsigned<T>::value)) operator += (T number);
 
 	template <typename T>
-	RET_VAL(void, (std::is_floating_point<T>::value)) operator += (T number);
+	RET_VAL_STR(void, (std::is_floating_point<T>::value)) operator += (T number);
 
 	template <typename T>
-    RET_VAL(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
     operator += (const T & str);
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
 
 	template <typename T>
-	RET_VAL(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
     operator + (const T & str) const;
 	Type operator + (const char * str) const;
 
 	template <typename T>
-	RET_VAL(Type &, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
     operator = (const T & str);
 	Type & operator = (const char * str);
 	Type & operator = (const std::string & str);
@@ -147,11 +146,11 @@ public:
 
 
 	template <typename T>
-    RET_VAL(char, (std::is_integral<T>::value))
+	RET_VAL_STR(char, (std::is_integral<T>::value))
     operator [](const T index) const;
     
     template <typename T>
-    RET_VAL(char&, (std::is_integral<T>::value))
+	RET_VAL_STR(char&, (std::is_integral<T>::value))
     operator [](const T index);
 
 
@@ -288,7 +287,20 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 	return newStr;
 }
 
-
+/// <summary>
+/// Append new formated string
+/// Really SLOW !!!!- because of used vsnprintf
+/// eg("Formated %d %d", 10, 20) = > "Formated 10, 20"
+/// </summary>
+/// <param name="appendStr"></param>
+/// <param name="...args"></param>
+template <typename Type>
+template<typename... Args>
+void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
+{
+	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
+	this->Append(tmp.c_str());
+}
 
 //====================================================================
 // Operators
@@ -300,7 +312,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	//uint64_t input = number;
 	typename std::make_unsigned<T>::type input = number;
@@ -369,7 +381,7 @@ RET_VAL(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStringA
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	size_t len = MyStringUtils::GetNumDigits(number);
 	//sizeof(T) = 1 => 4 (3 + sign)
@@ -425,7 +437,7 @@ RET_VAL(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (T nu
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::operator += (T number)
 {
 	//to do - create manuall solution that correspond to MyStringUtils::ToNumber instead of this
 	std::string tmp = std::to_string(number);
@@ -446,7 +458,7 @@ return newStr;
 
 template <typename Type>
 template <typename T>
-RET_VAL(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator += (const T & str)
 {
 	this->Append(str.c_str(), str.length());
@@ -497,7 +509,7 @@ inline void IStringAnsi<Type>::operator+= (const char singleChar)
 
 template <typename Type>
 template <typename T>
-RET_VAL(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator + (const T & str) const
 {
 	T newStr = T(static_cast<const Type *>(this)->c_str(), 
@@ -520,7 +532,7 @@ inline Type IStringAnsi<Type>::operator + (const char * str) const
 
 template <typename Type>
 template <typename T>
-RET_VAL(char, (std::is_integral<T>::value))
+RET_VAL_STR(char, (std::is_integral<T>::value))
 IStringAnsi<Type>::operator [](const T index) const
 {
 	return static_cast<const Type *>(this)->c_str()[index];
@@ -528,7 +540,7 @@ IStringAnsi<Type>::operator [](const T index) const
 
 template <typename Type>
 template <typename T>
-RET_VAL(char&, (std::is_integral<T>::value))
+RET_VAL_STR(char&, (std::is_integral<T>::value))
 IStringAnsi<Type>::operator [](const T index)
 {
 	this->hashCode = std::numeric_limits<uint32_t>::max();
@@ -537,7 +549,7 @@ IStringAnsi<Type>::operator [](const T index)
 
 template <typename Type>
 template <typename T>
-RET_VAL(Type&, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(Type&, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
 IStringAnsi<Type>::operator = (const T & str)
 {
 	/*
