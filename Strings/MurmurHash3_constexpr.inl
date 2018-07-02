@@ -6,7 +6,8 @@
 
 
 #include <stdint.h>
-
+#include <cstdint>
+#include <cstddef>
 
 
 //128 bit murmur hash

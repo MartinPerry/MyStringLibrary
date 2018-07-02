@@ -7,8 +7,10 @@ class MySmallStringAnsi;
 #include <limits>
 #include <vector>
 #include <string> //std::string
-#include <functional>
-#include <stdarg.h>
+#include <cstring> //strlen and other
+#include <functional> //lambdas
+#include <stdarg.h> //var args
+#include <algorithm> //std::find
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"

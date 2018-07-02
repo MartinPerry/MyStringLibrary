@@ -656,7 +656,7 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 template <typename Type>
 void IStringAnsi<Type>::Transform(std::function<char(char)> t)
 {
-	size_t count = 0;
+	//size_t count = 0;
 
 	char * end = static_cast<Type *>(this)->str();
 	char c = 0;
