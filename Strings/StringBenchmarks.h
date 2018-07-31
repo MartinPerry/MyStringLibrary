@@ -1,5 +1,5 @@
-#ifndef _STRING_BENCHMARKS_H_
-#define _STRING_BENCHMARKS_H_
+#ifndef STRING_BENCHMARKS_H
+#define STRING_BENCHMARKS_H
 
 #include <chrono>
 #include <random>

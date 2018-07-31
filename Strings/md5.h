@@ -35,7 +35,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "./MyStringMacros.h"
 
 // Constants for MD5Transform routine.
 #define S11 7

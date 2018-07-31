@@ -1,5 +1,5 @@
-#ifndef _STRING_TESTS_H_
-#define _STRING_TESTS_H_
+#ifndef STRING_TESTS_H
+#define STRING_TESTS_H
 
 #include <string>
 #include <stdexcept>

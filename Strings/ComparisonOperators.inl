@@ -1,5 +1,5 @@
-#ifndef _COMPARISON_OPERATORS_H_
-#define _COMPARISON_OPERATORS_H_
+#ifndef COMPARISON_OPERATORS_H
+#define COMPARISON_OPERATORS_H
 
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"

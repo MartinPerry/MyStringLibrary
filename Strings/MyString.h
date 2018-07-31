@@ -1,5 +1,5 @@
-#ifndef _MY_STRING_H_
-#define _MY_STRING_H_
+#ifndef MY_STRING_H
+#define MY_STRING_H
 
 
 
