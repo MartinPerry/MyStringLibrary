@@ -325,8 +325,11 @@ int main(int argc, char ** argv)
 	ee = ex;
 
 	//MyStringAnsi ooxxx = MyStringAnsi::CreateFormated("xx %i km", 40);
-	MyStringAnsi ooxxx = "1sada-sd-1sadasd0";
+	MyStringAnsi ooxxx = "1saxxxda-sd-1sadasd0xxxx";
 	
+	ooxxx.RemoveMultipleChars('x');
+	ooxxx.RemoveChar('x');
+
 	auto nm = ooxxx.GetAllNumbers();
 
 	IBar ibar = IBar("x");

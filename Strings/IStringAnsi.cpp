@@ -332,9 +332,35 @@ void IStringAnsi<Type>::Reverse()
 }
 
 
+
+template <typename Type>
+void IStringAnsi<Type>::RemoveChar(char t)
+{
+	char * str = static_cast<Type *>(this)->str();
+	size_t j = 0;	
+	char * start = str;
+	char c = 0;
+	while ((c = *start) != 0)
+	{		
+		start++;
+
+		if (c == t)
+		{
+			continue;
+		}
+		
+		str[j] = c;
+		j++;
+	}
+	str[j] = 0;
+		
+	static_cast<Type *>(this)->SetLengthInternal(j);
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
 /// <summary>
-/// Remove same characters from sequence
-/// Eg: remove x -> xxxaaxx => xaax
+/// Remove same characters given by parameter t from sequence
+/// Eg: t = x => remove x -> xxxaaxx => xaax
 /// 
 /// </summary>
 /// <param name="t"></param>
@@ -347,24 +373,25 @@ void IStringAnsi<Type>::RemoveMultipleChars(char t)
 	char * start = str + 1;
 	char c = 0;
 	while ((c = *start) != 0)
-	{		
+	{
 		start++;
 
 		if ((c == lastC) && (c == t))
 		{
 			continue;
 		}
-		
+
 		str[j] = c;
 		j++;
 
 		lastC = c;
 	}
 	str[j] = 0;
-		
-	static_cast<Type *>(this)->SetLengthInternal(j - 1);
+
+	static_cast<Type *>(this)->SetLengthInternal(j);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
+
 
 template <typename Type>
 void IStringAnsi<Type>::PopBack()

@@ -74,6 +74,7 @@ public:
 
 	void Trim();
 	void Reverse();
+	void RemoveChar(char t);
 	void RemoveMultipleChars(char t);
 	void PopBack();
 
