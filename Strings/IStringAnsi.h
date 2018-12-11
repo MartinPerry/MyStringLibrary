@@ -109,7 +109,8 @@ public:
 	Type SubString(int start, size_t length) const;
 	void CopySubstring(int start, char ** destination) const;
 	void CopySubstring(int start, size_t length, char ** destination) const;
-
+	void CopySubstring(int start, char * destination) const;
+	void CopySubstring(int start, size_t length, char * destination) const;
 
 	std::vector<double> GetAllNumbers() const;
 
@@ -156,6 +157,15 @@ public:
 	RET_VAL_STR(char&, (std::is_integral<T>::value))
     operator [](const T index);
 
+
+	//template <typename T>
+	//RET_VAL_STR( (std::is_integral<T>::value))
+	//template<typename T, typename = typename std::is_integral<T>::value>
+
+	template <typename T,
+		typename = typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type
+	>
+	explicit operator T() const;
 
 	//template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>	
 	//IStringAnsi operator + (T number) const;
@@ -600,6 +610,15 @@ inline Type & IStringAnsi<Type>::operator = (Type && other)
 
 	return *static_cast<Type *>(this);
 };
+
+template <typename Type>
+template <typename T,
+	typename
+>
+inline IStringAnsi<Type>::operator T() const
+{
+	return MyStringUtils::ToNumber<T>(static_cast<const Type *>(this)->c_str());
+}
 
 //====================================================================
 // Other methods

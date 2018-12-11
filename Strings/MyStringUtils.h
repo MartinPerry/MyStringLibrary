@@ -161,7 +161,7 @@ struct MyStringUtils
 	static int GetNumDigits(T number)
 	{
 		int digits = 0;
-		if (number < 0) digits = 1; // remove this line if '-' counts as a digit
+		if (number <= 0) digits = 1; // remove this line if '-' counts as a digit
 		while (number) {
 			number /= 10;
 			digits++;
@@ -248,48 +248,48 @@ inline int MyStringUtils::GetNumDigits(uint32_t x)
 template <>
 inline int MyStringUtils::GetNumDigits(uint64_t x)
 {
-	if (x >= 10000000000U) { //11
-		if (x >= 100000000000000U) { //15
-			if (x >= 100000000000000000U) { //18
-				if (x >= 1000000000000000000U) { //19
-					if (x >= 10000000000000000000U) return 20;
+	if (x >= 10000000000ULL) { //11
+		if (x >= 100000000000000ULL) { //15
+			if (x >= 100000000000000000ULL) { //18
+				if (x >= 1000000000000000000ULL) { //19
+					if (x >= 10000000000000000000ULL) return 20;
 					return 19;
 				}
 				return 18;
 			}
-			if (x >= 1000000000000000U) { //16
-				if (x >= 10000000000000000U) return 17;
+			if (x >= 1000000000000000ULL) { //16
+				if (x >= 10000000000000000ULL) return 17;
 				return 16;
 			}
 			return 15;
 		}
-		if (x >= 1000000000000U) { //13
-			if (x >= 10000000000000U) return 14;
+		if (x >= 1000000000000ULL) { //13
+			if (x >= 10000000000000ULL) return 14;
 			return 13;
 		}
-		if (x >= 100000000000U) return 12;
+		if (x >= 100000000000ULL) return 12;
 		return 11;
 	}
 
-	if (x >= 10000U) { //5
-		if (x >= 10000000U) { //8
-			if (x >= 100000000U) { //9
-				if (x >= 1000000000U) return 10;
+	if (x >= 10000ULL) { //5
+		if (x >= 10000000ULL) { //8
+			if (x >= 100000000ULL) { //9
+				if (x >= 1000000000ULL) return 10;
 				return 9;
 			}
 			return 8;
 		}
-		if (x >= 100000U) { //6
-			if (x >= 1000000U) return 7;
+		if (x >= 100000ULL) { //6
+			if (x >= 1000000ULL) return 7;
 			return 6;
 		}
 		return 5;
 	}
-	if (x >= 100U) { //3
-		if (x >= 1000U) return 4;
+	if (x >= 100ULL) { //3
+		if (x >= 1000ULL) return 4;
 		return 3;
 	}
-	if (x >= 10U) return 2;
+	if (x >= 10ULL) return 2;
 	return 1;
 }
 

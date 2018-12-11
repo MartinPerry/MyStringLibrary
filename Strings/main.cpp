@@ -324,13 +324,31 @@ int main(int argc, char ** argv)
 
 	ee = ex;
 
+	unsigned long iip = -0;
+	MyStringAnsi ioi = "x";
+	ioi += iip;
+
+	MyStringAnsi cislo = "45.789uuu";
+	double c = static_cast<int>(cislo.SubString(0));
+
 	//MyStringAnsi ooxxx = MyStringAnsi::CreateFormated("xx %i km", 40);
 	MyStringAnsi ooxxx = "1saxxxda-sd-1sadasd0xxxx";
 	
+	char data[5];
+	ooxxx.CopySubstring(0, 2, data);
+
+	char * data2 = new char[5];
+	ooxxx.CopySubstring(0, 2, data2);
+
+	char * data3 = nullptr;
+	ooxxx.CopySubstring(0, 2, &data3);
+
 	ooxxx.RemoveMultipleChars('x');
 	ooxxx.RemoveChar('x');
 
 	auto nm = ooxxx.GetAllNumbers();
+
+	
 
 	IBar ibar = IBar("x");
 	IBar ibar2 = IBar();

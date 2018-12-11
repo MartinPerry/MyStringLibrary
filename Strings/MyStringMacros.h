@@ -1,5 +1,5 @@
-#ifndef _MY_STRING_MACROS_H_
-#define _MY_STRING_MACROS_H_
+#ifndef MY_STRING_MACROS_H
+#define MY_STRING_MACROS_H
 
 
 //#define CONSTEXPR_DISABLE 

@@ -872,9 +872,11 @@ Type IStringAnsi<Type>::SubString(int start, size_t length) const
 
 /// <summary>
 /// Get substring within string
+/// String IS null terminated
+/// Destination string is allocated with new char[length + 1]
 /// </summary>
 /// <param name="start">start position</param>
-/// <param name="destination">destination, where substring is copied</param>
+/// <param name="destination">destination, where substring is copied. Must be cleared with delete[]</param>
 template <typename Type>
 void IStringAnsi<Type>::CopySubstring(int start, char ** destination) const
 {
@@ -883,6 +885,13 @@ void IStringAnsi<Type>::CopySubstring(int start, char ** destination) const
 	this->CopySubstring(start, length, destination);
 }
 
+/// <summary>
+/// Get substring within string. 
+/// String IS null terminated
+/// Destination string is allocated with new char[length + 1]
+/// </summary>
+/// <param name="start">start position</param>
+/// <param name="destination">destination, where substring is copied. Must be cleared with delete[]</param>
 template <typename Type>
 void IStringAnsi<Type>::CopySubstring(int start, size_t length, char ** destination) const
 {
@@ -892,10 +901,44 @@ void IStringAnsi<Type>::CopySubstring(int start, size_t length, char ** destinat
 		//to do ... hodit vyjimku
 	}
 	*/
+	*destination = new char[length + 1];
 
 	memcpy(*destination, static_cast<const Type *>(this)->c_str() + start, length);
+	(*destination)[length] = 0;
 }
 
+/// <summary>
+/// Get substring within string
+/// String IS NOT null terminated !
+/// </summary>
+/// <param name="start">start position</param>
+/// <param name="destination">destination, where substring is copied</param>
+template <typename Type>
+void IStringAnsi<Type>::CopySubstring(int start, char * destination) const
+{	
+	size_t length = static_cast<const Type *>(this)->length() - start;
+
+	this->CopySubstring(start, length, destination);
+}
+
+/// <summary>
+/// Get substring within string. 
+/// String IS NOT null terminated !
+/// </summary>
+/// <param name="start">start position</param>
+/// <param name="destination">destination, where substring is copied</param>
+template <typename Type>
+void IStringAnsi<Type>::CopySubstring(int start, size_t length, char * destination) const
+{
+	/*
+	if (start + length > this->strLength)
+	{
+		//to do ... hodit vyjimku
+	}
+	*/
+
+	memcpy(destination, static_cast<const Type *>(this)->c_str() + start, length);	
+}
 
 
 
