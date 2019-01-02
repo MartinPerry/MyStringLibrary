@@ -331,6 +331,9 @@ int main(int argc, char ** argv)
 	MyStringAnsi cislo = "45.789uuu";
 	double c = static_cast<int>(cislo.SubString(0));
 
+	cislo.Clear();
+	cislo += 456;
+
 	//MyStringAnsi ooxxx = MyStringAnsi::CreateFormated("xx %i km", 40);
 	MyStringAnsi ooxxx = "1saxxxda-sd-1sadasd0xxxx";
 	

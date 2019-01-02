@@ -281,8 +281,19 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 
 
 
+/// <summary>
+/// Clear string, but keep allocated memory
+/// Just set [0] = 0
+/// </summary>
+template <typename Type>
+void IStringAnsi<Type>::Clear()
+{
+	char * start = static_cast<Type *>(this)->str();
+	start[0] = 0;
 
-
+	static_cast<Type *>(this)->SetLengthInternal(0);
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
 
 /// <summary>
 /// Trim string from left and right

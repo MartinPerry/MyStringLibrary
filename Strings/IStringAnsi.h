@@ -71,7 +71,7 @@ public:
 		return this->operator[](length - 1);
 	}
 
-
+	void Clear();
 	void Trim();
 	void Reverse();
 	void RemoveChar(char t);
