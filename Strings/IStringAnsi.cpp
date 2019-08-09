@@ -596,6 +596,7 @@ template <typename Type>
 std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
 {
 	std::vector<double> s;
+	s.reserve(100);
 
 	const char * str = static_cast<const Type *>(this)->c_str();
 	const char * start = str;
@@ -713,6 +714,53 @@ void IStringAnsi<Type>::Transform(std::function<char(char)> t)
 //====================================================================
 // Finding
 //====================================================================
+
+/// <summary>
+/// Find char within this string and return first position of
+/// occurence
+/// </summary>
+/// <param name="str">char to find</param>
+/// <returns>position of occurence needle in haystack</returns>
+template <typename Type>
+int IStringAnsi<Type>::Find(const char c) const
+{
+	size_t strLen = static_cast<const Type *>(this)->length();
+	const char * str = static_cast<const Type *>(this)->c_str();
+
+	for (size_t i = 0; i < strLen; i++)
+	{
+		if (str[i] == c) 
+		{
+			return static_cast<int>(i);
+		}
+	}
+
+	return IStringAnsi<Type>::npos;
+}
+
+/// <summary>
+/// Find char within this string and return last position of
+/// occurence
+/// </summary>
+/// <param name="str">char to find</param>
+/// <returns>position of occurence needle in haystack</returns>
+template <typename Type>
+int IStringAnsi<Type>::FindLast(const char c) const
+{
+	size_t strLen = static_cast<const Type *>(this)->length();
+	const char * str = static_cast<const Type *>(this)->c_str();
+
+	for (size_t i = strLen - 1; i >= 0; i--)
+	{
+		if (str[i] == c)
+		{
+			return static_cast<int>(i);
+		}
+	}
+
+	return IStringAnsi<Type>::npos;
+}
+
 
 /// <summary>
 /// Find str within this string and return first position of
@@ -1034,7 +1082,7 @@ int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start
 	}
 
 
-	return -1;
+	return IStringAnsi<Type>::npos;
 
 }
 
@@ -1115,7 +1163,7 @@ int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t s
 	}
 
 
-	return -1;
+	return IStringAnsi<Type>::npos;
 }
 
 /// <summary>
@@ -1158,7 +1206,7 @@ int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 		}
 	}
 
-	return -1;
+	return IStringAnsi<Type>::npos;
 }
 
 
@@ -1175,7 +1223,7 @@ int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 	const char * found = strstr(str + start, needle);
 	if (found == nullptr)
 	{
-		return -1;
+		return IStringAnsi<Type>::npos;
 	}
 	return static_cast<int>(found - str);
 }

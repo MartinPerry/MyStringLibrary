@@ -87,6 +87,8 @@ public:
 	size_t Count(const char str) const;
 
 
+	int Find(const char c) const;
+	int FindLast(const char c) const;
 	int Find(const Type & str, SearchAlgorithm algo = C_LIB) const;
 	int Find(const char * str, SearchAlgorithm algo = C_LIB) const;
 	int Find(const char * str, int offset) const;
