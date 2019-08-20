@@ -37,7 +37,7 @@ class IStringAnsi
 {
 public:
 		
-	static const int npos = -1;
+	static const size_t npos = static_cast<size_t>(-1);
 
 	IStringAnsi();
 	IStringAnsi(char * str);
@@ -87,12 +87,12 @@ public:
 	size_t Count(const char str) const;
 
 
-	int Find(const char c) const;
-	int FindLast(const char c) const;
-	int Find(const Type & str, SearchAlgorithm algo = C_LIB) const;
-	int Find(const char * str, SearchAlgorithm algo = C_LIB) const;
-	int Find(const char * str, int offset) const;
-	std::vector<int> FindAll(const char * str) const;
+	size_t Find(const char c) const;
+	size_t FindLast(const char c) const;
+	size_t Find(const Type & str, SearchAlgorithm algo = C_LIB) const;
+	size_t Find(const char * str, SearchAlgorithm algo = C_LIB) const;
+	size_t Find(const char * str, size_t offset) const;
+	std::vector<size_t> FindAll(const char * str) const;
 
 
 
@@ -104,7 +104,7 @@ public:
 	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
 	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
-	void Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos);	
+	void Replace(const char * oldValue, const char * newValue, const std::vector<size_t> & searchStartPos);
 	Type CreateReplaced(const char * src, const char * dest) const;
 
 	Type SubString(int start) const;
@@ -200,10 +200,10 @@ protected:
 	void ResizeBuffer(size_t bufferSize);
 	void CreateNew(const char * str, size_t length);
 
-	int CLib(const char * str, size_t start = 0) const;
-	int BruteForce(const char * str, size_t start = 0) const;
-	int BoyerMoore(const char * str, int * &lookUp, size_t start = 0) const;
-	int KnuthMorisPrat(const char * str, int * &lookUp, size_t start = 0) const;
+	size_t CLib(const char * str, size_t start = 0) const;
+	size_t BruteForce(const char * str, size_t start = 0) const;
+	size_t BoyerMoore(const char * str, size_t * &lookUp, size_t start = 0) const;
+	size_t KnuthMorisPrat(const char * str, size_t * &lookUp, size_t start = 0) const;
 
 
 };

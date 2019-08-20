@@ -208,7 +208,7 @@ uint32_t IStringAnsi<Type>::GetHashCode() const
 	}
 
 	uint32_t hash = MurmurHash3_x86_32(static_cast<const Type *>(this)->c_str(), 
-		static_cast<const Type *>(this)->length());
+		static_cast<uint32_t>(static_cast<const Type *>(this)->length()));
 
 	this->hashCode = hash;
 
@@ -438,11 +438,11 @@ template <typename Type>
 void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, int replaceOffset)
 {
 	size_t oldValueLen = strlen(oldValue);
-	int * last = nullptr;
-	int pos = 0;
+	size_t * last = nullptr;
+	size_t pos = 0;
 
-	std::vector<int> startPos;
-	int foundOffset = 0;
+	std::vector<size_t> startPos;
+	size_t foundOffset = 0;
 
 	while (1)
 	{
@@ -473,7 +473,7 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, in
 }
 
 template <typename Type>
-void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, const std::vector<int> & searchStartPos)
+void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, const std::vector<size_t> & searchStartPos)
 {
 	if (searchStartPos.size() == 0)
 	{
@@ -534,11 +534,11 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, co
 		memcpy(str, newStr, curSize);						
 	}
 
-	int lastPos = 0;
+	size_t lastPos = 0;
 
 	for (auto foundPos : searchStartPos)
 	{
-		int copyLen = foundPos - lastPos;
+		size_t copyLen = foundPos - lastPos;
 
 		memcpy(newStr, str, copyLen);
 		newStr += copyLen;
@@ -551,7 +551,7 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, co
 		lastPos = foundPos + oldValueLen;
 	}
 
-	int copyLen = curLen - lastPos;
+	size_t copyLen = curLen - lastPos;
 	memcpy(newStr, str, copyLen);
 	newStr[copyLen] = 0;
 
@@ -722,7 +722,7 @@ void IStringAnsi<Type>::Transform(std::function<char(char)> t)
 /// <param name="str">char to find</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::Find(const char c) const
+size_t IStringAnsi<Type>::Find(const char c) const
 {
 	size_t strLen = static_cast<const Type *>(this)->length();
 	const char * str = static_cast<const Type *>(this)->c_str();
@@ -731,7 +731,7 @@ int IStringAnsi<Type>::Find(const char c) const
 	{
 		if (str[i] == c) 
 		{
-			return static_cast<int>(i);
+			return i;
 		}
 	}
 
@@ -745,7 +745,7 @@ int IStringAnsi<Type>::Find(const char c) const
 /// <param name="str">char to find</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::FindLast(const char c) const
+size_t IStringAnsi<Type>::FindLast(const char c) const
 {
 	size_t strLen = static_cast<const Type *>(this)->length();
 	const char * str = static_cast<const Type *>(this)->c_str();
@@ -754,7 +754,7 @@ int IStringAnsi<Type>::FindLast(const char c) const
 	{
 		if (str[i] == c)
 		{
-			return static_cast<int>(i);
+			return i;
 		}
 	}
 
@@ -770,7 +770,7 @@ int IStringAnsi<Type>::FindLast(const char c) const
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::Find(const Type & str, SearchAlgorithm algo) const
+size_t IStringAnsi<Type>::Find(const Type & str, SearchAlgorithm algo) const
 {
 	return this->Find(str.c_str(), algo);
 }
@@ -783,16 +783,16 @@ int IStringAnsi<Type>::Find(const Type & str, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
+size_t IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
 {
-	int pos = IStringAnsi<Type>::npos;
+	size_t pos = IStringAnsi<Type>::npos;
 
 	if (str == nullptr)
 	{
 		return pos;
 	}
 
-	int * last = nullptr;
+	size_t * last = nullptr;
 	if (algo == BM)
 	{
 		pos = this->BoyerMoore(str, last);
@@ -820,12 +820,12 @@ int IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
 
 
 template <typename Type>
-int IStringAnsi<Type>::Find(const char * str, int offset) const
+size_t IStringAnsi<Type>::Find(const char * str, size_t offset) const
 {
-	int count = 0;	
+	size_t count = 0;
 	size_t searchLength = strlen(str);
-	int * last = nullptr;
-	int pos = 0;
+	size_t * last = nullptr;
+	size_t pos = 0;
 
 	while (1)
 	{
@@ -852,13 +852,13 @@ int IStringAnsi<Type>::Find(const char * str, int offset) const
 }
 
 template <typename Type>
-std::vector<int> IStringAnsi<Type>::FindAll(const char * str) const
+std::vector<size_t> IStringAnsi<Type>::FindAll(const char * str) const
 {
 	size_t searchLength = strlen(str);
-	int * last = nullptr;
-	int pos = 0;
+	size_t * last = nullptr;
+	size_t pos = 0;
 
-	std::vector<int> startPos;
+	std::vector<size_t> startPos;
 	int foundOffset = 0;
 
 	while (1)
@@ -1042,40 +1042,47 @@ size_t IStringAnsi<Type>::Count(const char f) const
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start) const
+size_t IStringAnsi<Type>::BoyerMoore(const char * needle, size_t * &last, size_t start) const
 {
 	const char * str = static_cast<const Type *>(this)->c_str();
-	int needleLen = static_cast<int>(strlen(needle));
+	size_t needleLen = strlen(needle);
 
-	int strLength = static_cast<int>(static_cast<const Type *>(this)->length());
+	
+	if (needleLen == 0)
+	{
+		return IStringAnsi<Type>::npos;
+	}
+
+	size_t strLength = static_cast<const Type *>(this)->length();
 
 	if (last == nullptr)
 	{
-		last = new int[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
-		memset(last, -1, std::numeric_limits<uint8_t>::max());
+		last = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
+		std::fill(last, last + std::numeric_limits<uint8_t>::max(), IStringAnsi<Type>::npos);
 		for (int i = 0; i < strLength; i++)
 		{
-			last[static_cast<unsigned char>(str[i])] = i;
+			last[static_cast<uint8_t>(str[i])] = i;
 		}
 	}
-	int index = needleLen - 1;
-	int cmpIndex = index;
+
+	size_t index = needleLen - 1;
+	size_t cmpIndex = index;
 	index += start;
 	while (index < strLength)
 	{
 		if (str[index] == needle[cmpIndex])
-		{
+		{				
+			if (cmpIndex == 0)
+			{
+				return index;
+			}
+
 			index--;
 			cmpIndex--;
-			if (cmpIndex < 0)
-			{
-
-				return index + 1;
-			}
 		}
 		else
 		{
-			int offset = last[static_cast<int>(str[index])];
+			size_t offset = last[static_cast<int>(str[index])];
 			index = index + needleLen - ((cmpIndex < offset + 1) ? cmpIndex : offset + 1);
 			cmpIndex = needleLen - 1;
 		}
@@ -1097,18 +1104,24 @@ int IStringAnsi<Type>::BoyerMoore(const char * needle, int * &last, size_t start
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t start) const
+size_t IStringAnsi<Type>::KnuthMorisPrat(const char * needle, size_t * &last, size_t start) const
 {
-	int index = 1;
-	int cmpIndex = 0;
-	int needleLen = static_cast<int>(strlen(needle));
-	int * failFce = last;
-	int strLen = static_cast<int>(static_cast<const Type *>(this)->length());
+	size_t needleLen = strlen(needle);
+
+	if (needleLen == 0)
+	{
+		return IStringAnsi<Type>::npos;
+	}
+
+	size_t index = 1;
+	size_t cmpIndex = 0;
+	size_t * failFce = last;
+	size_t strLen = static_cast<const Type *>(this)->length();
 	const char * str = static_cast<const Type *>(this)->c_str();
 
 	if (failFce == nullptr)
 	{
-		failFce = new int[needleLen];
+		failFce = new size_t[needleLen];
 		last = failFce;
 		//buil Fail fce
 		failFce[0] = 0;
@@ -1155,9 +1168,8 @@ int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t s
 				index++;
 			}
 			else
-			{
-				char offset = failFce[cmpIndex - 1];
-				cmpIndex = offset;
+			{				
+				cmpIndex = failFce[cmpIndex - 1];
 			}
 		}
 	}
@@ -1173,12 +1185,12 @@ int IStringAnsi<Type>::KnuthMorisPrat(const char * needle, int * &last, size_t s
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
+size_t IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 {
-	int needleLen = static_cast<int>(strlen(needle));
+	size_t needleLen = strlen(needle);
 	size_t i = start;
-	int j = 0;
-	int lastPos = -1;
+	size_t j = 0;
+	size_t lastPos = IStringAnsi<Type>::npos;
 	size_t strLen = static_cast<const Type *>(this)->length();
 	const char * str = static_cast<const Type *>(this)->c_str();
 
@@ -1196,11 +1208,12 @@ int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 			else
 			{
 				i++;
-				lastPos = -1;
+				lastPos = IStringAnsi<Type>::npos;
 				break;
 			}
 		}
-		if (lastPos != -1)
+
+		if (lastPos != IStringAnsi<Type>::npos)
 		{
 			return (lastPos - needleLen);
 		}
@@ -1217,7 +1230,7 @@ int IStringAnsi<Type>::BruteForce(const char * needle, size_t start) const
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
+size_t IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 {
 	const char * str = static_cast<const Type *>(this)->c_str();
 	const char * found = strstr(str + start, needle);
@@ -1225,7 +1238,7 @@ int IStringAnsi<Type>::CLib(const char * needle, size_t start) const
 	{
 		return IStringAnsi<Type>::npos;
 	}
-	return static_cast<int>(found - str);
+	return static_cast<size_t>(found - str);
 }
 
 

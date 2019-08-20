@@ -507,6 +507,37 @@ void StringTests<T>::TestMethods()
 	printf("OK\n");
 
 	//========================================================================
+	//string find
+
+	printf("==== Find (%s) ==== ", __func__);
+
+	T tmpFind = "ahoj vojle ahoj kluku";
+	auto all = tmpFind.FindAll("ahoj");
+
+	
+	if (all.size() != 2)
+	{
+		StringTests<T>::error("Find not working");
+	}
+	if ((all[0] != 0) && (all[1] != 11))
+	{
+		StringTests<T>::error("Find not working");
+	}
+
+	auto ik1 = tmpFind.Find("kluk", SearchAlgorithm::KMP);
+	auto ik2 = tmpFind.Find("kluk", SearchAlgorithm::C_LIB);
+	auto ik3 = tmpFind.Find("kluk", SearchAlgorithm::BM);
+	auto ik4 = tmpFind.Find("kluk", SearchAlgorithm::BF);
+
+	if (ik1 != 16) StringTests<T>::error("Find not working");
+	if (ik1 != ik2) StringTests<T>::error("Find not working");
+	if (ik1 != ik3) StringTests<T>::error("Find not working");
+	if (ik1 != ik4) StringTests<T>::error("Find not working");
+	
+
+	printf("OK\n");
+
+	//========================================================================
 	//MD5
 #ifdef _WIN32
 	printf("==== MD5 (%s) ==== ", __func__);

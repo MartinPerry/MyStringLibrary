@@ -244,7 +244,7 @@ namespace std
 	{
 		std::size_t operator()(const MyStringAnsi & k) const
 		{
-			return k.GetHashCode();
+			return static_cast<size_t>(k.GetHashCode());
 		};
 	};
 };

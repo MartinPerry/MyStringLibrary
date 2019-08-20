@@ -318,6 +318,15 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	MyStringAnsi tmpFind = "ahoj vojle ahoj kluku";
+	auto all = tmpFind.FindAll("ahoj");
+	auto ik1 = tmpFind.Find("klukuj", SearchAlgorithm::KMP);
+	auto ik2 = tmpFind.Find("klukuk", SearchAlgorithm::C_LIB);
+	auto ik3 = tmpFind.Find("klukuk", SearchAlgorithm::BM);
+	auto ik4 = tmpFind.Find("klukuk", SearchAlgorithm::BF);
+
+	
+
 	MyStringAnsi ex;
 
 	MyStringAnsi ee;

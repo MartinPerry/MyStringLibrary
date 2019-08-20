@@ -10,11 +10,11 @@
 #include "./MyStringMacros.h"
 
 #ifdef CONSTEXPR_DISABLE
-	#define CALC_HASH(x) MurmurHash3_x86_32(x)
-	//#define CALC_HASH(x) strlen(x)
+#	define CALC_HASH(x) MurmurHash3_x86_32(x)
+//#	define CALC_HASH(x) strlen(x)
 #else
-	#define CALC_HASH(x) MurmurHash3_32(x)
-	//#define CALC_HASH(x) StringLengthCExpr(x)
+#	define CALC_HASH(x) MurmurHash3_32(x)
+//#	define CALC_HASH(x) StringLengthCExpr(x)
 #endif
 
 //-----------------------------------------------------------------------------
@@ -23,18 +23,12 @@
 // Microsoft Visual Studio
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
-
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef unsigned __int64 uint64_t;
-
-// Other compilers
-
+	typedef unsigned char uint8_t;
+	typedef unsigned int uint32_t;
+	typedef unsigned __int64 uint64_t;
 #else	// defined(_MSC_VER)
-
-#include <stdint.h>
-
-#endif // !defined(_MSC_VER)
+#	include <stdint.h>
+#endif
 
 //-----------------------------------------------------------------------------
 
