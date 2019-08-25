@@ -433,9 +433,9 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue)
 /// </summary>
 /// <param name="oldValue"></param>
 /// <param name="newValue"></param>
-/// <param name="replaceOffset">if multiple occurence of "oldValue", which one to replace (-1 = all)</param>
+/// <param name="replaceOffset">if multiple occurence of "oldValue", which one to replace (size_t max = all)</param>
 template <typename Type>
-void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, int replaceOffset)
+void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, size_t replaceOffset)
 {
 	size_t oldValueLen = strlen(oldValue);
 	size_t * last = nullptr;
@@ -1058,8 +1058,9 @@ size_t IStringAnsi<Type>::BoyerMoore(const char * needle, size_t * &last, size_t
 	if (last == nullptr)
 	{
 		last = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
-		std::fill(last, last + std::numeric_limits<uint8_t>::max(), IStringAnsi<Type>::npos);
-		for (int i = 0; i < strLength; i++)
+		size_t val = IStringAnsi<Type>::npos;
+		std::fill(last, last + std::numeric_limits<uint8_t>::max(), val);
+		for (size_t i = 0; i < strLength; i++)
 		{
 			last[static_cast<uint8_t>(str[i])] = i;
 		}

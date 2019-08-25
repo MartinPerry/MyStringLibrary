@@ -30,7 +30,7 @@ static const char* const conversions[] = {
 };
 
 typedef enum SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 } SearchAlgorithm;
-typedef enum StringConstants { REPLACE_ALL = -1 } StringConstants;
+typedef enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() } StringConstants;
 
 template <typename Type>
 class IStringAnsi
@@ -103,7 +103,7 @@ public:
 	
 	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
-	void Replace(const char * oldValue, const char * newValue, int replaceOffset);
+	void Replace(const char * oldValue, const char * newValue, size_t replaceOffset);
 	void Replace(const char * oldValue, const char * newValue, const std::vector<size_t> & searchStartPos);
 	Type CreateReplaced(const char * src, const char * dest) const;
 
