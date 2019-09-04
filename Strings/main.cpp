@@ -318,7 +318,32 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
-	MyStringAnsi tmpFind = "ahoj vojle ahoj kluku";
+	MyStringAnsi tmpFind = "";
+	tmpFind.AppendWithDigitsCount(-123, 5);
+
+
+	StringBenchmarks sb11(1000000);
+	sb11.RunExternalTest([&](int count, double * r) -> void{
+		for (int i = 0; i < count; i++)
+		{
+			MyStringAnsi x = "";
+			x.AppendWithDigitsCount(-123, 5);
+			r[i] += x.length();
+		}
+	});
+
+	sb11.RunExternalTest([&](int count, double * r) -> void {
+		for (int i = 0; i < count; i++)
+		{
+			MyStringAnsi x = "";
+			x.AppendFormat("%05d", -123);
+			r[i] += x.length();
+		}
+	});
+
+	return 0;
+
+	tmpFind += "ahoj vojle ahoj kluku";
 	auto all = tmpFind.FindAll("ahoj");
 	auto ik1 = tmpFind.Find("klukuj", SearchAlgorithm::KMP);
 	auto ik2 = tmpFind.Find("klukuk", SearchAlgorithm::C_LIB);
@@ -514,7 +539,7 @@ int main(int argc, char ** argv)
 	//std::string po = "xxxxxxxxxxxxxxx xxxxx";
 	std::string po = "xxxxxxxxxxxxxx";
 	po += "x";
-	int oox = po.capacity();
+	size_t oox = po.capacity();
 	po += "x";
 
 	StringX oo = "xx";

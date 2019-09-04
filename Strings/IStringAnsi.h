@@ -63,14 +63,15 @@ public:
 	uint32_t GetRawHashCode() const
 	{
 		return this->hashCode;
-	}
+	};
 
 	char GetLastChar() const
 	{
 		size_t length = static_cast<const Type *>(this)->length();
 		return this->operator[](length - 1);
-	}
+	};
 
+	void ResizeBuffer(size_t bufferSize);
 	void Clear();
 	void Trim();
 	void Reverse();
@@ -95,8 +96,10 @@ public:
 	std::vector<size_t> FindAll(const char * str) const;
 
 
-
 	void Append(const char * str, size_t len = 0);
+
+	template<typename T>
+	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);
 
 	template<typename... Args>
 	void AppendFormat(const char * str, Args... args);
@@ -196,8 +199,7 @@ protected:
 	};
 
 
-
-	void ResizeBuffer(size_t bufferSize);
+	
 	void CreateNew(const char * str, size_t length);
 
 	size_t CLib(const char * str, size_t start = 0) const;
@@ -315,6 +317,39 @@ void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
 	this->Append(tmp.c_str());
+}
+
+/// <summary>
+/// Append number padded to at least digitsCount chars
+/// Same functionality as AppendFormat("%0[digitsCount]d", number);
+/// </summary>
+/// <param name="number"></param>
+/// <param name="digitsCount"></param>
+template <typename Type>
+template<typename T>
+RET_VAL_STR(void, (std::is_integral<T>::value)) IStringAnsi<Type>::AppendWithDigitsCount(T number, size_t digitsCount)
+{	
+	if (number < 0)
+	{
+		this->operator+=('-');
+		number = -number;
+		digitsCount--;
+	}
+
+	size_t len = MyStringUtils::GetNumDigits(number);
+	if (len >= digitsCount)
+	{
+		this->operator+=(number);
+		return;
+	}
+
+	size_t zeroCount = digitsCount - len;
+	for (size_t i = 0; i < zeroCount; i++)
+	{
+		this->operator+=('0');
+	}
+
+	this->operator+=(number);
 }
 
 //====================================================================

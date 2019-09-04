@@ -338,7 +338,7 @@ void StringBenchmarks::TestAppendSmallString()
 	{
 		MyStringAnsi tmp = "";
 		tmp += rnd[i];
-		res[i] = tmp.length();
+		res[i] = static_cast<double>(tmp.length());
 	}
 	this->Finish();
 
@@ -347,7 +347,7 @@ void StringBenchmarks::TestAppendSmallString()
 	{
 		MySmallStringAnsi tmp1 = "";
 		tmp1 += rnd[i];
-		res[i] = tmp1.length();
+		res[i] = static_cast<double>(tmp1.length());
 	}
 	this->Finish();
 
@@ -356,7 +356,7 @@ void StringBenchmarks::TestAppendSmallString()
 	{
 		std::string tmp2 = "";
 		tmp2 += rnd[i];
-		res[i] = tmp2.length();
+		res[i] = static_cast<double>(tmp2.length());
 	}
 	this->Finish();
 
