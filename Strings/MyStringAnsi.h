@@ -157,7 +157,20 @@ public:
 	{
 		return IStringAnsi<MyStringAnsi>::operator=(str);
 	};
-			
+		
+	/// <summary>
+	/// Move internal string array
+	/// char * str = (char *)(std::move(stringVar));
+	/// </summary>
+	/// <returns></returns>
+	operator char *() && 
+	{
+		char * m = this->strPtr;
+		this->strPtr = nullptr;
+		this->bufferCapacity = 0;
+		this->strLength = 0;
+		return m;
+	};
 
 	friend class IStringAnsi<MyStringAnsi>;
 

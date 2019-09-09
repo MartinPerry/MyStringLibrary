@@ -319,6 +319,12 @@ int main(int argc, char ** argv)
 #endif
 
 	double rrd = MyStringUtils::ToNumber<double>("45.45");
+	char * xMove = nullptr;
+	{
+		MyStringAnsi moveS = "xxxxx";
+
+		xMove = (char *)(std::move(moveS));
+	}
 
 	MyStringAnsi tmpFind = "";
 	tmpFind.AppendWithDigitsCount(-123, 5);
