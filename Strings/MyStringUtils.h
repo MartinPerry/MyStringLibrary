@@ -50,31 +50,58 @@ struct MyStringUtils
 			if (ret) *ret = str;
 			return static_cast<T>(value) * sign;
 		}
-
-		uint64_t fractValue = 0;
-		uint64_t fractLen = 1;
-		int64_t expon = 0;
-		int exponSign = 1;
-
-		T val = static_cast<T>(value) * sign;
+				
+		T val;
 
 		if (*str == '.')
 		{
+			static const uint64_t pow10[15] = {
+				1, 10, 100, 1000, 10000,
+				100000, 1000000, 10000000, 100000000, 1000000000,
+				10000000000, 100000000000, 1000000000000, 10000000000000, 100000000000000
+			};
+
+			uint64_t fractValue = 0;
+			uint64_t fractLen = 1;
+
 			++str;
 			
+			const char * startStr = str;
+
 			while ((*str >= '0') && (*str <= '9'))
 			{
-				fractValue = fractValue * 10 + (*str - '0');
-				fractLen *= 10;
+				fractValue = fractValue * 10 + (*str - '0');				
 				++str;
+			}
+
+			size_t len = str - startStr;
+			if (len <= 14)
+			{
+				fractLen = pow10[len];
+			}
+			else 
+			{
+				while (len--)
+				{
+					fractLen *= 10;
+				}
 			}
 
 			val = (static_cast<T>(value) + static_cast<T>(fractValue) / fractLen) * sign;
 		}
+		else 
+		{
+			val = static_cast<T>(value) * sign;
+		}
 		
+
+
 		if (*str == 'e')
 		{
 			//not fully working the same as std::strtod
+
+			int64_t expon = 0;
+			int exponSign = 1;
 
 			++str;			
 			if (*str == '-') // handle negative

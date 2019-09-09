@@ -318,6 +318,8 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	double rrd = MyStringUtils::ToNumber<double>("45.45");
+
 	MyStringAnsi tmpFind = "";
 	tmpFind.AppendWithDigitsCount(-123, 5);
 
