@@ -11,12 +11,11 @@
 //includes
 
 #ifdef ID_DEBUG
-#include <unordered_map>
-#include <set>
-#include <cassert>
+#	include <unordered_map>
+#	include <set>
+#	include <cassert>
 #endif
 
-#include "./MyStringMacros.h"
 
 #include "./MurmurHash3.h"
 
@@ -27,36 +26,46 @@
 //================================
 //class declaration
 
-class MyStringID 
+class MyStringId
 {
-	public:
+public:
 #if defined(ID_DEBUG) || defined(CONSTEXPR_DISABLE)
-		MyStringID(const char * key);
+	MyStringId(const char * key);
 #else
-		constexpr MyStringID(const char * key);
+	constexpr MyStringId(const char * key);
 #endif
-		MyStringID(const MyStringAnsi & key);
-		MyStringID(const MySmallStringAnsi & key);
-		MyStringID(const MyStringID & key);
-		MyStringID(const uint32_t & key);
+	MyStringId(const MyStringAnsi & key);
+	MyStringId(const MySmallStringAnsi & key);
+	MyStringId(const MyStringId & key);
+	MyStringId(const uint32_t & key);
 
-		inline uint32_t GetHashID() const { return this->hashID; };
-		inline uint32_t GetHashCode() const { return this->hashID; };
-		inline operator uint32_t() { return this->hashID; }
-		inline operator uint32_t() const { return this->hashID; }
-		
-		
-	private:
-		#ifdef ID_DEBUG
-			MyStringAnsi debugKey;
+	MyStringId& operator=(const MyStringId & other)
+	{
+		// check for self-assignment
+		if (&other == this)
+		{
+			return *this;
+		}
+#ifdef ID_DEBUG
+		this->debugKey = other.debugKey;
+#endif
+		this->hashId = other.hashId;
 
-			static void Check(const MyStringAnsi & key, uint32_t hash);
-						
-		#endif
-			const uint32_t hashID;
-		
-		
+		return *this;
+	}
 
+	inline uint32_t GetHashId() const { return this->hashId; };
+	inline uint32_t GetHashCode() const { return this->hashId; };
+	inline operator uint32_t() { return this->hashId; }
+	inline operator uint32_t() const { return this->hashId; }
+
+
+private:
+#ifdef ID_DEBUG
+	MyStringAnsi debugKey;
+	static void Check(const MyStringAnsi & key, uint32_t hash);
+#endif
+	uint32_t hashId;
 };
 
 //================================
@@ -66,11 +75,11 @@ class MyStringID
 namespace std
 {
 	template <>
-	struct hash < MyStringID >
+	struct hash <MyStringId>
 	{
-		size_t operator()(const MyStringID & k) const
+		size_t operator()(const MyStringId & k) const
 		{
-			return k.GetHashID();
+			return k.GetHashId();
 		};
 	};
 };
@@ -82,104 +91,109 @@ namespace std
 //this is used mainly for constexpr
 
 #if defined(ID_DEBUG) || defined(CONSTEXPR_DISABLE)
-	inline MyStringID::MyStringID(const char * key)
-		: hashID(CALC_HASH(key))
-	{
+inline MyStringId::MyStringId(const char * key)
+	: hashId(CALC_HASH(key))
+{
 #ifdef ID_DEBUG
-		MyStringAnsi debugKey = key;
-		MyStringID::Check(debugKey, hashID);
+	this->debugKey = key;
+	MyStringId::Check(debugKey, hashID);
 #endif
-	}
+}
 #else
-	constexpr inline MyStringID::MyStringID(const char * key)
-		: hashID(CALC_HASH(key))
-	{
-		
-	}
+constexpr inline MyStringId::MyStringId(const char * key)
+	: hashId(CALC_HASH(key))
+{
+
+}
 #endif
 
 //other ctors
 //those are not constexpr
 
-	inline MyStringID::MyStringID(const MyStringAnsi & key)
-		: hashID(key.GetHashCode())
-	{
+inline MyStringId::MyStringId(const MyStringAnsi & key)
+	: hashId(key.GetHashCode())
+{
 #ifdef ID_DEBUG
-		this->debugKey = key;
-		MyStringID::Check(debugKey, hashID);		
+	this->debugKey = key;
+	MyStringId::Check(debugKey, hashID);
 #endif	
-	}
-	
-	inline MyStringID::MyStringID(const MySmallStringAnsi & key)
-		: hashID(key.GetHashCode())
-	{
-#ifdef ID_DEBUG
-		this->debugKey = key;
-		MyStringID::Check(debugKey, hashID);
-#endif	
-	}
-	
+}
 
-	inline MyStringID::MyStringID(const MyStringID & key)
-		: hashID(key.GetHashID())
-	{
+inline MyStringId::MyStringId(const MySmallStringAnsi & key)
+	: hashId(key.GetHashCode())
+{
 #ifdef ID_DEBUG
-		this->debugKey = key.debugKey;
-		MyStringID::Check(debugKey, hashID);
+	this->debugKey = key;
+	MyStringId::Check(debugKey, hashID);
 #endif	
-	}
+}
 
-	inline MyStringID::MyStringID(const uint32_t & key)
-		: hashID(key)
-	{
+
+inline MyStringId::MyStringId(const MyStringId & key)
+	: hashId(key.GetHashId())
+{
 #ifdef ID_DEBUG
-		this->debugKey = "direct_hash_value_";
-		this->debugKey += key;
-		MyStringID::Check(debugKey, hashID);
+	this->debugKey = key.debugKey;
+	MyStringId::Check(debugKey, hashID);
+#endif	
+}
+
+inline MyStringId::MyStringId(const uint32_t & key)
+	: hashId(key)
+{
+#ifdef ID_DEBUG
+	this->debugKey = "direct_hash_value_";
+	this->debugKey += key;
+	MyStringId::Check(debugKey, hashId);
 #endif
 
-	}
+}
 
 
 #ifdef ID_DEBUG
-	inline void MyStringID::Check(const MyStringAnsi & key, uint32_t hashID)
+inline void MyStringId::Check(const MyStringAnsi & key, uint32_t hashId)
+{
+	static std::unordered_map<uint32_t, std::set<MyStringAnsi> > collisions;
+
+	if (collisions.find(hashId) == collisions.end())
 	{
-		static std::unordered_map<uint32_t, std::set<MyStringAnsi> > collisions;
-		
-		if (collisions.find(hashID) == collisions.end())
-		{
-			//hashID not exist yet
-			collisions[hashID].insert(key);
-			return;
-		}
-
-		
-		if (collisions[hashID].find(key) == collisions[hashID].end())
-		{
-			//hashID already exist... only one key can be set for this hashID
-			assert(collisions[hashID].size() == 0);
-		}
-
-		
-		collisions[hashID].insert(key);
-
+		//hashID not exist yet
+		collisions[hashId].insert(key);
+		return;
 	}
+
+	if (collisions[hashId].find(key) == collisions[hashId].end())
+	{
+		//hashID already exist... only one key can be set for this hashID
+		assert(collisions[hashId].size() == 0);
+	}
+
+	collisions[hashId].insert(key);
+}
 #endif
 //================================
 
 //define forward declaration
-#define GENERATE_OPERATOR_FORWRAD(p1, p2, op) \
-	bool operator op(const p1 &str1, const p2 &id2);
+#define GENERATE_ID_FORWARD_OPERATORS_REF(p1, p2) \
+	bool operator ==(const p1 & str1, const p2 & str2); \
+	bool operator !=(const p1 & str1, const p2 & str2); \
+	bool operator >(const p1 & str1, const p2 & str2); \
+	bool operator <(const p1 & str1, const p2 & str2);
 
 
-//
-//same has id can be for different string - possibly test here, 
-//but that is not needed for common words or if there is no prior problem
-//
-#define GENERATE_BODY(p1, p2, op) \
-	inline bool operator op(const p1 &str1, const p2 &id2){ \
-		return (str1.GetHashCode() op id2.GetHashCode());  \
-	}; 
+#define GENERATE_ID_BODY_OPERATORS_REF(p1, p2) \
+	inline bool operator ==(const p1 & str1, const p2 & str2){ \
+		return (str1.GetHashCode() == str2.GetHashCode()); \
+	}; \
+	inline bool operator !=(const p1 & str1, const p2 & str2){ \
+		return (str1.GetHashCode() != str2.GetHashCode()); \
+	}; \
+	inline bool operator >(const p1 & str1, const p2 & str2){ \
+		return (str1.GetHashCode() > str2.GetHashCode()); \
+	}; \
+	inline bool operator <(const p1 & str1, const p2 & str2) { \
+		return (str1.GetHashCode() < str2.GetHashCode()); \
+	};
 
 #define GENERATE_BODY2(p1, p2, op) \
 	inline bool operator op(const p1 &id1, const p2 &id2){ \
@@ -195,99 +209,62 @@ namespace std
 
 //declare friend operators to compare our ID with different
 //classes and structures directly
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringID, == );
-GENERATE_OPERATOR_FORWRAD(MyStringAnsi, MyStringID, == );
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringAnsi, == );
-GENERATE_OPERATOR_FORWRAD(MySmallStringAnsi, MyStringID, == );
-GENERATE_OPERATOR_FORWRAD(MyStringID, MySmallStringAnsi, == );
-GENERATE_OPERATOR_FORWRAD(MyStringID, uint32_t, == );
-GENERATE_OPERATOR_FORWRAD(uint32_t, MyStringID, == );
 
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringID, != );
-GENERATE_OPERATOR_FORWRAD(MyStringAnsi, MyStringID, != );
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringAnsi, != );
-GENERATE_OPERATOR_FORWRAD(MySmallStringAnsi, MyStringID, != );
-GENERATE_OPERATOR_FORWRAD(MyStringID, MySmallStringAnsi, != );
-GENERATE_OPERATOR_FORWRAD(MyStringID, uint32_t, != );
-GENERATE_OPERATOR_FORWRAD(uint32_t, MyStringID, != );
-
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringID, >);
-GENERATE_OPERATOR_FORWRAD(MyStringAnsi, MyStringID, >);
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringAnsi, >);
-GENERATE_OPERATOR_FORWRAD(MySmallStringAnsi, MyStringID, >);
-GENERATE_OPERATOR_FORWRAD(MyStringID, MySmallStringAnsi, >);
-GENERATE_OPERATOR_FORWRAD(MyStringID, uint32_t, >);
-GENERATE_OPERATOR_FORWRAD(uint32_t, MyStringID, >);
-
-
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringID, <);
-GENERATE_OPERATOR_FORWRAD(MyStringAnsi, MyStringID, <);
-GENERATE_OPERATOR_FORWRAD(MyStringID, MyStringAnsi, <);
-GENERATE_OPERATOR_FORWRAD(MySmallStringAnsi, MyStringID, <);
-GENERATE_OPERATOR_FORWRAD(MyStringID, MySmallStringAnsi, <);
-GENERATE_OPERATOR_FORWRAD(MyStringID, uint32_t, <);
-GENERATE_OPERATOR_FORWRAD(uint32_t, MyStringID, <);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringId);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringAnsi);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MySmallStringAnsi);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, uint32_t);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringAnsi, MyStringId);
+GENERATE_ID_FORWARD_OPERATORS_REF(MySmallStringAnsi, MyStringId);
+GENERATE_ID_FORWARD_OPERATORS_REF(uint32_t, MyStringId);
 
 //================================
 
-
-GENERATE_BODY(MyStringAnsi, MyStringID, == );
-GENERATE_BODY(MyStringID, MyStringAnsi, == );
-GENERATE_BODY(MySmallStringAnsi, MyStringID, == );
-GENERATE_BODY(MyStringID, MySmallStringAnsi, == );
-GENERATE_BODY(MyStringID, MyStringID, == );
-GENERATE_BODY2(uint32_t, MyStringID, == );
-GENERATE_BODY3(MyStringID, uint32_t, == );
+GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringId);
+GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringAnsi);
+GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MySmallStringAnsi);
+GENERATE_ID_BODY_OPERATORS_REF(MyStringAnsi, MyStringId);
+GENERATE_ID_BODY_OPERATORS_REF(MySmallStringAnsi, MyStringId);
 
 
-GENERATE_BODY(MyStringAnsi, MyStringID, != );
-GENERATE_BODY(MyStringID, MyStringAnsi, != );
-GENERATE_BODY(MySmallStringAnsi, MyStringID, != );
-GENERATE_BODY(MyStringID, MySmallStringAnsi, != );
-GENERATE_BODY(MyStringID, MyStringID, != );
-GENERATE_BODY2(uint32_t, MyStringID, != );
-GENERATE_BODY3(MyStringID, uint32_t, != );
+GENERATE_BODY2(uint32_t, MyStringId, == );
+GENERATE_BODY3(MyStringId, uint32_t, == );
 
 
-GENERATE_BODY(MyStringAnsi, MyStringID, < );
-GENERATE_BODY(MyStringID, MyStringAnsi, < );
-GENERATE_BODY(MySmallStringAnsi, MyStringID, <);
-GENERATE_BODY(MyStringID, MySmallStringAnsi, <);
-GENERATE_BODY(MyStringID, MyStringID, < );
-GENERATE_BODY2(uint32_t, MyStringID, < );
-GENERATE_BODY3(MyStringID, uint32_t, < );
+GENERATE_BODY2(uint32_t, MyStringId, != );
+GENERATE_BODY3(MyStringId, uint32_t, != );
 
 
-GENERATE_BODY(MyStringAnsi, MyStringID, > );
-GENERATE_BODY(MyStringID, MyStringAnsi, > );
-GENERATE_BODY(MySmallStringAnsi, MyStringID, >);
-GENERATE_BODY(MyStringID, MySmallStringAnsi, >);
-GENERATE_BODY(MyStringID, MyStringID, > );
-GENERATE_BODY2(uint32_t, MyStringID, > );
-GENERATE_BODY3(MyStringID, uint32_t, > );
+GENERATE_BODY2(uint32_t, MyStringId, < );
+GENERATE_BODY3(MyStringId, uint32_t, < );
+
+GENERATE_BODY2(uint32_t, MyStringId, > );
+GENERATE_BODY3(MyStringId, uint32_t, > );
 
 
 //================================
 //undef defined values
 
-#ifdef GENERATE_OPERATOR_FORWRAD
-	#undef GENERATE_OPERATOR_FORWRAD
+#ifdef GENERATE_ID_FORWARD_OPERATORS_REF
+#	undef GENERATE_ID_FORWARD_OPERATORS_REF
 #endif
 
-#ifdef GENERATE_BODY
-	#undef GENERATE_BODY
+#ifdef GENERATE_ID_BODY_OPERATORS_REF
+#	undef GENERATE_ID_BODY_OPERATORS_REF
 #endif
+
 #ifdef GENERATE_BODY2
-	#undef GENERATE_BODY2
+#	undef GENERATE_BODY2
 #endif
+
 #ifdef GENERATE_BODY3
-	#undef GENERATE_BODY3
+#	undef GENERATE_BODY3
 #endif
 
 #ifdef ID_DEBUG
-	#undef ID_DEBUG
+#	undef ID_DEBUG
 #endif
 
 
 
-#endif //_MY_ID_H_
+#endif //MY_STRING_ID_H

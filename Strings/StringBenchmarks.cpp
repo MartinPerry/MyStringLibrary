@@ -428,15 +428,15 @@ void StringBenchmarks::TestHashing()
 {
 	LogTestStart(__func__);
 
-	std::unordered_map<MyStringID, int> dataId;
+	std::unordered_map<MyStringId, int> dataId;
 	std::unordered_map<MyStringAnsi, int> dataString;
 
 	std::vector<MyStringAnsi> keys;
-	std::vector<MyStringID> keysId;
+	std::vector<MyStringId> keysId;
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyStringAnsi key = StringTests<MyStringAnsi>::CreateRandomString(10);
-		MyStringID keyId = key;
+		MyStringId keyId = key;
 
 		keys.push_back(key);
 		keysId.push_back(keyId);
