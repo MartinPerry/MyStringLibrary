@@ -1,7 +1,7 @@
 #ifndef MY_STRING_UTILS
 #define MY_STRING_UTILS
 
-
+#include <stddef.h>
 #include <stdint.h>
 #include <type_traits>
 

@@ -56,6 +56,9 @@
     <None Include="MurmurHash3_constexpr.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="makefile">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MurmurHash3.cpp">

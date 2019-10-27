@@ -312,6 +312,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl" />
+    <None Include="makefile" />
     <None Include="MurmurHash3_constexpr.inl" />
   </ItemGroup>
   <ItemGroup>
