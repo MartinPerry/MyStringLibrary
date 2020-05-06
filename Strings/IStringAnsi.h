@@ -29,8 +29,8 @@ static const char* const conversions[] = {
 	"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
 };
 
-typedef enum SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 } SearchAlgorithm;
-typedef enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() } StringConstants;
+enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 };
+enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() };
 
 template <typename Type>
 class IStringAnsi
@@ -90,8 +90,8 @@ public:
 
 	size_t Find(const char c) const;
 	size_t FindLast(const char c) const;
-	size_t Find(const Type & str, SearchAlgorithm algo = C_LIB) const;
-	size_t Find(const char * str, SearchAlgorithm algo = C_LIB) const;
+	size_t Find(const Type & str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
+	size_t Find(const char * str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
 	size_t Find(const char * str, size_t offset) const;
 	std::vector<size_t> FindAll(const char * str) const;
 

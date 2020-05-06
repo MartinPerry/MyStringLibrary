@@ -419,13 +419,13 @@ void IStringAnsi<Type>::PopBack()
 template <typename Type>
 void IStringAnsi<Type>::Replace(const Type & oldValue, const Type & newValue)
 {
-	this->Replace(oldValue.c_str(), newValue.c_str(), REPLACE_ALL);
+	this->Replace(oldValue.c_str(), newValue.c_str(), StringConstants::REPLACE_ALL);
 }
 
 template <typename Type>
 void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue)
 {
-	this->Replace(oldValue, newValue, REPLACE_ALL);
+	this->Replace(oldValue, newValue, StringConstants::REPLACE_ALL);
 }
 
 /// <summary>
@@ -453,7 +453,7 @@ void IStringAnsi<Type>::Replace(const char * oldValue, const char * newValue, si
 			break;  //not found
 		}     
 
-		if (replaceOffset == REPLACE_ALL)
+		if (replaceOffset == StringConstants::REPLACE_ALL)
 		{
 			startPos.push_back(pos);    //store all found start positions of search words
 		}
@@ -793,19 +793,19 @@ size_t IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
 	}
 
 	size_t * last = nullptr;
-	if (algo == BM)
+	if (algo == SearchAlgorithm::BM)
 	{
 		pos = this->BoyerMoore(str, last);
 	}
-	else if (algo == KMP)
+	else if (algo == SearchAlgorithm::KMP)
 	{
 		pos = this->KnuthMorisPrat(str, last);
 	}
-	else if (algo == BF)
+	else if (algo == SearchAlgorithm::BF)
 	{
 		pos = this->BruteForce(str);
 	}
-	else if (algo == C_LIB)
+	else if (algo == SearchAlgorithm::C_LIB)
 	{
 		pos = this->CLib(str);
 	}
