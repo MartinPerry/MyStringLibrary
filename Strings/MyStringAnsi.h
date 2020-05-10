@@ -99,13 +99,16 @@ public:
 		return memory;
 	};
 
-	MyStringAnsi() 		
+	MyStringAnsi() : 
+		strPtr(nullptr),
+		strLength(0),
+		bufferCapacity(0)
 	{
 		this->CtorInternal(nullptr);
 	}
 
-	MyStringAnsi(const char * newStr, size_t length)	
-		: bufferCapacity(length + 1),
+	MyStringAnsi(const char * newStr, size_t length) : 
+		bufferCapacity(length + 1),
 		strLength(length)
 	{				
 		this->strPtr = new char[this->bufferCapacity];
@@ -114,7 +117,10 @@ public:
 		this->strPtr[length] = 0;
 	}
 
-	MyStringAnsi(const MyStringAnsi &other)
+	MyStringAnsi(const MyStringAnsi &other) : 
+		strPtr(nullptr),
+		strLength(0),
+		bufferCapacity(0)
 	{
 		this->CtorInternal(other.c_str());		
 		this->hashCode = other.hashCode;
