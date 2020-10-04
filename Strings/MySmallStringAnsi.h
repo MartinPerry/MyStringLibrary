@@ -106,6 +106,7 @@ public:
 	};
 
 	friend class IStringAnsi<MySmallStringAnsi>;
+	friend class MyStringView;
 
 protected:
 

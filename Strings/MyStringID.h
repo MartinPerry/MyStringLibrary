@@ -21,6 +21,7 @@
 
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"
+#include "./MyStringView.h"
 
 
 //================================
@@ -36,6 +37,7 @@ public:
 #endif
 	MyStringId(const MyStringAnsi & key);
 	MyStringId(const MySmallStringAnsi & key);
+	MyStringId(const MyStringView & key);
 	MyStringId(const MyStringId & key);
 	MyStringId(const uint32_t & key);
 
@@ -120,6 +122,15 @@ inline MyStringId::MyStringId(const MyStringAnsi & key)
 }
 
 inline MyStringId::MyStringId(const MySmallStringAnsi & key)
+	: hashId(key.GetHashCode())
+{
+#ifdef ID_DEBUG
+	this->debugKey = key;
+	MyStringId::Check(debugKey, hashID);
+#endif	
+}
+
+inline MyStringId::MyStringId(const MyStringView & key)
 	: hashId(key.GetHashCode())
 {
 #ifdef ID_DEBUG
@@ -213,9 +224,11 @@ inline void MyStringId::Check(const MyStringAnsi & key, uint32_t hashId)
 GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringId);
 GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringAnsi);
 GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MySmallStringAnsi);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringView);
 GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, uint32_t);
 GENERATE_ID_FORWARD_OPERATORS_REF(MyStringAnsi, MyStringId);
 GENERATE_ID_FORWARD_OPERATORS_REF(MySmallStringAnsi, MyStringId);
+GENERATE_ID_FORWARD_OPERATORS_REF(MyStringView, MyStringId);
 GENERATE_ID_FORWARD_OPERATORS_REF(uint32_t, MyStringId);
 
 //================================
@@ -223,8 +236,10 @@ GENERATE_ID_FORWARD_OPERATORS_REF(uint32_t, MyStringId);
 GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringId);
 GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringAnsi);
 GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MySmallStringAnsi);
+GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringView);
 GENERATE_ID_BODY_OPERATORS_REF(MyStringAnsi, MyStringId);
 GENERATE_ID_BODY_OPERATORS_REF(MySmallStringAnsi, MyStringId);
+GENERATE_ID_BODY_OPERATORS_REF(MyStringView, MyStringId);
 
 
 GENERATE_BODY2(uint32_t, MyStringId, == );

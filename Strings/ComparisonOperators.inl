@@ -3,6 +3,7 @@
 
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"
+#include "./MyStringView.h"
 
 #include <cstring>
 
@@ -52,6 +53,16 @@ GENERATE_FORWARD_OPERATORS_FULL_TYPE(char *, MySmallStringAnsi &);
 GENERATE_FORWARD_OPERATORS_FULL_TYPE(MyStringAnsi &, char *);
 GENERATE_FORWARD_OPERATORS_FULL_TYPE(MySmallStringAnsi &, char *);
 
+GENERATE_FORWARD_OPERATORS_REF(MyStringView, MyStringView);
+GENERATE_FORWARD_OPERATORS_REF(MyStringView, MyStringAnsi);
+GENERATE_FORWARD_OPERATORS_REF(MyStringAnsi, MyStringView);
+GENERATE_FORWARD_OPERATORS_REF(MyStringView, MySmallStringAnsi);
+GENERATE_FORWARD_OPERATORS_REF(MySmallStringAnsi, MyStringView);
+GENERATE_FORWARD_OPERATORS_REF(MyStringView, std::string);
+GENERATE_FORWARD_OPERATORS_REF(std::string, MyStringView);
+GENERATE_FORWARD_OPERATORS_FULL_TYPE(char *, MyStringView &);
+GENERATE_FORWARD_OPERATORS_FULL_TYPE(MyStringView &, char *);
+
 //=====================================================================
 
 GENERATE_BODY_OPERATORS_REF(MyStringAnsi, MyStringAnsi);
@@ -62,6 +73,14 @@ GENERATE_BODY_OPERATORS_REF(MyStringAnsi, std::string);
 GENERATE_BODY_OPERATORS_REF(std::string, MyStringAnsi);
 GENERATE_BODY_OPERATORS_REF(std::string, MySmallStringAnsi);
 GENERATE_BODY_OPERATORS_REF(MySmallStringAnsi, std::string);
+
+GENERATE_BODY_OPERATORS_REF(MyStringView, MyStringView);
+GENERATE_BODY_OPERATORS_REF(MyStringView, MyStringAnsi);
+GENERATE_BODY_OPERATORS_REF(MyStringAnsi, MyStringView);
+GENERATE_BODY_OPERATORS_REF(MyStringView, MySmallStringAnsi);
+GENERATE_BODY_OPERATORS_REF(MySmallStringAnsi, MyStringView);
+GENERATE_BODY_OPERATORS_REF(MyStringView, std::string);
+GENERATE_BODY_OPERATORS_REF(std::string, MyStringView);
 
 //==========================================================
 

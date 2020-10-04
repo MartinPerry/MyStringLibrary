@@ -5,7 +5,9 @@
 #ifndef MURMURHASH3_H
 #define MURMURHASH3_H
 
-#define MURMUR_HASH_DEF_SEED 0
+#ifndef MURMUR_HASH_DEF_SEED
+#	define MURMUR_HASH_DEF_SEED 0
+#endif
 
 #include "./MyStringMacros.h"
 

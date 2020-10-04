@@ -15,6 +15,7 @@
 
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"
+#include "./MyStringView.h"
 
 //====================================================================
 // ctors / dtors
@@ -73,6 +74,12 @@ IStringAnsi<Type>::IStringAnsi(const std::string & str)
 	static_cast<Type *>(this)->CtorInternal(str.c_str());
 }
 
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(const MyStringView & str)
+	: hashCode(std::numeric_limits<uint32_t>::max())
+{
+	static_cast<Type *>(this)->CtorInternal(str.c_str());
+}
 
 
 
@@ -247,6 +254,28 @@ bool IStringAnsi<Type>::SaveToFile(const char * fileName) const
 // Methods for string manipulation
 //====================================================================
 
+/// <summary>
+/// Transform every character of string with a transfrom callback
+/// </summary>
+/// <param name="t"></param>
+template <typename Type>
+void IStringAnsi<Type>::Transform(std::function<char(char)> t)
+{
+	//size_t count = 0;
+
+	char * end = static_cast<Type *>(this)->str();
+	char c = 0;
+	while ((c = *end) != 0)
+	{
+		*end = t(c);
+
+		end++;
+	}
+
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
+
 template <typename Type>
 void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 {
@@ -278,7 +307,6 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 	
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
-
 
 
 /// <summary>
@@ -690,23 +718,6 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 	}
 
 	return true;
-}
-
-template <typename Type>
-void IStringAnsi<Type>::Transform(std::function<char(char)> t)
-{
-	//size_t count = 0;
-
-	char * end = static_cast<Type *>(this)->str();
-	char c = 0;
-	while ((c = *end) != 0)
-	{
-		*end = t(c);
-
-		end++;
-	}
-
-	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
 

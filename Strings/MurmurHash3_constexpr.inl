@@ -4,6 +4,10 @@
 
 #ifndef CONSTEXPR_DISABLE
 
+#ifndef MURMUR_HASH_DEF_SEED
+#	define MURMUR_HASH_DEF_SEED 0
+#endif
+
 
 #include <stdint.h>
 #include <cstdint>

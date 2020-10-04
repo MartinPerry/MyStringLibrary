@@ -3,6 +3,7 @@
 
 class MyStringAnsi;
 class MySmallStringAnsi;
+class MyStringView;
 
 #include <limits>
 #include <vector>
@@ -16,7 +17,8 @@ class MySmallStringAnsi;
 #include "./MyStringMacros.h"
 
 
-static const char* const conversions[] = {
+static const char* const conversions[] = 
+{
 	"00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
 	"10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
 	"20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
@@ -43,6 +45,7 @@ public:
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
 	IStringAnsi(const std::string & str);
+	IStringAnsi(const MyStringView & str);
 
 	IStringAnsi(size_t bufferSize);
 

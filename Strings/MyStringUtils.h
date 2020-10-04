@@ -1,16 +1,18 @@
 #ifndef MY_STRING_UTILS
 #define MY_STRING_UTILS
 
+class MyStringAnsi;
+
 #include <stddef.h>
 #include <stdint.h>
 #include <type_traits>
 
 #include "./MyStringMacros.h"
 
-
 struct MyStringUtils 
 {
 		
+public:
 	//https://tombarta.wordpress.com/2008/04/23/specializing-atoi/
 
 	/// <summary>
@@ -177,8 +179,7 @@ struct MyStringUtils
 		if (ret) ret = str;
 		return static_cast<T>(value) * sign;
 	};
-
-
+	
 	/// <summary>
 	/// Universal fallback for number of digits in number
 	/// </summary>
@@ -195,6 +196,12 @@ struct MyStringUtils
 		}
 		return digits;
 	}		
+
+
+	static MyStringAnsi ToStringSimple(double val, int fractPlaces);
+	static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces);
+	static uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces);
+	static uint64_t ReversDigits(uint64_t num);
 };
 
 

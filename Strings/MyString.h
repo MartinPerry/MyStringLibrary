@@ -8,6 +8,7 @@
 #include "./MyStringMacros.h"
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"
+#include "./MyStringView.h"
 #include "./MyStringID.h"
 #include "./MyStringUtils.h"
 #include "./md5.h"

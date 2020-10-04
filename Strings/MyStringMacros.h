@@ -5,15 +5,10 @@
 //#define CONSTEXPR_DISABLE 
 
 
-#ifndef SWAP
-	//http://www.cprogramming.com/tutorial/cpreprocessor.html
+//http://www.cprogramming.com/tutorial/cpreprocessor.html
+#ifndef SWAP	
 #	define SWAP(a, b)  do { a ^= b; b ^= a; a ^= b; } while ( 0 )
 #endif
-
-
-
-
-
 
 
 #ifdef _MSC_VER
@@ -79,12 +74,19 @@ inline wchar_t* my_wcsupr_func(wchar_t* str) { wchar_t* it = str; while (*it != 
 
 #endif
 
-#define SAFE_STRDUP(s) (s != nullptr) ? my_strdup(s) : my_strdup("")
+#ifndef SAFE_STRDUP
+#	define SAFE_STRDUP(s) (s != nullptr) ? my_strdup(s) : my_strdup("")
+#endif
 
 //https://stackoverflow.com/questions/13842468/comma-in-c-c-macro
 
-#define UNPACK_ENABLE_COND( ... ) __VA_ARGS__
+#ifndef UNPACK_ENABLE_COND
+#	define UNPACK_ENABLE_COND( ... ) __VA_ARGS__
+#endif
 
-#define RET_VAL_STR(ret_type, enable_cond) \
-	typename std::enable_if<UNPACK_ENABLE_COND enable_cond, ret_type>::type
+#ifndef RET_VAL_STR
+#	define RET_VAL_STR(ret_type, enable_cond) \
+		typename std::enable_if<UNPACK_ENABLE_COND enable_cond, ret_type>::type
+#endif
+
 #endif

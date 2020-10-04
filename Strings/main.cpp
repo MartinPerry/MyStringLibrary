@@ -306,6 +306,28 @@ FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t of
 //vyhozeni sfinae z headeru
 //https://stackoverflow.com/questions/48480469/function-implementation-with-enable-if-outside-of-class-definition
 
+
+uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces)
+{
+	double decimalMult = std::pow(10, fractPlaces);
+
+	double fractPart = val - intPart;
+	uint64_t fractInt = (uint64_t)(fractPart * decimalMult);
+
+	uint64_t res = 0;
+	uint8_t * buf = reinterpret_cast<uint8_t *>(&res);
+	
+	uint64_t rev_num = 0;
+	while (fractInt > 0)
+	{
+		fractPlaces--;
+		buf[fractPlaces] = (uint8_t)(fractInt % 10 + '0');				
+		fractInt = fractInt / 10;
+	}
+
+	return 0;
+}
+
 int main(int argc, char ** argv)
 {
 #ifdef _WIN32
@@ -317,6 +339,36 @@ int main(int argc, char ** argv)
 	// For crashes, SIGSEV should be enough.
 	installSignal(SIGSEGV);
 #endif
+
+	auto rer = GetFractPartAsBuffer(45.1, 45, 7);
+
+	auto ss7 = MyStringUtils::ToStringSimple(-789.00999178, 7);
+
+	ss7.GetHashCode();
+	MyStringView viewx = ss7;
+	ss7[0] = 'x';	
+	ss7[0] = '-';
+
+	MyStringAnsi w789 = ss7;
+	MyStringView viewx2 = w789;
+	w789[0] = '-';
+	
+	if (viewx == viewx2)
+	{
+		printf("x");
+	}
+
+	std::unordered_map<MyStringView, int> xxa;
+	xxa[viewx] = 789;
+
+	MyStringView view = "-789.0099917";
+
+	if (view == ss7)
+	{
+		printf("x");
+	}
+
+	view = "xxx";
 
 	double rrd = MyStringUtils::ToNumber<double>("45.45");
 	char * xMove = nullptr;

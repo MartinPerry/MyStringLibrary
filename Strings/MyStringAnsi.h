@@ -179,6 +179,7 @@ public:
 	};
 
 	friend class IStringAnsi<MyStringAnsi>;
+	friend class MyStringView;
 
 protected:
 	

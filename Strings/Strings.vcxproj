@@ -461,6 +461,7 @@
     <ClInclude Include="MyStringAnsi.h" />
     <ClInclude Include="MyStringMacros.h" />
     <ClInclude Include="MyStringUtils.h" />
+    <ClInclude Include="MyStringView.h" />
     <ClInclude Include="StringBenchmarks.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
@@ -490,6 +491,7 @@
     <ClCompile Include="MurmurHash3.cpp" />
     <ClCompile Include="IStringAnsi.cpp" />
     <ClCompile Include="MyStringUtils.cpp" />
+    <ClCompile Include="MyStringView.cpp" />
     <ClCompile Include="StringBenchmarks.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>

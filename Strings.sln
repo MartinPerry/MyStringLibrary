@@ -31,8 +31,8 @@ Global
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_lib_mt|x86.Build.0 = Release_lib_mt|Win32
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x64.ActiveCfg = Debug_test|x64
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x64.Build.0 = Debug_test|x64
-		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x86.ActiveCfg = Release_test|Win32
-		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x86.Build.0 = Release_test|Win32
+		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x86.ActiveCfg = Debug_test|Win32
+		{5ACFE853-8078-495A-8243-63A36840FE86}.Debug_test|x86.Build.0 = Debug_test|Win32
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Release_lib_md|x64.ActiveCfg = Release_lib_md|x64
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Release_lib_md|x64.Build.0 = Release_lib_md|x64
 		{5ACFE853-8078-495A-8243-63A36840FE86}.Release_lib_md|x86.ActiveCfg = Release_lib_md|Win32
