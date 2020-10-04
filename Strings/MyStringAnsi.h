@@ -126,7 +126,7 @@ public:
 		this->hashCode = other.hashCode;
 	};
 	
-	MyStringAnsi(MyStringAnsi && other)  :
+	MyStringAnsi(MyStringAnsi && other) noexcept  :
 		strPtr(other.strPtr), 
 		bufferCapacity(other.bufferCapacity),
 		strLength(other.strLength)		
@@ -143,18 +143,18 @@ public:
 
 
 
-	const char * c_str() const
+	const char * c_str() const noexcept
 	{
 		return this->strPtr;
 	};
 
 
-	size_t length() const
+	size_t length() const noexcept
 	{
 		return this->strLength;
 	};
 
-	size_t capacity() const
+	size_t capacity() const noexcept
 	{
 		return this->bufferCapacity;
 	};
@@ -169,7 +169,7 @@ public:
 	/// char * str = (char *)(std::move(stringVar));
 	/// </summary>
 	/// <returns></returns>
-	operator char *() && 
+	operator char *() && noexcept
 	{
 		char * m = this->strPtr;
 		this->strPtr = nullptr;
@@ -200,7 +200,7 @@ protected:
 		this->hashCode = std::numeric_limits<uint32_t>::max();		
 	};
 
-	void DefaultInit()
+	void DefaultInit() noexcept
 	{
 		this->strPtr = nullptr;
 		this->bufferCapacity = 0;
@@ -228,27 +228,27 @@ protected:
 	};
 
 
-	char * str()
+	char * str() noexcept
 	{
 		return this->strPtr;
 	};
 
-	bool IsLocal() const
+	bool IsLocal() const noexcept
 	{
 		return false;
 	};
 
-	void SetBufferSizeInternal(size_t s)
+	void SetBufferSizeInternal(size_t s) noexcept
 	{
 		this->bufferCapacity = s;
 	};
 
-	void SetLengthInternal(size_t s)
+	void SetLengthInternal(size_t s) noexcept
 	{
 		this->strLength = s;
 	};
 
-	void SetStrInternal(char * s)
+	void SetStrInternal(char * s) noexcept
 	{
 		this->strPtr = s;
 

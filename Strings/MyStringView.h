@@ -46,21 +46,21 @@ inline StringLiteral operator"" _L(const char* str, size_t)
 class MyStringView 
 {
 public:
-	MyStringView(StringLiteral l);
-	MyStringView(const char * str, size_t len = 0);
-	MyStringView(const MyStringAnsi & str);
-	MyStringView(const MySmallStringAnsi & str);
-	MyStringView(const MyStringView & v);
+	MyStringView(StringLiteral l) noexcept;
+	MyStringView(const char * str, size_t len = 0) noexcept;
+	MyStringView(const MyStringAnsi & str) noexcept;
+	MyStringView(const MySmallStringAnsi & str) noexcept;
+	MyStringView(const MyStringView & v) noexcept;
 
 	~MyStringView() = default;
 
-	uint32_t GetHashCode() const;
-	const char * c_str() const;
-	size_t length() const;
+	uint32_t GetHashCode() const noexcept;
+	const char * c_str() const noexcept;
+	size_t length() const noexcept;
 
 	char GetLastChar() const;
 
-	MyStringView & operator = (const char * str);
+	MyStringView & operator = (const char * str) noexcept;
 
 private:
 	struct stringHash

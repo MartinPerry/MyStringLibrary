@@ -186,7 +186,7 @@ public:
 	/// <param name="number"></param>
 	/// <returns></returns>
 	template <typename T>	
-	static int GetNumDigits(T number)
+	static int GetNumDigits(T number) noexcept
 	{
 		int digits = 0;
 		if (number <= 0) digits = 1; // remove this line if '-' counts as a digit
@@ -199,9 +199,9 @@ public:
 
 
 	static MyStringAnsi ToStringSimple(double val, int fractPlaces);
-	static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces);
-	static uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces);
-	static uint64_t ReversDigits(uint64_t num);
+	static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept;
+	static uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept;
+	static uint64_t ReversDigits(uint64_t num) noexcept;
 };
 
 
@@ -211,7 +211,7 @@ public:
 /// <param name="number"></param>
 /// <returns></returns>
 template <>
-inline int MyStringUtils::GetNumDigits(uint8_t x)
+inline int MyStringUtils::GetNumDigits(uint8_t x) noexcept
 {
 	if (x >= 10U)
 	{
@@ -227,7 +227,7 @@ inline int MyStringUtils::GetNumDigits(uint8_t x)
 /// <param name="number"></param>
 /// <returns></returns>
 template <>
-inline int MyStringUtils::GetNumDigits(uint16_t x)
+inline int MyStringUtils::GetNumDigits(uint16_t x) noexcept
 {
 	if (x >= 1000U)
 	{
@@ -250,7 +250,7 @@ inline int MyStringUtils::GetNumDigits(uint16_t x)
 /// <param name="number"></param>
 /// <returns></returns>
 template <>
-inline int MyStringUtils::GetNumDigits(uint32_t x)
+inline int MyStringUtils::GetNumDigits(uint32_t x) noexcept
 {
 	if (x >= 10000U) {
 		if (x >= 10000000U) {
@@ -280,7 +280,7 @@ inline int MyStringUtils::GetNumDigits(uint32_t x)
 /// <param name="number"></param>
 /// <returns></returns>
 template <>
-inline int MyStringUtils::GetNumDigits(uint64_t x)
+inline int MyStringUtils::GetNumDigits(uint64_t x) noexcept
 {
 	if (x >= 10000000000ULL) { //11
 		if (x >= 100000000000000ULL) { //15

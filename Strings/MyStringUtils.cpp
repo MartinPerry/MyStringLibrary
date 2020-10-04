@@ -58,7 +58,7 @@ MyStringAnsi MyStringUtils::ToStringSimple(double val, int fractPlaces)
 	return res;
 }
 
-uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int fractPlaces)
+uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept
 {
 	double decimalMult = std::pow(10, fractPlaces);
 
@@ -101,7 +101,7 @@ uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int f
 /// <param name="intPart"></param>
 /// <param name="fractPlaces"></param>
 /// <returns></returns>
-uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces)
+uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept
 {
 	double decimalMult = std::pow(10, fractPlaces);
 
@@ -131,7 +131,7 @@ uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int f
 /// </summary>
 /// <param name="num"></param>
 /// <returns></returns>
-uint64_t MyStringUtils::ReversDigits(uint64_t num)
+uint64_t MyStringUtils::ReversDigits(uint64_t num) noexcept
 {
 	if (num < 10) return num;
 

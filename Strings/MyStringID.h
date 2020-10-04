@@ -35,13 +35,13 @@ public:
 #else
 	constexpr MyStringId(const char * key);
 #endif
-	MyStringId(const MyStringAnsi & key);
-	MyStringId(const MySmallStringAnsi & key);
-	MyStringId(const MyStringView & key);
-	MyStringId(const MyStringId & key);
-	MyStringId(const uint32_t & key);
+	MyStringId(const MyStringAnsi & key) noexcept;
+	MyStringId(const MySmallStringAnsi & key) noexcept;
+	MyStringId(const MyStringView & key) noexcept;
+	MyStringId(const MyStringId & key) noexcept;
+	MyStringId(const uint32_t & key) noexcept;
 
-	MyStringId& operator=(const MyStringId & other)
+	MyStringId& operator=(const MyStringId & other) noexcept
 	{
 		// check for self-assignment
 		if (&other == this)
@@ -56,10 +56,10 @@ public:
 		return *this;
 	}
 
-	inline uint32_t GetHashId() const { return this->hashId; };
-	inline uint32_t GetHashCode() const { return this->hashId; };
-	inline operator uint32_t() { return this->hashId; }
-	inline operator uint32_t() const { return this->hashId; }
+	inline uint32_t GetHashId() const  noexcept  { return this->hashId; };
+	inline uint32_t GetHashCode() const  noexcept { return this->hashId; };
+	inline operator uint32_t()  noexcept { return this->hashId; }
+	inline operator uint32_t() const  noexcept { return this->hashId; }
 
 
 private:
@@ -93,7 +93,7 @@ namespace std
 //this is used mainly for constexpr
 
 #if defined(ID_DEBUG) || defined(CONSTEXPR_DISABLE)
-inline MyStringId::MyStringId(const char * key)
+inline MyStringId::MyStringId(const char * key) 
 	: hashId(CALC_HASH(key))
 {
 #ifdef ID_DEBUG
@@ -102,7 +102,7 @@ inline MyStringId::MyStringId(const char * key)
 #endif
 }
 #else
-constexpr inline MyStringId::MyStringId(const char * key)
+constexpr inline MyStringId::MyStringId(const char * key) 
 	: hashId(CALC_HASH(key))
 {
 
@@ -112,7 +112,7 @@ constexpr inline MyStringId::MyStringId(const char * key)
 //other ctors
 //those are not constexpr
 
-inline MyStringId::MyStringId(const MyStringAnsi & key)
+inline MyStringId::MyStringId(const MyStringAnsi & key) noexcept
 	: hashId(key.GetHashCode())
 {
 #ifdef ID_DEBUG
@@ -121,7 +121,7 @@ inline MyStringId::MyStringId(const MyStringAnsi & key)
 #endif	
 }
 
-inline MyStringId::MyStringId(const MySmallStringAnsi & key)
+inline MyStringId::MyStringId(const MySmallStringAnsi & key) noexcept
 	: hashId(key.GetHashCode())
 {
 #ifdef ID_DEBUG
@@ -130,7 +130,7 @@ inline MyStringId::MyStringId(const MySmallStringAnsi & key)
 #endif	
 }
 
-inline MyStringId::MyStringId(const MyStringView & key)
+inline MyStringId::MyStringId(const MyStringView & key) noexcept
 	: hashId(key.GetHashCode())
 {
 #ifdef ID_DEBUG
@@ -140,7 +140,7 @@ inline MyStringId::MyStringId(const MyStringView & key)
 }
 
 
-inline MyStringId::MyStringId(const MyStringId & key)
+inline MyStringId::MyStringId(const MyStringId & key)  noexcept
 	: hashId(key.GetHashId())
 {
 #ifdef ID_DEBUG
@@ -149,7 +149,7 @@ inline MyStringId::MyStringId(const MyStringId & key)
 #endif	
 }
 
-inline MyStringId::MyStringId(const uint32_t & key)
+inline MyStringId::MyStringId(const uint32_t & key)  noexcept
 	: hashId(key)
 {
 #ifdef ID_DEBUG

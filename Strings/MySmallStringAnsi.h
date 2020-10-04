@@ -56,7 +56,7 @@ public:
 		this->hashCode = other.hashCode;
 	};
 
-	MySmallStringAnsi(MySmallStringAnsi && other)  /* noexcept needed to enable optimizations in containers */
+	MySmallStringAnsi(MySmallStringAnsi && other)  noexcept
 	{
 		//http://blog.smartbear.com/c-plus-plus/c11-tutorial-introducing-the-move-constructor-and-the-move-assignment-operator/
 		memcpy(local, other.local, sizeof(local));
@@ -80,7 +80,7 @@ public:
 	};
 
 
-	size_t length() const
+	size_t length() const noexcept
 	{
 		if (this->IsLocal()) return local[BUFFER_SIZE];
 		return (uint8_t(local[7]) << 24) +
@@ -89,7 +89,7 @@ public:
 			uint8_t(local[4]);
 	};
 
-	size_t capacity() const
+	size_t capacity() const noexcept
 	{
 		if (this->IsLocal()) return BUFFER_SIZE;
 
@@ -176,7 +176,7 @@ protected:
 		//return this->strp;
 	};
 
-	bool IsLocal() const
+	bool IsLocal() const noexcept
 	{
 		return local[BUFFER_SIZE] >= 0;
 	};

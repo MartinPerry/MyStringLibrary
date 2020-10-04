@@ -207,18 +207,16 @@ void IStringAnsi<Type>::ResizeBuffer(size_t newBufferSize)
 //====================== Methods ===============================
 
 template <typename Type>
-uint32_t IStringAnsi<Type>::GetHashCode() const
+uint32_t IStringAnsi<Type>::GetHashCode() const noexcept
 {
 	if (this->hashCode != std::numeric_limits<uint32_t>::max())
 	{
 		return this->hashCode;
 	}
 
-	uint32_t hash = MurmurHash3_x86_32(static_cast<const Type *>(this)->c_str(), 
+	this->hashCode = MurmurHash3_x86_32(static_cast<const Type *>(this)->c_str(), 
 		static_cast<uint32_t>(static_cast<const Type *>(this)->length()));
-
-	this->hashCode = hash;
-
+	
 	//const volatile uint32_t * ptr = &this->hashCode;
 	//(*const_cast<uint32_t*>(ptr)) = hash;
 

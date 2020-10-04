@@ -328,6 +328,18 @@ uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces)
 	return 0;
 }
 
+template <class T>
+constexpr void test_helper(T&&) {}
+
+#define IS_CONSTEXPR(...) noexcept(test_helper(__VA_ARGS__))
+
+double bar(double x) { return x; }
+
+constexpr double foo(double x, bool b) {
+	if (b) return x;
+	else return bar(x);
+}
+
 int main(int argc, char ** argv)
 {
 #ifdef _WIN32
@@ -339,6 +351,18 @@ int main(int argc, char ** argv)
 	// For crashes, SIGSEV should be enough.
 	installSignal(SIGSEGV);
 #endif
+
+	MyStringAnsi xxs = "ahoj";
+	xxs[0] = 'x';
+	double d = 3.0;// +xxs.length();
+
+	constexpr auto xx = IS_CONSTEXPR(foo(3.0, true));
+	constexpr auto yy = IS_CONSTEXPR(foo(3.0, false));
+	constexpr auto zz = IS_CONSTEXPR(foo(d, true));
+
+	
+	
+	std::cerr << xx << yy << zz;
 
 	auto rer = GetFractPartAsBuffer(45.1, 45, 7);
 
@@ -362,6 +386,8 @@ int main(int argc, char ** argv)
 	xxa[viewx] = 789;
 
 	MyStringView view = "-789.0099917"_L;
+
+	//static_assert(view.length() == 12, "Literal failed");
 
 	if (view == ss7)
 	{

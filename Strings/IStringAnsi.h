@@ -62,8 +62,8 @@ public:
 	bool SaveToFile(const char * fileName) const;
 
 
-	uint32_t GetHashCode() const;
-	uint32_t GetRawHashCode() const
+	uint32_t GetHashCode() const noexcept;
+	uint32_t GetRawHashCode() const noexcept
 	{
 		return this->hashCode;
 	};

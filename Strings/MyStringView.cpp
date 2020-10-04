@@ -5,7 +5,7 @@
 #include "./MurmurHash3_constexpr.inl"
 #include "./MurmurHash3.h"
 
-MyStringView::MyStringView(StringLiteral l) :
+MyStringView::MyStringView(StringLiteral l) noexcept :
 	str(l),
 	len(StringLengthCExpr(str)),
 	hash(static_cast<uint32_t>(MurmurHash3_32(str, len)))	
@@ -13,7 +13,7 @@ MyStringView::MyStringView(StringLiteral l) :
 }
 
 
-MyStringView::MyStringView(const char * str, size_t len) : 
+MyStringView::MyStringView(const char * str, size_t len) noexcept :
 	str(str),
 	len((len == 0) ? StringLengthCExpr(str) : len),
 	//hash(static_cast<uint32_t>(MurmurHash3_32(str, len)))
@@ -21,28 +21,28 @@ MyStringView::MyStringView(const char * str, size_t len) :
 {		
 }
 
-MyStringView::MyStringView(const MyStringAnsi & str) : 
+MyStringView::MyStringView(const MyStringAnsi & str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MySmallStringAnsi & str) :
+MyStringView::MyStringView(const MySmallStringAnsi & str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MyStringView & v) : 
+MyStringView::MyStringView(const MyStringView & v) noexcept :
 	str(v.str),
 	len(v.len),
 	hash(v.hash)
 {
 }
 
-MyStringView & MyStringView::operator = (const char * str)
+MyStringView & MyStringView::operator = (const char * str) noexcept
 {
 	this->str = str;
 	this->len = StringLengthCExpr(str);
@@ -50,12 +50,12 @@ MyStringView & MyStringView::operator = (const char * str)
 	return *this;
 }
 
-const char * MyStringView::c_str() const
+const char * MyStringView::c_str() const noexcept
 {
 	return this->str;
 };
 
-size_t MyStringView::length() const
+size_t MyStringView::length() const noexcept
 {
 	return this->len;
 };
@@ -67,7 +67,7 @@ uint32_t MyStringView::GetHashCode() const
 }
 */
 
-uint32_t MyStringView::GetHashCode() const
+uint32_t MyStringView::GetHashCode() const noexcept
 {
 	if (this->hash.isPtr)
 	{
