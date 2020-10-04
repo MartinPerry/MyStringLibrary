@@ -361,7 +361,7 @@ int main(int argc, char ** argv)
 	std::unordered_map<MyStringView, int> xxa;
 	xxa[viewx] = 789;
 
-	MyStringView view = "-789.0099917";
+	MyStringView view = "-789.0099917"_L;
 
 	if (view == ss7)
 	{
