@@ -4,6 +4,7 @@
 class MyStringAnsi;
 class MySmallStringAnsi;
 
+#include <type_traits>
 #include <unordered_map>
 #include <stdint.h>
 #include <limits>
@@ -62,6 +63,10 @@ public:
 
 	MyStringView & operator = (const char * str) noexcept;
 
+	template <typename T>
+	RET_VAL_STR(char, (std::is_integral<T>::value))
+	operator [](const T index) const;
+
 private:
 	struct stringHash
 	{
@@ -88,6 +93,13 @@ private:
 
 };
 
+
+template <typename T>
+RET_VAL_STR(char, (std::is_integral<T>::value))
+MyStringView::operator [](const T index) const
+{
+	return str[index];
+}
 
 //For use in std::unordered_map
 //http://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key

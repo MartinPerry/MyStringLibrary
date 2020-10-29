@@ -377,6 +377,8 @@ int main(int argc, char ** argv)
 	MyStringView viewx2 = w789;
 	w789[0] = '-';
 	
+	char xdsd = viewx2[0];
+
 	if (viewx == viewx2)
 	{
 		printf("x");
