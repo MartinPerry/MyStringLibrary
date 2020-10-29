@@ -35,6 +35,7 @@ public:
 #else
 	constexpr MyStringId(const char * key);
 #endif
+	MyStringId() noexcept;
 	MyStringId(const MyStringAnsi & key) noexcept;
 	MyStringId(const MySmallStringAnsi & key) noexcept;
 	MyStringId(const MyStringView & key) noexcept;
@@ -111,6 +112,11 @@ constexpr inline MyStringId::MyStringId(const char * key)
 
 //other ctors
 //those are not constexpr
+
+inline MyStringId::MyStringId() noexcept
+	: hashId(0)
+{
+}
 
 inline MyStringId::MyStringId(const MyStringAnsi & key) noexcept
 	: hashId(key.GetHashCode())

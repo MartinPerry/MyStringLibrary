@@ -379,6 +379,9 @@ int main(int argc, char ** argv)
 	
 	char xdsd = viewx2[0];
 
+	MyStringId sid;
+	sid = w789;
+
 	if (viewx == viewx2)
 	{
 		printf("x");
