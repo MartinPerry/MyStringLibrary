@@ -462,6 +462,13 @@
     <ClInclude Include="MyStringMacros.h" />
     <ClInclude Include="MyStringUtils.h" />
     <ClInclude Include="MyStringView.h" />
+    <ClInclude Include="SimpleLocalization\cJSON_JS.h" />
+    <ClInclude Include="SimpleLocalization\generated_localization.h" />
+    <ClInclude Include="SimpleLocalization\IcuUnicodeStringWrapper.h" />
+    <ClInclude Include="SimpleLocalization\Localization.h" />
+    <ClInclude Include="SimpleLocalization\tinyutf8.h" />
+    <ClInclude Include="SimpleLocalization\TinyUtf8Wrapper.h" />
+    <ClInclude Include="SimpleLocalization\win_dirent.h" />
     <ClInclude Include="StringBenchmarks.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
@@ -492,6 +499,9 @@
     <ClCompile Include="IStringAnsi.cpp" />
     <ClCompile Include="MyStringUtils.cpp" />
     <ClCompile Include="MyStringView.cpp" />
+    <ClCompile Include="SimpleLocalization\cJSON_JS.c" />
+    <ClCompile Include="SimpleLocalization\Localization.cpp" />
+    <ClCompile Include="SimpleLocalization\tinyutf8.cpp" />
     <ClCompile Include="StringBenchmarks.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>

@@ -19,6 +19,8 @@
 #include "StringTests.h"
 #include "StringBenchmarks.h"
 
+#include "./SimpleLocalization/Localization.h"
+
 using namespace std;
 
 #ifndef _WIN32
@@ -352,6 +354,18 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+
+	Localization l("en", "en", "../test_data/");
+	auto res = l.Localize("searchCoords");
+	auto res2 = res.getAs<Localization::String>();
+
+
+	printf("%s\n", (l.Localize("searchCoords").getAs<Localization::String>()).c_str());
+	printf("%s\n", (l.Localize("temperature", "layers").getAs<Localization::String>()).c_str());
+	printf("%s\n", (l.Localize("searchCoords", { "kccc", "x", "xxcxc7" }).getAs<Localization::String>()).c_str());
+
+
+
 	MyStringAnsi xxs = "ahoj";
 	xxs[0] = 'x';
 	double d = 3.0;// +xxs.length();
@@ -359,7 +373,6 @@ int main(int argc, char ** argv)
 	constexpr auto xx = IS_CONSTEXPR(foo(3.0, true));
 	constexpr auto yy = IS_CONSTEXPR(foo(3.0, false));
 	constexpr auto zz = IS_CONSTEXPR(foo(d, true));
-
 	
 	
 	std::cerr << xx << yy << zz;

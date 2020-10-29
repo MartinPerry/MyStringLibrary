@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\SimpleLocalization">
+      <UniqueIdentifier>{6e0b0db8-67a9-4c8a-9e19-513e1a206c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SimpleLocalization">
+      <UniqueIdentifier>{30d8eeff-5e99-46b1-9212-aeb5d9260cb3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="md5.h">
@@ -51,6 +57,27 @@
     <ClInclude Include="MyStringView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleLocalization\IcuUnicodeStringWrapper.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\Localization.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\tinyutf8.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\TinyUtf8Wrapper.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\cJSON_JS.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\win_dirent.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleLocalization\generated_localization.h">
+      <Filter>Header Files\SimpleLocalization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">
@@ -84,6 +111,15 @@
     </ClCompile>
     <ClCompile Include="MyStringView.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleLocalization\Localization.cpp">
+      <Filter>Source Files\SimpleLocalization</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleLocalization\tinyutf8.cpp">
+      <Filter>Source Files\SimpleLocalization</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleLocalization\cJSON_JS.c">
+      <Filter>Source Files\SimpleLocalization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
