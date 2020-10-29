@@ -58,6 +58,39 @@ public:
 	static RetVal CreateFormated(const char * str, ...);
 		
 	//======================================================================
+	//std::string compatible methods
+
+	void append(const char * str, size_t len = 0)
+	{
+		this->Append(str, len);
+	}
+
+	void reserve(size_t s)
+	{
+		this->ResizeBuffer(s);
+	}
+	
+	size_t find(const char c) const
+	{
+		return this->Find(c);
+	}
+
+	size_t find(const char * str, size_t offset = 0) const
+	{
+		return this->Find(str, offset);
+	}
+
+	Type substr(const size_t start = 0, const size_t length = npos) const
+	{
+		if (length == npos)
+		{
+			return this->SubString(start);
+		}
+		return this->SubString(start, length);
+	}
+
+	//======================================================================
+	
 	void Release();
 	bool SaveToFile(const char * fileName) const;
 
