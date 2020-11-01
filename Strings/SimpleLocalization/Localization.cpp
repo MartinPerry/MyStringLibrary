@@ -2,6 +2,16 @@
 
 //#define USE_VFS
 
+#ifdef _MSC_VER
+#	ifndef my_fopen 
+#		define my_fopen(a, b, c) fopen_s(a, b, c)	
+#	endif
+#else
+#	ifndef my_fopen 
+#		define my_fopen(a, b, c) (*a = fopen(b, c))
+#	endif
+#endif
+
 #ifndef NOMINMAX
 #   define NOMINMAX
 #endif
@@ -334,7 +344,7 @@ Localization::String Localization::LoadFile(const Localization::String & path)
 	Localization::String str =  VFS::GetInstance()->GetFileString(path.c_str()).c_str();
 #else
 	FILE * f = nullptr;
-	f = fopen(path.c_str(), "rb");
+	my_fopen(&f, path.c_str(), "rb");
 
 	if (f == nullptr)
 	{		

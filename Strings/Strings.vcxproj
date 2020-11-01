@@ -469,6 +469,7 @@
     <ClInclude Include="SimpleLocalization\tinyutf8.h" />
     <ClInclude Include="SimpleLocalization\TinyUtf8Wrapper.h" />
     <ClInclude Include="SimpleLocalization\win_dirent.h" />
+    <ClInclude Include="StdStringCompatibility.h" />
     <ClInclude Include="StringBenchmarks.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>

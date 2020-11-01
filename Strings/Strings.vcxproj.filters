@@ -78,6 +78,9 @@
     <ClInclude Include="SimpleLocalization\generated_localization.h">
       <Filter>Header Files\SimpleLocalization</Filter>
     </ClInclude>
+    <ClInclude Include="StdStringCompatibility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">

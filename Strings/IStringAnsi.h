@@ -13,6 +13,11 @@ class MyStringView;
 #include <stdarg.h> //var args
 #include <algorithm> //std::find
 
+#if __has_include("./StdStringCompatibility.h")
+#	include "./StdStringCompatibility.h"
+#	define STD_STRING_COMPATIBILITY 1
+#endif
+
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
 
@@ -35,7 +40,10 @@ enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 };
 enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() };
 
 template <typename Type>
-class IStringAnsi
+class IStringAnsi : 
+#ifdef STD_STRING_COMPATIBILITY
+	public StdStringCompatibility<Type>
+#endif
 {
 public:
 		
@@ -56,39 +64,7 @@ public:
 
 	template <typename RetVal = Type>
 	static RetVal CreateFormated(const char * str, ...);
-		
-	//======================================================================
-	//std::string compatible methods
-
-	void append(const char * str, size_t len = 0)
-	{
-		this->Append(str, len);
-	}
-
-	void reserve(size_t s)
-	{
-		this->ResizeBuffer(s);
-	}
-	
-	size_t find(const char c) const
-	{
-		return this->Find(c);
-	}
-
-	size_t find(const char * str, size_t offset = 0) const
-	{
-		return this->Find(str, offset);
-	}
-
-	Type substr(const size_t start = 0, const size_t length = npos) const
-	{
-		if (length == npos)
-		{
-			return this->SubString(start);
-		}
-		return this->SubString(start, length);
-	}
-
+			
 	//======================================================================
 	
 	void Release();
