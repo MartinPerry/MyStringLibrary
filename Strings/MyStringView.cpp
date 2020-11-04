@@ -5,6 +5,13 @@
 #include "./MurmurHash3_constexpr.inl"
 #include "./MurmurHash3.h"
 
+MyStringView::MyStringView() noexcept :
+	str(nullptr),
+	len(0),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
 MyStringView::MyStringView(StringLiteral l) noexcept :
 	str(l),
 	len(StringLengthCExpr(str)),

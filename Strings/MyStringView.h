@@ -47,6 +47,7 @@ inline StringLiteral operator"" _L(const char* str, size_t)
 class MyStringView 
 {
 public:
+	MyStringView() noexcept;
 	MyStringView(StringLiteral l) noexcept;
 	MyStringView(const char * str, size_t len = 0) noexcept;
 	MyStringView(const MyStringAnsi & str) noexcept;
