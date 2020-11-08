@@ -94,4 +94,15 @@ uint32_t MyStringView::GetHashCode() const noexcept
 char MyStringView::GetLastChar() const
 {	
 	return this->str[len - 1];
-};
+}
+
+void MyStringView::RemoveFromStart(int count)
+{
+	this->str++;
+	this->len--;
+}
+
+void MyStringView::RemoveFromEnd(int count)
+{	
+	this->len--;
+}

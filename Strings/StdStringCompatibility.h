@@ -33,9 +33,9 @@ public:
 	{
 		if (length == Type::npos)
 		{
-			return static_cast<const Type *>(this)->SubString(start);
+			return static_cast<const Type *>(this)->SubString(static_cast<int>(start));
 		}
-		return static_cast<const Type *>(this)->SubString(start, length);
+		return static_cast<const Type *>(this)->SubString(static_cast<int>(start), length);
 	}
 
 };

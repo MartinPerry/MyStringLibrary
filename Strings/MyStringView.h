@@ -8,6 +8,7 @@ class MySmallStringAnsi;
 #include <unordered_map>
 #include <stdint.h>
 #include <limits>
+#include <string>
 
 
 #include "./MyStringMacros.h"
@@ -62,11 +63,31 @@ public:
 
 	char GetLastChar() const;
 
+	void RemoveFromStart(int count);
+	void RemoveFromEnd(int count);
+
 	MyStringView & operator = (const char * str) noexcept;
 
 	template <typename T>
 	RET_VAL_STR(char, (std::is_integral<T>::value))
 	operator [](const T index) const;
+
+	/// <summary>
+	/// Used for comparison os views that are substring 
+	/// non-null terminated
+	/// For example:
+	/// std::unordered_map<MyStringView, ...,
+	/// std::hash<MyStringView>, MyStringView>
+	/// </summary>
+	/// <param name="t1"></param>
+	/// <param name="t2"></param>
+	/// <returns></returns>
+	bool operator() (MyStringView const& t1, MyStringView const& t2) const
+	{
+		if (t1.length() != t2.length()) return false;
+		return (memcmp(t1.c_str(), t2.c_str(), t1.length()) == 0);
+	};
+
 
 private:
 	struct stringHash

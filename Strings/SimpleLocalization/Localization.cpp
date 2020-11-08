@@ -534,7 +534,7 @@ Localization::UnicodeStringWrapper Localization::LocalizeWithReplace(const Local
 
 	Localization::UnicodeStringWrapper tmp = input.str;
 	size_t i = 0;
-	int offset = 0;
+	size_t offset = 0;
 	for (const auto & elem : params)
 	{
 		size_t start = input.replaceOffsetsRawStart[i] + offset;
