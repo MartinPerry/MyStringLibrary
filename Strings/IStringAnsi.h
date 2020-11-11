@@ -64,6 +64,9 @@ public:
 
 	template <typename RetVal = Type>
 	static RetVal CreateFormated(const char * str, ...);
+
+	template <typename RetVal = Type>
+	static RetVal CreateFormated(const char * str, va_list args);
 			
 	//======================================================================
 	
@@ -115,6 +118,8 @@ public:
 
 	template<typename... Args>
 	void AppendFormat(const char * str, Args... args);
+
+	void AppendFormat(const char * str, va_list args);
 	
 	void Replace(const Type & oldValue, const Type & newValue);
 	void Replace(const char * oldValue, const char * newValue);
@@ -278,17 +283,35 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 		return RetVal("");
 	}
 
-	va_list vl;
+	va_list myargs;
+	va_start(myargs, newStrFormat);
+
+	RetVal str = IStringAnsi<Type>::CreateFormated(newStrFormat, myargs);
+
+	va_end(myargs);
+
+	return str;
+}
+
+
+template <typename Type>
+template <typename RetVal>
+static RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args)
+{
+	if (newStrFormat == nullptr)
+	{
+		return RetVal("");
+	}
+
+	//va_list vl;
 
 	//calculate length of new string
 	std::vector<char> localBuffer;
 	int appendLength = -1;
 	while (appendLength < 0)
-	{
-		va_start(vl, newStrFormat);
+	{		
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, vl);
-		va_end(vl);
+		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, args);	
 	}
 
 
@@ -297,10 +320,8 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 	RetVal newStr = RetVal(bufferSize);
 
 	char * str = newStr.str();
-
-	va_start(vl, newStrFormat);
-	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, vl);
-	va_end(vl);
+	
+	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, args);
 
 	if (written == -1)
 	{
@@ -328,6 +349,20 @@ template<typename... Args>
 void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
+	this->Append(tmp.c_str());
+}
+
+/// <summary>
+/// Append new formated string
+/// Really SLOW !!!!- because of used vsnprintf
+/// eg("Formated %d %d", 10, 20) = > "Formated 10, 20"
+/// </summary>
+/// <param name="appendStr"></param>
+/// <param name="...args"></param>
+template <typename Type>
+void IStringAnsi<Type>::AppendFormat(const char * appendStr, va_list args)
+{
+	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args);
 	this->Append(tmp.c_str());
 }
 

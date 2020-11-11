@@ -354,6 +354,7 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	auto xxgf = MyStringAnsi::CreateFormated("xxx %d", 45);
 
 	Localization l("en", "en", "../test_data/");
 	auto res = l.Localize("searchCoords");
