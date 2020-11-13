@@ -25,11 +25,11 @@
 #define GENERATE_BODY_OPERATORS_REF(p1, p2) \
 	inline bool operator ==(const p1 & str1, const p2 & str2){ \
 		if (str1.length() != str2.length()) return false; \
-		return (strcmp(str1.c_str(), str2.c_str()) == 0); \
+		return (memcmp(str1.c_str(), str2.c_str(), str1.length()) == 0); \
 	}; \
 	inline bool operator !=(const p1 & str1, const p2 & str2){ \
 		if (str1.length() != str2.length()) return true; \
-			return (strcmp(str1.c_str(), str2.c_str()) != 0); \
+			return (memcmp(str1.c_str(), str2.c_str(), str1.length()) != 0); \
 	}; \
 	inline bool operator >(const p1 & str1, const p2 & str2){ \
 		return (strcmp(str1.c_str(), str2.c_str()) > 0); \
