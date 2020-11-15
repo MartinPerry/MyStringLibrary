@@ -53,8 +53,7 @@ public:
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
 	IStringAnsi(const std::string & str);
-	IStringAnsi(const MyStringView & str);
-
+	
 	IStringAnsi(size_t bufferSize);
 
 	virtual ~IStringAnsi();
@@ -62,8 +61,8 @@ public:
 	template <typename RetVal = Type>
 	static RetVal LoadFromFile(const char * fileName);
 
-	template <typename RetVal = Type>
-	static RetVal CreateFormated(const char * str, ...);
+	template <typename ...Args, typename RetVal = Type>	
+	static RetVal CreateFormated(const char * str, Args ...args);
 
 	template <typename RetVal = Type>
 	static RetVal CreateFormated(const char * str, va_list args);
@@ -116,8 +115,8 @@ public:
 	template<typename T>
 	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);
 
-	template<typename... Args>
-	void AppendFormat(const char * str, Args... args);
+	template<typename ...Args>
+	void AppendFormat(const char * str, Args ...args);
 
 	void AppendFormat(const char * str, va_list args);
 	
@@ -275,14 +274,47 @@ RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 /// <param name=""></param>
 /// <returns></returns>
 template <typename Type>
-template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
+template <typename ...Args, typename RetVal>
+RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args)
 {
 	if (newStrFormat == nullptr)
 	{
 		return RetVal("");
 	}
 
+
+	//calculate length of new string
+	std::vector<char> localBuffer;
+	int appendLength = -1;
+	while (appendLength < 0)
+	{
+		localBuffer.resize(localBuffer.size() + 256);
+		appendLength = snprintf(&localBuffer[0], localBuffer.size(), newStrFormat, std::forward<Args>(args)...);
+	}
+
+
+	//always store in heap
+	size_t bufferSize = appendLength + 16;
+	RetVal newStr = RetVal(bufferSize);
+
+	char * str = newStr.str();
+	
+	int written = snprintf(str, bufferSize, newStrFormat, std::forward<Args>(args)...);
+
+	if (written == -1)
+	{
+		return "";
+	}
+
+
+	size_t strLength = strlen(str);
+	str[strLength] = 0;
+
+	newStr.hashCode = std::numeric_limits<uint32_t>::max();
+	newStr.SetLengthInternal(strLength);
+	return newStr;
+
+	/*
 	va_list myargs;
 	va_start(myargs, newStrFormat);
 
@@ -291,6 +323,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, ...)
 	va_end(myargs);
 
 	return str;
+	*/
 }
 
 
@@ -302,9 +335,7 @@ static RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_li
 	{
 		return RetVal("");
 	}
-
-	//va_list vl;
-
+	
 	//calculate length of new string
 	std::vector<char> localBuffer;
 	int appendLength = -1;
@@ -345,10 +376,10 @@ static RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_li
 /// <param name="appendStr"></param>
 /// <param name="...args"></param>
 template <typename Type>
-template<typename... Args>
-void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args... args)
+template<typename ...Args>
+void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args ...args)
 {
-	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args...);
+	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, std::forward<Args>(args)...);
 	this->Append(tmp.c_str());
 }
 

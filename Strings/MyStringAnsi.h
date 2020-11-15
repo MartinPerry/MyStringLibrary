@@ -9,6 +9,7 @@
 #include "./MyStringMacros.h"
 
 #include "./IStringAnsi.h"
+#include "./MyStringView.h"
 
 
 class MyStringAnsi : public IStringAnsi<MyStringAnsi>
@@ -115,6 +116,11 @@ public:
 				
 		memcpy(this->strPtr, newStr, length);
 		this->strPtr[length] = 0;
+	}
+	
+	MyStringAnsi(const MyStringView & str)
+		: MyStringAnsi(str.c_str(), str.length())
+	{
 	}
 
 	MyStringAnsi(const MyStringAnsi &other) : 

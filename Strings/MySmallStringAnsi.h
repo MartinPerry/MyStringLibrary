@@ -9,6 +9,7 @@
 #include "./MyStringMacros.h"
 
 #include "./IStringAnsi.h"
+#include "./MyStringView.h"
 
 //#define BUFFER_SIZE 19
 
@@ -44,6 +45,11 @@ public:
 
 		this->SetStrInternal(str);
 		this->SetLengthInternal(length);
+	}
+
+	MySmallStringAnsi(const MyStringView & str)
+		: MySmallStringAnsi(str.c_str(), str.length())
+	{
 	}
 
 	MySmallStringAnsi(const MySmallStringAnsi &other)

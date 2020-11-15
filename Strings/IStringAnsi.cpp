@@ -74,13 +74,6 @@ IStringAnsi<Type>::IStringAnsi(const std::string & str)
 	static_cast<Type *>(this)->CtorInternal(str.c_str());
 }
 
-template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const MyStringView & str)
-	: hashCode(std::numeric_limits<uint32_t>::max())
-{
-	static_cast<Type *>(this)->CtorInternal(str.c_str());
-}
-
 
 
 template <typename Type>

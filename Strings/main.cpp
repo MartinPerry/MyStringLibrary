@@ -1,6 +1,7 @@
 
-#ifdef _WIN32
-#include <vld.h>
+#if __has_include(<vld.h>)
+#	define VLD_ENABLED
+#	include <vld.h>
 #endif
 
 #include <cstdlib>
@@ -344,7 +345,7 @@ constexpr double foo(double x, bool b) {
 
 int main(int argc, char ** argv)
 {
-#ifdef _WIN32
+#ifdef VLD_ENABLED
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);	
 #endif	
@@ -355,6 +356,7 @@ int main(int argc, char ** argv)
 #endif
 
 	auto xxgf = MyStringAnsi::CreateFormated("xxx %d", 45);
+	xxgf.AppendFormat("%d %d", 45, 45);
 
 	Localization l("en", "en", "../test_data/");
 	auto res = l.Localize("searchCoords");
