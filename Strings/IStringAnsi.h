@@ -151,19 +151,25 @@ public:
 	RET_VAL_STR(void, (std::is_floating_point<T>::value)) operator += (T number);
 
 	template <typename T>
-	RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || 
+		std::is_same<T, MySmallStringAnsi>::value ||
+		std::is_same<T, MyStringView>::value))
     operator += (const T & str);
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
 
 	template <typename T>
-	RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || 
+		std::is_same<T, MySmallStringAnsi>::value ||
+		std::is_same<T, MyStringView>::value))
     operator + (const T & str) const;
 	Type operator + (const char * str) const;
 
 	template <typename T>
-	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || 
+		std::is_same<T, MySmallStringAnsi>::value ||
+		std::is_same<T, MyStringView>::value))
     operator = (const T & str);
 	Type & operator = (const char * str);
 	Type & operator = (const std::string & str);
@@ -586,15 +592,25 @@ return newStr;
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || 
+	std::is_same<T, MySmallStringAnsi>::value ||
+	std::is_same<T, MyStringView>::value))
 IStringAnsi<Type>::operator += (const T & str)
 {
+	if (str.length() == 0)
+	{
+		return;
+	}
 	this->Append(str.c_str(), str.length());
 };
 
 template <typename Type>
 inline void IStringAnsi<Type>::operator += (const std::string & str)
 {
+	if (str.length() == 0)
+	{
+		return;
+	}
 	this->Append(str.c_str(), str.length());
 };
 
@@ -637,12 +653,18 @@ inline void IStringAnsi<Type>::operator+= (const char singleChar)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || 
+	std::is_same<T, MySmallStringAnsi>::value ||
+	std::is_same<T, MyStringView>::value))
 IStringAnsi<Type>::operator + (const T & str) const
 {
 	T newStr = T(static_cast<const Type *>(this)->c_str(), 
 		static_cast<const Type *>(this)->length());
-	newStr.Append(str.c_str(), str.length());
+	
+	if (str.length() != 0)
+	{
+		newStr.Append(str.c_str(), str.length());
+	}
 	
 	return newStr;
 };
@@ -677,7 +699,9 @@ IStringAnsi<Type>::operator [](const T index)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(Type&, (std::is_same<T, MyStringAnsi>::value || std::is_same<T, MySmallStringAnsi>::value))
+RET_VAL_STR(Type&, (std::is_same<T, MyStringAnsi>::value || 
+	std::is_same<T, MySmallStringAnsi>::value ||
+	std::is_same<T, MyStringView>::value))
 IStringAnsi<Type>::operator = (const T & str)
 {
 	/*
