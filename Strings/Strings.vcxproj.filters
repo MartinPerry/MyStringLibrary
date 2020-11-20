@@ -81,6 +81,9 @@
     <ClInclude Include="StdStringCompatibility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MyStringKeys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">
@@ -123,9 +126,6 @@
     </ClCompile>
     <ClCompile Include="SimpleLocalization\cJSON_JS.c">
       <Filter>Source Files\SimpleLocalization</Filter>
-    </ClCompile>
-    <ClCompile Include="MyStringKeys.cpp">
-      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

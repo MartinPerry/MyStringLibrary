@@ -461,6 +461,7 @@
     <ClInclude Include="MySmallStringAnsi.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="MyStringAnsi.h" />
+    <ClInclude Include="MyStringKeys.h" />
     <ClInclude Include="MyStringMacros.h" />
     <ClInclude Include="MyStringUtils.h" />
     <ClInclude Include="MyStringView.h" />
@@ -500,7 +501,6 @@
     </ClCompile>
     <ClCompile Include="MurmurHash3.cpp" />
     <ClCompile Include="IStringAnsi.cpp" />
-    <ClCompile Include="MyStringKeys.cpp" />
     <ClCompile Include="MyStringUtils.cpp" />
     <ClCompile Include="MyStringView.cpp" />
     <ClCompile Include="SimpleLocalization\cJSON_JS.c" />
