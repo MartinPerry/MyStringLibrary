@@ -500,6 +500,7 @@
     </ClCompile>
     <ClCompile Include="MurmurHash3.cpp" />
     <ClCompile Include="IStringAnsi.cpp" />
+    <ClCompile Include="MyStringKeys.cpp" />
     <ClCompile Include="MyStringUtils.cpp" />
     <ClCompile Include="MyStringView.cpp" />
     <ClCompile Include="SimpleLocalization\cJSON_JS.c" />

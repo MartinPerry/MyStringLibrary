@@ -12,7 +12,7 @@ class MyStringAnsi;
 struct MyStringUtils 
 {
 		
-public:
+
 	//https://tombarta.wordpress.com/2008/04/23/specializing-atoi/
 
 	/// <summary>
