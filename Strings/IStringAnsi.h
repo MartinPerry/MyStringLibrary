@@ -335,7 +335,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args
 
 template <typename Type>
 template <typename RetVal>
-static RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args)
+RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args)
 {
 	if (newStrFormat == nullptr)
 	{
