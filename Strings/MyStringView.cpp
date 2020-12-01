@@ -2,31 +2,7 @@
 
 #include "./MyStringAnsi.h"
 #include "./MySmallStringAnsi.h"
-#include "./MurmurHash3_constexpr.inl"
 #include "./MurmurHash3.h"
-
-MyStringView::MyStringView() noexcept :
-	str(nullptr),
-	len(0),
-	hash(std::numeric_limits<uint32_t>::max())
-{
-}
-
-MyStringView::MyStringView(StringLiteral l) noexcept :
-	str(l),
-	len(StringLengthCExpr(str)),
-	hash(static_cast<uint32_t>(MurmurHash3_32(str, len)))	
-{
-}
-
-
-MyStringView::MyStringView(const char * str, size_t len) noexcept :
-	str(str),
-	len((len == 0) ? StringLengthCExpr(str) : len),
-	//hash(static_cast<uint32_t>(MurmurHash3_32(str, len)))
-	hash(std::numeric_limits<uint32_t>::max())
-{		
-}
 
 MyStringView::MyStringView(const MyStringAnsi & str) noexcept :
 	str(str.c_str()),
@@ -49,11 +25,26 @@ MyStringView::MyStringView(const MyStringView & v) noexcept :
 {
 }
 
+
+MyStringView::MyStringView(const std::string& str) noexcept :
+	str(str.c_str()),
+	len(str.length()),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
+MyStringView::MyStringView(const std::vector<char>& v) noexcept :
+	str(v.data()),
+	len(v.size()),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
 MyStringView & MyStringView::operator = (const char * str) noexcept
 {
 	this->str = str;
 	this->len = StringLengthCExpr(str);
-	this->hash = static_cast<uint32_t>(MurmurHash3_x86_32(str, len));
+	this->hash = std::numeric_limits<uint32_t>::max();// static_cast<uint32_t>(MurmurHash3_x86_32(str, len));
 	return *this;
 }
 
@@ -67,12 +58,6 @@ size_t MyStringView::length() const noexcept
 	return this->len;
 };
 
-/*
-uint32_t MyStringView::GetHashCode() const
-{
-	return (this->hash.isPtr) ? *this->hash.valuePtr : this->hash.value;
-}
-*/
 
 uint32_t MyStringView::GetHashCode() const noexcept
 {

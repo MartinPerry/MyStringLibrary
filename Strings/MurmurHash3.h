@@ -15,7 +15,7 @@
 #	define CALC_HASH(x) MurmurHash3_x86_32(x)
 //#	define CALC_HASH(x) strlen(x)
 #else
-#	define CALC_HASH(x) MurmurHash3_32(x)
+#	define CALC_HASH(x) MurmurHash3_32CExpr(x)
 //#	define CALC_HASH(x) StringLengthCExpr(x)
 #endif
 

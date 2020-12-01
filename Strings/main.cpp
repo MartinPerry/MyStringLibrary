@@ -355,6 +355,16 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	StringLiteral sl = "-789.0099917"_L;;
+
+	std::string xster = "asa";
+
+	MyStringView vvv;
+
+	MyStringView v = "xxx";
+
+	v = xster;
+
 	auto xxgf = MyStringAnsi::CreateFormated("xxx %d", 45);
 	xxgf.AppendFormat("%d %d", 45, 45);
 

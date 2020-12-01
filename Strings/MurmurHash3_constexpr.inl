@@ -94,14 +94,19 @@ constexpr inline uint32_t Murmur3Loop_32CExpr(const char *const data, const uint
 		Murmur3Rest_32CExpr(data, len, hash);
 };
 
-constexpr inline uint32_t Murmur3_32(const char *const key, const uint32_t length, const uint32_t seed) noexcept
+constexpr inline uint32_t Murmur3_32CExpr(const char *const key, const uint32_t length, const uint32_t seed) noexcept
 {
 	return Murmur3Loop_32CExpr(key, length, seed);
 };
 
-constexpr inline uint32_t MurmurHash3_32(const char *const str, const uint32_t seed = MURMUR_HASH_DEF_SEED) noexcept
+constexpr inline uint32_t MurmurHash3_32CExpr(const char *const str) noexcept
 {	
-	return Murmur3_32(str, StringLengthCExpr(str), seed);
+	return Murmur3_32CExpr(str, StringLengthCExpr(str), MURMUR_HASH_DEF_SEED);
+};
+
+constexpr inline uint32_t MurmurHash3_32CExpr(const char* const str, const uint32_t len, const uint32_t seed) noexcept
+{
+	return Murmur3_32CExpr(str, len, seed);
 };
 
 

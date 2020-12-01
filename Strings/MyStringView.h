@@ -9,8 +9,9 @@ class MySmallStringAnsi;
 #include <stdint.h>
 #include <limits>
 #include <string>
+#include <vector>
 
-
+#include "./MurmurHash3_constexpr.inl"
 #include "./MyStringMacros.h"
 
 //========================================================================
@@ -21,21 +22,21 @@ class MySmallStringAnsi;
 class StringLiteral 
 {
 public:
-	explicit StringLiteral(const char* literal) : literal_(literal) {}
+	constexpr explicit StringLiteral(const char* literal) : literal_(literal) {}
 	// The constructor is public to allow explicit conversion of external string
 	// literals to `_L` literals. If there is no such need, then move constructor
 	// to private section.
 
-	operator const char* () { return literal_; }
+	constexpr operator const char* () { return literal_; }
 
 private:
-	friend StringLiteral operator"" _L(const char*, size_t);
+	constexpr friend StringLiteral operator"" _L(const char*, size_t);
 	// Helps, when constructor is moved to private section.
 
 	const char* literal_;
 };
 
-inline StringLiteral operator"" _L(const char* str, size_t)
+constexpr inline StringLiteral operator"" _L(const char* str, size_t)
 {
 	return StringLiteral(str);
 }
@@ -48,12 +49,16 @@ inline StringLiteral operator"" _L(const char* str, size_t)
 class MyStringView 
 {
 public:
-	MyStringView() noexcept;
-	MyStringView(StringLiteral l) noexcept;
-	MyStringView(const char * str, size_t len = 0) noexcept;
+	constexpr MyStringView() noexcept;
+	constexpr MyStringView(StringLiteral l) noexcept;
+	constexpr MyStringView(const char * str, size_t len = 0) noexcept;
 	MyStringView(const MyStringAnsi & str) noexcept;
 	MyStringView(const MySmallStringAnsi & str) noexcept;
 	MyStringView(const MyStringView & v) noexcept;
+
+	MyStringView(const std::string& str) noexcept;
+	MyStringView(const std::vector<char>& v) noexcept;
+
 
 	~MyStringView() = default;
 
@@ -99,11 +104,12 @@ private:
 			uint32_t * valuePtr;
 		};
 
-		stringHash(uint32_t val) :
+		constexpr stringHash(uint32_t val) :
 			isPtr(false),
 			value(val) 
 		{}
-		stringHash(uint32_t * val) :
+
+		constexpr stringHash(uint32_t * val) :
 			isPtr(true),
 			valuePtr(val)
 		{}
@@ -114,6 +120,30 @@ private:
 	stringHash hash;	
 
 };
+
+
+
+constexpr MyStringView::MyStringView() noexcept :
+	str(nullptr),
+	len(0),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
+constexpr MyStringView::MyStringView(StringLiteral l) noexcept :
+	str(l),
+	len(StringLengthCExpr(str)),
+	hash(MurmurHash3_32CExpr(str, static_cast<uint32_t>(len), MURMUR_HASH_DEF_SEED))
+{
+}
+
+
+constexpr MyStringView::MyStringView(const char* str, size_t len) noexcept :
+	str(str),
+	len((len == 0) ? StringLengthCExpr(str) : len),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
 
 
 template <typename T>
