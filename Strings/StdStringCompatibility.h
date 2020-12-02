@@ -25,7 +25,7 @@ public:
 	}
 
 	size_t find(const char * str, size_t offset = 0) const
-	{
+	{		
 		return static_cast<const Type *>(this)->Find(str, offset);
 	}
 
@@ -38,6 +38,20 @@ public:
 		return static_cast<const Type *>(this)->SubString(static_cast<int>(start), length);
 	}
 
+	void pop_back() noexcept
+	{		
+		static_cast<Type*>(this)->PopBack();
+	}
+
+	void push_back(char c)
+	{
+		static_cast<Type*>(this)->operator+=(c);
+	}
+
+	char & back() noexcept
+	{
+		static_cast<Type*>(this)->GetLastChar();
+	}
 };
 
 #endif

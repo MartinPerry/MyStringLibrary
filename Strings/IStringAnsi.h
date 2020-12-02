@@ -85,6 +85,13 @@ public:
 		return this->operator[](length - 1);
 	};
 
+	char & GetLastChar()
+	{
+		size_t length = static_cast<const Type*>(this)->length();
+		return this->operator[](length - 1);
+	};
+
+
 	void ResizeBuffer(size_t bufferSize);
 	void Clear();
 	void Trim();
