@@ -271,11 +271,18 @@ RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 	fclose(f);
 
 	data[size] = 0;
-	RetVal tmp = RetVal(data);
-	delete[] data;
 
-	return tmp;
+	if constexpr (std::is_same<RetVal, MyStringAnsi>::value)
+	{
+		return MyStringAnsi::CreateFromMoveMemory(data, size + 1, size);		
+	}
+	else
+	{
+		RetVal tmp = RetVal(data);
+		delete[] data;
 
+		return tmp;
+	}
 }
 
 /// <summary>

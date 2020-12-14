@@ -6,6 +6,7 @@ class MyStringAnsi;
 #include <stddef.h>
 #include <stdint.h>
 #include <type_traits>
+#include <vector>
 
 #include "./MyStringMacros.h"
 
@@ -202,6 +203,9 @@ struct MyStringUtils
 	static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept;
 	static uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept;
 	static uint64_t ReversDigits(uint64_t num) noexcept;
+
+	static std::vector<std::vector<MyStringAnsi>> LoadCsv(const char* fileName, char delim);
+
 };
 
 

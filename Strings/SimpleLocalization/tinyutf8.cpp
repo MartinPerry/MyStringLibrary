@@ -42,7 +42,7 @@ utf8_string::utf8_string( utf8_string::size_type number , utf8_string::value_typ
 	
 	if( num_bytes == 1 )
 		while( number-- > 0 )
-			this->buffer[number] = ch;
+			this->buffer[number] = static_cast<char>(ch);
 	else
 	{
 		char representation[6];

@@ -58,6 +58,14 @@ MyStringAnsi MyStringUtils::ToStringSimple(double val, int fractPlaces)
 	return res;
 }
 
+/// <summary>
+/// Get fractional part of number in reversed order
+/// Eg: for 45.789 => 987
+/// </summary>
+/// <param name="val">number</param>
+/// <param name="intPart">integer part of number</param>
+/// <param name="fractPlaces">how many places we want</param>
+/// <returns></returns>
 uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept
 {
 	double decimalMult = std::pow(10, fractPlaces);
@@ -144,3 +152,26 @@ uint64_t MyStringUtils::ReversDigits(uint64_t num) noexcept
 	return rev_num;
 }
 
+/// <summary>
+/// Simple load for CSV
+/// CSV is splitted with delimeter, but this method
+/// does not handle delimeter inside strings ""
+/// </summary>
+/// <param name="fileName"></param>
+/// <param name="delim"></param>
+/// <returns></returns>
+std::vector<std::vector<MyStringAnsi>> MyStringUtils::LoadCsv(const char* fileName, char delim)
+{
+	std::vector<std::vector<MyStringAnsi>> res;
+
+	MyStringAnsi tmp = MyStringAnsi::LoadFromFile(fileName);
+
+	auto lines = tmp.Split({ '\n', '\r' });
+
+	for (auto & line : lines)
+	{
+		res.emplace_back(line.Split(delim));
+	}
+
+	return res;
+}
