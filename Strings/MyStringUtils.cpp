@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <climits>
 #include <cfloat>
+#include <cmath>
 
 #include "./MyStringAnsi.h"
 

@@ -8,7 +8,7 @@ class MySmallStringAnsi;
 #include <unordered_map>
 #include <stdint.h>
 #include <limits>
-#include <string>
+#include <string.h>
 #include <vector>
 
 #include "./MurmurHash3_constexpr.inl"
