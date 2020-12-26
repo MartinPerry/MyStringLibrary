@@ -29,6 +29,11 @@ public:
 		return static_cast<const Type *>(this)->Find(str, offset);
 	}
 
+	size_t find(const Type& str, size_t offset = 0) const
+	{
+		return static_cast<const Type*>(this)->Find(str.c_str(), offset);
+	}
+
 	Type substr(const size_t start = 0, const size_t length = Type::npos) const
 	{
 		if (length == Type::npos)
@@ -50,7 +55,7 @@ public:
 
 	char & back() noexcept
 	{
-		static_cast<Type*>(this)->GetLastChar();
+		return static_cast<Type*>(this)->GetLastChar();
 	}
 };
 

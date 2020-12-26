@@ -12,6 +12,7 @@ class MyStringView;
 #include <functional> //lambdas
 #include <stdarg.h> //var args
 #include <algorithm> //std::find
+#include <stdio.h>
 
 #if __has_include("./StdStringCompatibility.h")
 #	include "./StdStringCompatibility.h"
@@ -274,7 +275,7 @@ RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 
 	if constexpr (std::is_same<RetVal, MyStringAnsi>::value)
 	{
-		return MyStringAnsi::CreateFromMoveMemory(data, size + 1, size);		
+		return RetVal::CreateFromMoveMemory(data, size + 1, size);
 	}
 	else
 	{

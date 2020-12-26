@@ -121,8 +121,7 @@ uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int f
 	uint8_t * buf = reinterpret_cast<uint8_t *>(&res);
 
 	buf[fractPlaces] = 0; //set terminating NULL to last fractPlace
-
-	uint64_t rev_num = 0;
+	
 	while (fractInt > 0)
 	{
 		fractPlaces--;

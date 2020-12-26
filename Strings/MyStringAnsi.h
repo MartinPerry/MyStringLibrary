@@ -102,8 +102,8 @@ public:
 
 	MyStringAnsi() : 
 		strPtr(nullptr),
-		strLength(0),
-		bufferCapacity(0)
+		bufferCapacity(0),
+		strLength(0)
 	{
 		this->CtorInternal(nullptr);
 	}
@@ -125,8 +125,8 @@ public:
 
 	MyStringAnsi(const MyStringAnsi &other) : 
 		strPtr(nullptr),
-		strLength(0),
-		bufferCapacity(0)
+		bufferCapacity(0),
+		strLength(0)		
 	{
 		this->CtorInternal(other.c_str());		
 		this->hashCode = other.hashCode;
