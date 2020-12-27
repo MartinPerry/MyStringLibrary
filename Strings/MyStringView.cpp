@@ -92,6 +92,23 @@ void MyStringView::RemoveFromEnd(int count)
 	this->len--;
 }
 
+MyStringView MyStringView::SubString(int start, size_t length) const
+{	
+	MyStringView v = *this;
+
+	for (int i = 0; i < start; i++)
+	{
+		v.str++;
+		v.len--;
+	}
+
+	if (v.len > length)
+	{
+		v.len = length;
+	}
+	return v;
+}
+
 /// <summary>
 /// Find char within this string view and return first position of
 /// occurence

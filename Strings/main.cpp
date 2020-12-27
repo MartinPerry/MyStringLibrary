@@ -357,6 +357,9 @@ int main(int argc, char ** argv)
 
 	StringLiteral sl = "-789.0099917"_L;;
 
+	MyStringView vvxx = "Ahoj";
+	auto subs = vvxx.SubString(1, 4);
+
 	std::string xster = "asa";
 
 	MyStringView vvv;

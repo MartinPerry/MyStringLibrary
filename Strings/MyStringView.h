@@ -73,7 +73,7 @@ public:
 
 	void RemoveFromStart(int count);
 	void RemoveFromEnd(int count);
-
+	MyStringView SubString(int start, size_t length) const;
 
 	size_t Find(const char c) const noexcept;
 
