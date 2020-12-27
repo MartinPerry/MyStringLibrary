@@ -49,6 +49,9 @@ constexpr inline StringLiteral operator"" _L(const char* str, size_t)
 class MyStringView 
 {
 public:
+
+	static const size_t npos = static_cast<size_t>(-1);
+
 	constexpr MyStringView() noexcept;
 	constexpr MyStringView(StringLiteral l) noexcept;
 	constexpr MyStringView(const char * str, size_t len = 0) noexcept;
@@ -70,6 +73,9 @@ public:
 
 	void RemoveFromStart(int count);
 	void RemoveFromEnd(int count);
+
+
+	size_t Find(const char c) const noexcept;
 
 	MyStringView & operator = (const char * str) noexcept;
 

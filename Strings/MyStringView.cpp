@@ -91,3 +91,25 @@ void MyStringView::RemoveFromEnd(int count)
 {	
 	this->len--;
 }
+
+/// <summary>
+/// Find char within this string view and return first position of
+/// occurence
+/// </summary>
+/// <param name="str">char to find</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringView::Find(const char c) const noexcept
+{
+	size_t strLen = this->length();
+	const char* str = this->c_str();
+
+	for (size_t i = 0; i < strLen; i++)
+	{
+		if (str[i] == c)
+		{
+			return i;
+		}
+	}
+
+	return MyStringView::npos;
+}
