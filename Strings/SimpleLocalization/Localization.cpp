@@ -21,12 +21,6 @@
 #include <cstdio>
 #include <algorithm>
 
-#ifdef _WIN32
-#   include "./win_dirent.h"
-#else 
-#   include <sys/stat.h>
-#   include <dirent.h>
-#endif
 
 #include "./cJSON_JS.h"
 
@@ -34,11 +28,23 @@
 #   define GENERATE_CODE
 #endif
 
+#ifdef GENERATE_CODE
+#	ifdef _WIN32
+#		include "./win_dirent.h"
+#	else 
+#		include <sys/stat.h>
+#	   include <dirent.h>
+#	endif
+#endif
+
+
 #ifdef USE_VFS
 #   include "../Utils/VFS/VFS.h"
 #endif
 
-#include "generated_localization.h"
+#if __has_include("generated_localization.h")
+#	include "generated_localization.h"
+#endif
 
 //Limitation: translated string cannot contain {}
 //These symbols are reserved for "translation replacement"
@@ -56,8 +62,8 @@ Localization::Localization(Localization::StringView lang,
 	lang(""), 
 	DEFAULT_LANGUAGE(defLang), 
 	DEFAULT_PATH(defPath)
-{
-	this->LoadAllSupportedLanguages();
+{	
+	this->GenerateSupportedLanguagesList();
     this->SetLang(lang);
 }
 
@@ -67,18 +73,24 @@ Localization::~Localization()
 {
 }
 
-const std::map<Localization::String, Localization::String> & Localization::GetAllSupportedLanguages() const
+const std::map<Localization::StringView, Localization::StringView> & Localization::GetAllSupportedLanguages() const
 {
-	return this->supportedLanguages;
+#ifdef GENERATED_LANG_LIST_H
+	return SUPPORTED_LANG_LIST;
+#elif defined(GENERATE_CODE)
+	//here we return address of local variable
+	//but it is OK, because we use GENERATE_CODE mode to generate correct header
+	return {};
+#else
+#	error List of languages not found
+#endif
 }
 
-void Localization::LoadAllSupportedLanguages()
-{	
-#ifdef GENERATED_LANG_LIST_H
+void Localization::GenerateSupportedLanguagesList()
+{
+#if defined(GENERATE_CODE) && !defined(GENERATED_LANG_LIST_H)
 
-	this->supportedLanguages = SUPPORTED_LANG_LIST;
-
-#else
+	std::map<String, String> langList;
 
 	DIR *dir;
 	struct dirent * ent;
@@ -124,7 +136,7 @@ void Localization::LoadAllSupportedLanguages()
 				{
 					label = code;
 				}
-				supportedLanguages[code] = label;
+				langList[code] = label;
 			}
 			break;
 
@@ -138,14 +150,13 @@ void Localization::LoadAllSupportedLanguages()
 		}
 	}
 
-#ifdef GENERATE_CODE
 
 	Localization::String generatedCodeCpp = "#ifndef GENERATED_LANG_LIST_H\n";
 	generatedCodeCpp += "#define GENERATED_LANG_LIST_H\n\n";
 	generatedCodeCpp += "#include \"./Localization.h\"\n\n";
-	generatedCodeCpp += "static std::map<Localization::String, Localization::String> SUPPORTED_LANG_LIST = { \n";
+	generatedCodeCpp += "static const std::map<Localization::StringView, Localization::StringView> SUPPORTED_LANG_LIST = { \n";
 
-	for (auto & langInfo : supportedLanguages)
+	for (auto & langInfo : langList)
 	{
 			generatedCodeCpp += "{\"";
 			generatedCodeCpp += langInfo.first;
@@ -167,7 +178,6 @@ void Localization::LoadAllSupportedLanguages()
 		fclose(f);
 	}
 
-#endif
 
 	closedir(dir);
 #endif

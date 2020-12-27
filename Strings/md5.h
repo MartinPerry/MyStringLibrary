@@ -368,13 +368,18 @@ public:
   }
 
   // Digests a string and prints the result.
-  char* digestString(const char *string )
+  char* digestString(const char* string, size_t len = 0)
   {
-    Init() ;
-    Update( (unsigned char*)string, strlen(string) ) ;
-    Final() ;
+      if (len == 0)
+      {
+          len = strlen(string);
+      }
 
-    return digestChars ;
+      Init();
+      Update((unsigned char*)string, len);
+      Final();
+
+      return digestChars;
   }
 } ;
 

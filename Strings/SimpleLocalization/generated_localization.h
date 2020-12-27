@@ -3,7 +3,7 @@
 
 #include "./Localization.h"
 
-static std::map<Localization::String, Localization::String> SUPPORTED_LANG_LIST = { 
+static const std::map<Localization::StringView, Localization::StringView> SUPPORTED_LANG_LIST = {
 {"cs", "česky"},
 {"en", "english"},
 {"ru", "русский"} 

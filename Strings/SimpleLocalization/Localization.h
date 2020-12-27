@@ -28,7 +28,7 @@ public:
 	Localization(StringView lang, StringView defLang = "en", StringView defPath = "");
 	~Localization();
 	
-	const std::map<String, String> & GetAllSupportedLanguages() const;
+	const std::map<StringView, StringView> & GetAllSupportedLanguages() const;
 
     void SetLang(StringView lang);
     const String & GetLang() const;
@@ -58,13 +58,13 @@ protected:
 	const String DEFAULT_LANGUAGE;
 	const String DEFAULT_PATH;
 
-	std::map<String, String> supportedLanguages;
+	std::map<StringView, StringView> supportedLanguages;
     String lang;
     
 	std::unordered_map<String, LocalString> strs; //ordinary translation [key] = value
 	std::unordered_map<String, std::unordered_map<String, LocalString>> groups; //special translation [group][key] = value
-
-	void LoadAllSupportedLanguages();
+	
+	void GenerateSupportedLanguagesList();
 
 	void LoadLocalization(const String & langID);
 	LocalString ProcessSingleInput(const char * rawData);
