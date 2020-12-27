@@ -81,6 +81,24 @@ char MyStringView::GetLastChar() const
 	return this->str[len - 1];
 }
 
+void MyStringView::Trim()
+{
+	size_t newLength = this->length();
+	
+	while ((*str > 0) && isspace(*str))
+	{
+		str++;
+		len--;
+	}
+
+	const char* end = str + this->len - 1;
+	while ((end > str) && (*end > 0) && isspace(*end))
+	{
+		end--;
+		len--;
+	}
+}
+
 void MyStringView::RemoveFromStart(int count)
 {
 	this->str++;
