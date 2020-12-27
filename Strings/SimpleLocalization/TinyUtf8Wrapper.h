@@ -33,7 +33,7 @@ struct TinyUtf8Wrapper
 
 	template <typename S>
 	S getAs() const
-	{		
+	{				
 		return S(str.c_str());
 	}
 	

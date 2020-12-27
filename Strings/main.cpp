@@ -433,6 +433,8 @@ int main(int argc, char ** argv)
 		MyStringAnsi moveS = "xxxxx";
 
 		xMove = (char *)(std::move(moveS));
+
+		delete[] xMove;
 	}
 
 	MyStringAnsi tmpFind = "";

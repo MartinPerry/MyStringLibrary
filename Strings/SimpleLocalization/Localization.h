@@ -7,8 +7,13 @@
 #include <vector>
 #include <initializer_list>
 
-#include "./TinyUtf8Wrapper.h"
-#include "./IcuUnicodeStringWrapper.h"
+#if __has_include("./TinyUtf8Wrapper.h")
+#	include "./TinyUtf8Wrapper.h"
+#endif
+
+#if __has_include("./IcuUnicodeStringWrapper.h")
+#	include "./IcuUnicodeStringWrapper.h"
+#endif
 
 #include "../MyString.h"
 
@@ -17,14 +22,15 @@ class Localization
 public:
 
 	using String = MyStringAnsi;	
+	using StringView = MyStringView;
 	using UnicodeStringWrapper = TinyUtf8Wrapper;
 	
-	Localization(const String & lang, const String & defLang = "en", const String & defPath = "");
+	Localization(StringView lang, StringView defLang = "en", StringView defPath = "");
 	~Localization();
 	
 	const std::map<String, String> & GetAllSupportedLanguages() const;
 
-    void SetLang(const String & lang);
+    void SetLang(StringView lang);
     const String & GetLang() const;
     
 	UnicodeStringWrapper Localize(const String & key, bool * exist = nullptr);

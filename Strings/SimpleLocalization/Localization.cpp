@@ -50,9 +50,9 @@
 
 
 
-Localization::Localization(const Localization::String & lang, 
-	const Localization::String & defLang, 
-	const Localization::String & defPath) : 
+Localization::Localization(Localization::StringView lang,
+	Localization::StringView defLang,
+	Localization::StringView defPath) :
 	lang(""), 
 	DEFAULT_LANGUAGE(defLang), 
 	DEFAULT_PATH(defPath)
@@ -74,7 +74,7 @@ const std::map<Localization::String, Localization::String> & Localization::GetAl
 
 void Localization::LoadAllSupportedLanguages()
 {	
-#ifdef _GENERATED_LANG_LIST_H_
+#ifdef GENERATED_LANG_LIST_H
 
 	this->supportedLanguages = SUPPORTED_LANG_LIST;
 
@@ -140,9 +140,9 @@ void Localization::LoadAllSupportedLanguages()
 
 #ifdef GENERATE_CODE
 
-	Localization::String generatedCodeCpp = "#ifndef _GENERATED_LANG_LIST_H_\n";
-	generatedCodeCpp += "#define _GENERATED_LANG_LIST_H_\n\n";
-	
+	Localization::String generatedCodeCpp = "#ifndef GENERATED_LANG_LIST_H\n";
+	generatedCodeCpp += "#define GENERATED_LANG_LIST_H\n\n";
+	generatedCodeCpp += "#include \"./Localization.h\"\n\n";
 	generatedCodeCpp += "static std::map<Localization::String, Localization::String> SUPPORTED_LANG_LIST = { \n";
 
 	for (auto & langInfo : supportedLanguages)
@@ -212,7 +212,7 @@ const Localization::String & Localization::GetLang() const
     return this->lang;
 }
 
-void Localization::SetLang(const Localization::String & lang)
+void Localization::SetLang(Localization::StringView lang)
 {
 	if (this->lang == lang)
 	{
@@ -226,9 +226,9 @@ void Localization::SetLang(const Localization::String & lang)
     
     this->LoadLocalization(DEFAULT_LANGUAGE);
     
-    if (lang != DEFAULT_LANGUAGE)
+    if (this->lang != DEFAULT_LANGUAGE)
     {
-        this->LoadLocalization(lang);
+        this->LoadLocalization(this->lang);
     }
 }
 
@@ -379,7 +379,8 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 	return this->Localize(key, "", exist);
 }
 
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, const Localization::String & group, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
+	const Localization::String & group, bool * exist)
 {
 	std::unordered_map<Localization::String, LocalString>::const_iterator it;
 
@@ -410,24 +411,26 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 		}
 	}
 		
+	if (exist != nullptr) *exist = true;
 
 	const Localization::LocalString & str = it->second;
-
-	Localization::UnicodeStringWrapper tmp = str.str;
-
+	
 	if (str.replaceNames.size() != 0)
 	{
 		std::vector<Localization::UnicodeStringWrapper> t;
 		for (size_t i = 0; i < str.replaceNames.size(); i++)
 		{
-			t.push_back(this->Localize(str.replaceNames[i], str.replaceNameGroups[i]));
+			auto val = this->Localize(str.replaceNames[i], str.replaceNameGroups[i]);
+			t.push_back(std::move(val));
 		}
 
-		tmp = this->LocalizeWithReplace(str, t);
+		return this->LocalizeWithReplace(str, t);
 	}
+	else
+	{
 
-	if (exist != nullptr) *exist = true;
-	return tmp;
+		return str.str;
+	}
 }
 
 /// <summary>
@@ -443,7 +446,8 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// <param name="key"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
+	const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
 {	
 	return this->Localize(key, "", params, exist);
 }
@@ -462,7 +466,9 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// <param name="group"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, const Localization::String & group, const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
+	const Localization::String & group, 
+	const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
 {
 	std::unordered_map<Localization::String, LocalString>::const_iterator it;
 
@@ -505,7 +511,7 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 			str.replaceNameGroups[index], &found);
 		if (found)
 		{
-			t.push_back(s);
+			t.push_back(std::move(s));
 		}
 		else
 		{
@@ -513,9 +519,11 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 		}
 		index++;
 	}
+
 	for (size_t i = index; i < str.replaceNames.size(); i++)
 	{
-		t.push_back(this->Localize(str.replaceNames[i], str.replaceNameGroups[i]));
+		auto val = this->Localize(str.replaceNames[i], str.replaceNameGroups[i]);
+		t.push_back(std::move(val));
 	}
 
 
@@ -528,11 +536,13 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// </summary>
 /// <param name="input"></param>
 /// <param name="params"></param>
-Localization::UnicodeStringWrapper Localization::LocalizeWithReplace(const LocalString & input, const std::vector<Localization::UnicodeStringWrapper> & params)
+Localization::UnicodeStringWrapper Localization::LocalizeWithReplace(const LocalString & input, 
+	const std::vector<Localization::UnicodeStringWrapper> & params)
 {
 	size_t count = std::min(params.size(), input.replaceOffsetsRawStart.size());
 
 	Localization::UnicodeStringWrapper tmp = input.str;
+
 	size_t i = 0;
 	size_t offset = 0;
 	for (const auto & elem : params)

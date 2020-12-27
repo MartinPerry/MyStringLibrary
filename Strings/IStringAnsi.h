@@ -3,7 +3,7 @@
 
 class MyStringAnsi;
 class MySmallStringAnsi;
-class MyStringView;
+//class MyStringView;
 
 #include <limits>
 #include <vector>
@@ -19,6 +19,7 @@ class MyStringView;
 #	define STD_STRING_COMPATIBILITY 1
 #endif
 
+#include "./MyStringView.h"
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
 
@@ -60,13 +61,13 @@ public:
 	virtual ~IStringAnsi();
 
 	template <typename RetVal = Type>
-	static RetVal LoadFromFile(const char * fileName);
+	static RetVal LoadFromFile(MyStringView fileName);
 
 	template <typename ...Args, typename RetVal = Type>	
-	static RetVal CreateFormated(const char * str, Args ...args);
+	static RetVal CreateFormated(MyStringView str, Args ...args);
 
 	template <typename RetVal = Type>
-	static RetVal CreateFormated(const char * str, va_list args);
+	static RetVal CreateFormated(MyStringView str, va_list args);
 			
 	//======================================================================
 	
@@ -110,12 +111,11 @@ public:
 	size_t Count(const char str) const;
 
 
-	size_t Find(const char c) const;
-	size_t FindLast(const char c) const;
-	size_t Find(const Type & str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
-	size_t Find(const char * str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
-	size_t Find(const char * str, size_t offset) const;
-	std::vector<size_t> FindAll(const char * str) const;
+	size_t Find(const char c) const noexcept;
+	size_t FindLast(const char c) const noexcept;
+	size_t Find(MyStringView str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
+	size_t Find(MyStringView str, size_t offset) const;
+	std::vector<size_t> FindAll(MyStringView str) const;
 
 
 	void Append(const char * str, size_t len = 0);
@@ -124,15 +124,14 @@ public:
 	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);
 
 	template<typename ...Args>
-	void AppendFormat(const char * str, Args ...args);
+	void AppendFormat(MyStringView str, Args ...args);
 
-	void AppendFormat(const char * str, va_list args);
+	void AppendFormat(MyStringView str, va_list args);
 	
-	void Replace(const Type & oldValue, const Type & newValue);
-	void Replace(const char * oldValue, const char * newValue);
-	void Replace(const char * oldValue, const char * newValue, size_t replaceOffset);
-	void Replace(const char * oldValue, const char * newValue, const std::vector<size_t> & searchStartPos);
-	Type CreateReplaced(const char * src, const char * dest) const;
+	void Replace(MyStringView oldValue, MyStringView newValue);	
+	void Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset);
+	void Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos);
+	Type CreateReplaced(MyStringView src, MyStringView dest) const;
 
 	Type SubString(int start) const;
 	Type SubString(int start, size_t length) const;
@@ -178,9 +177,7 @@ public:
 	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || 
 		std::is_same<T, MySmallStringAnsi>::value ||
 		std::is_same<T, MyStringView>::value))
-    operator = (const T & str);
-	Type & operator = (const char * str);
-	Type & operator = (const std::string & str);
+    operator = (const T & str);	
 	Type & operator = (Type && other);
 
 
@@ -232,10 +229,10 @@ protected:
 	
 	void CreateNew(const char * str, size_t length);
 
-	size_t CLib(const char * str, size_t start = 0) const;
-	size_t BruteForce(const char * str, size_t start = 0) const;
-	size_t BoyerMoore(const char * str, size_t * &lookUp, size_t start = 0) const;
-	size_t KnuthMorisPrat(const char * str, size_t * &lookUp, size_t start = 0) const;
+	size_t CLib(MyStringView str, size_t start = 0) const;
+	size_t BruteForce(MyStringView str, size_t start = 0) const;
+	size_t BoyerMoore(MyStringView str, size_t * &lookUp, size_t start = 0) const;
+	size_t KnuthMorisPrat(MyStringView str, size_t * &lookUp, size_t start = 0) const;
 
 
 };
@@ -253,13 +250,13 @@ protected:
 /// <returns></returns>
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
+RetVal IStringAnsi<Type>::LoadFromFile(MyStringView fileName)
 {
 	FILE *f = nullptr;  //pointer to file we will read in
-	my_fopen(&f, fileName, "rb");
+	my_fopen(&f, fileName.c_str(), "rb");
 	if (f == nullptr)
 	{
-		printf("Failed to open file: \"%s\"\n", fileName);
+		printf("Failed to open file: \"%s\"\n", fileName.c_str());
 		return "";
 	}
 
@@ -296,9 +293,9 @@ RetVal IStringAnsi<Type>::LoadFromFile(const char * fileName)
 /// <returns></returns>
 template <typename Type>
 template <typename ...Args, typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args)
+RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, Args ...args)
 {
-	if (newStrFormat == nullptr)
+	if (newStrFormat.c_str() == nullptr)
 	{
 		return RetVal("");
 	}
@@ -310,7 +307,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args
 	while (appendLength < 0)
 	{
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = snprintf(&localBuffer[0], localBuffer.size(), newStrFormat, std::forward<Args>(args)...);
+		appendLength = snprintf(&localBuffer[0], localBuffer.size(), newStrFormat.c_str(), std::forward<Args>(args)...);
 	}
 
 
@@ -320,7 +317,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args
 
 	char * str = newStr.str();
 	
-	int written = snprintf(str, bufferSize, newStrFormat, std::forward<Args>(args)...);
+	int written = snprintf(str, bufferSize, newStrFormat.c_str(), std::forward<Args>(args)...);
 
 	if (written == -1)
 	{
@@ -350,9 +347,9 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, Args ...args
 
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args)
+RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, va_list args)
 {
-	if (newStrFormat == nullptr)
+	if (newStrFormat.c_str() == nullptr)
 	{
 		return RetVal("");
 	}
@@ -363,7 +360,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args
 	while (appendLength < 0)
 	{		
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, args);	
+		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat.c_str(), args);
 	}
 
 
@@ -373,7 +370,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args
 
 	char * str = newStr.str();
 	
-	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, args);
+	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat.c_str(), args);
 
 	if (written == -1)
 	{
@@ -398,7 +395,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char * newStrFormat, va_list args
 /// <param name="...args"></param>
 template <typename Type>
 template<typename ...Args>
-void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args ...args)
+void IStringAnsi<Type>::AppendFormat(MyStringView appendStr, Args ...args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, std::forward<Args>(args)...);
 	this->Append(tmp.c_str());
@@ -412,7 +409,7 @@ void IStringAnsi<Type>::AppendFormat(const char * appendStr, Args ...args)
 /// <param name="appendStr"></param>
 /// <param name="...args"></param>
 template <typename Type>
-void IStringAnsi<Type>::AppendFormat(const char * appendStr, va_list args)
+void IStringAnsi<Type>::AppendFormat(MyStringView appendStr, va_list args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args);
 	this->Append(tmp.c_str());
@@ -730,20 +727,6 @@ IStringAnsi<Type>::operator = (const T & str)
 	return *static_cast<Type *>(this);
 };
 
-
-template <typename Type>
-inline Type & IStringAnsi<Type>::operator =(const char * str)
-{
-	this->CreateNew(str, 0);
-	return *static_cast<Type *>(this);
-};
-
-template <typename Type>
-inline Type & IStringAnsi<Type>::operator = (const std::string & str)
-{
-	this->CreateNew(str.c_str(), str.length());
-	return *static_cast<Type *>(this);
-};
 
 template <typename Type>
 inline Type & IStringAnsi<Type>::operator = (Type && other)
