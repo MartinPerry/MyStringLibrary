@@ -64,10 +64,10 @@ public:
 	static RetVal LoadFromFile(MyStringView fileName);
 
 	template <typename ...Args, typename RetVal = Type>	
-	static RetVal CreateFormated(MyStringView str, Args ...args);
+	static RetVal CreateFormated(const char * str, Args ...args);
 
 	template <typename RetVal = Type>
-	static RetVal CreateFormated(MyStringView str, va_list args);
+	static RetVal CreateFormated(const char* str, va_list args);
 			
 	//======================================================================
 	
@@ -113,7 +113,9 @@ public:
 
 	size_t Find(const char c) const noexcept;
 	size_t FindLast(const char c) const noexcept;
-	size_t Find(MyStringView str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
+	size_t Find(const Type& str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
+	size_t Find(MyStringView str, SearchAlgorithm algo = SearchAlgorithm::BF) const;
+	size_t Find(const char * str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
 	size_t Find(MyStringView str, size_t offset) const;
 	std::vector<size_t> FindAll(MyStringView str) const;
 
@@ -124,9 +126,9 @@ public:
 	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);
 
 	template<typename ...Args>
-	void AppendFormat(MyStringView str, Args ...args);
+	void AppendFormat(const char* str, Args ...args);
 
-	void AppendFormat(MyStringView str, va_list args);
+	void AppendFormat(const char* str, va_list args);
 	
 	void Replace(MyStringView oldValue, MyStringView newValue);	
 	void Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset);
@@ -178,7 +180,8 @@ public:
 		std::is_same<T, MySmallStringAnsi>::value ||
 		std::is_same<T, MyStringView>::value))
     operator = (const T & str);	
-	Type & operator = (Type && other);
+	Type& operator = (const char * str);
+	Type& operator = (Type && other);
 
 
 	template <typename T>
@@ -227,9 +230,9 @@ protected:
 
 
 	
-	void CreateNew(const char * str, size_t length);
+	void CreateNew(const char * str, size_t length = 0);
 
-	size_t CLib(MyStringView str, size_t start = 0) const;
+	size_t CLib(const char * str, size_t start = 0) const;
 	size_t BruteForce(MyStringView str, size_t start = 0) const;
 	size_t BoyerMoore(MyStringView str, size_t * &lookUp, size_t start = 0) const;
 	size_t KnuthMorisPrat(MyStringView str, size_t * &lookUp, size_t start = 0) const;
@@ -293,9 +296,9 @@ RetVal IStringAnsi<Type>::LoadFromFile(MyStringView fileName)
 /// <returns></returns>
 template <typename Type>
 template <typename ...Args, typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, Args ...args)
+RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, Args ...args)
 {
-	if (newStrFormat.c_str() == nullptr)
+	if (newStrFormat == nullptr)
 	{
 		return RetVal("");
 	}
@@ -307,7 +310,7 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, Args ...args
 	while (appendLength < 0)
 	{
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = snprintf(&localBuffer[0], localBuffer.size(), newStrFormat.c_str(), std::forward<Args>(args)...);
+		appendLength = snprintf(&localBuffer[0], localBuffer.size(), newStrFormat, std::forward<Args>(args)...);
 	}
 
 
@@ -317,7 +320,7 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, Args ...args
 
 	char * str = newStr.str();
 	
-	int written = snprintf(str, bufferSize, newStrFormat.c_str(), std::forward<Args>(args)...);
+	int written = snprintf(str, bufferSize, newStrFormat, std::forward<Args>(args)...);
 
 	if (written == -1)
 	{
@@ -347,9 +350,9 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, Args ...args
 
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, va_list args)
+RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, va_list args)
 {
-	if (newStrFormat.c_str() == nullptr)
+	if (newStrFormat == nullptr)
 	{
 		return RetVal("");
 	}
@@ -360,7 +363,7 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, va_list args
 	while (appendLength < 0)
 	{		
 		localBuffer.resize(localBuffer.size() + 256);
-		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat.c_str(), args);
+		appendLength = my_vsnprintf(&localBuffer[0], localBuffer.size(), localBuffer.size() - 1, newStrFormat, args);
 	}
 
 
@@ -370,7 +373,7 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, va_list args
 
 	char * str = newStr.str();
 	
-	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat.c_str(), args);
+	int written = my_vsnprintf(str, bufferSize, bufferSize - 1, newStrFormat, args);
 
 	if (written == -1)
 	{
@@ -395,7 +398,7 @@ RetVal IStringAnsi<Type>::CreateFormated(MyStringView newStrFormat, va_list args
 /// <param name="...args"></param>
 template <typename Type>
 template<typename ...Args>
-void IStringAnsi<Type>::AppendFormat(MyStringView appendStr, Args ...args)
+void IStringAnsi<Type>::AppendFormat(const char* appendStr, Args ...args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, std::forward<Args>(args)...);
 	this->Append(tmp.c_str());
@@ -409,7 +412,7 @@ void IStringAnsi<Type>::AppendFormat(MyStringView appendStr, Args ...args)
 /// <param name="appendStr"></param>
 /// <param name="...args"></param>
 template <typename Type>
-void IStringAnsi<Type>::AppendFormat(MyStringView appendStr, va_list args)
+void IStringAnsi<Type>::AppendFormat(const char* appendStr, va_list args)
 {
 	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args);
 	this->Append(tmp.c_str());
@@ -727,6 +730,12 @@ IStringAnsi<Type>::operator = (const T & str)
 	return *static_cast<Type *>(this);
 };
 
+template <typename Type>
+inline Type& IStringAnsi<Type>::operator = (const char* str)
+{
+	this->CreateNew(str);
+	return *static_cast<Type*>(this);
+}
 
 template <typename Type>
 inline Type & IStringAnsi<Type>::operator = (Type && other)

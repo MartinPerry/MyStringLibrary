@@ -355,6 +355,9 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	MyStringAnsi ere = "xxx   ";
+	ere.Trim();
+
 	StringLiteral sl = "-789.0099917"_L;;
 
 	MyStringView vvxx = "  Ahoj   xx  ";

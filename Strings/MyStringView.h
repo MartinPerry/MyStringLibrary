@@ -27,6 +27,8 @@ public:
 	// literals to `_L` literals. If there is no such need, then move constructor
 	// to private section.
 
+	constexpr uint32_t length() const { return StringLengthCExpr(literal_); }
+
 	constexpr operator const char* () { return literal_; }
 
 private:
@@ -54,7 +56,7 @@ public:
 
 	constexpr MyStringView() noexcept;
 	constexpr MyStringView(StringLiteral l) noexcept;
-	constexpr MyStringView(const char * str, size_t len = 0) noexcept;
+	MyStringView(const char * str, size_t len = 0) noexcept;
 	MyStringView(const MyStringAnsi & str) noexcept;
 	MyStringView(const MySmallStringAnsi & str) noexcept;
 	MyStringView(const MyStringView & v) noexcept;
@@ -73,8 +75,8 @@ public:
 
 	void Trim();
 
-	void RemoveFromStart(int count);
-	void RemoveFromEnd(int count);
+	void RemoveFromStart(size_t count = 1);
+	void RemoveFromEnd(size_t count = 1);
 	MyStringView SubString(int start, size_t length) const;
 
 	size_t Find(const char c) const noexcept;
@@ -140,18 +142,11 @@ constexpr MyStringView::MyStringView() noexcept :
 
 constexpr MyStringView::MyStringView(StringLiteral l) noexcept :
 	str(l),
-	len(StringLengthCExpr(str)),
+	len(l.length()),
 	hash(MurmurHash3_32CExpr(str, static_cast<uint32_t>(len), MURMUR_HASH_DEF_SEED))
 {
 }
 
-
-constexpr MyStringView::MyStringView(const char* str, size_t len) noexcept :
-	str(str),
-	len((len == 0) ? StringLengthCExpr(str) : len),
-	hash(std::numeric_limits<uint32_t>::max())
-{
-}
 
 
 template <typename T>

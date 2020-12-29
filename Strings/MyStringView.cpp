@@ -4,6 +4,14 @@
 #include "./MySmallStringAnsi.h"
 #include "./MurmurHash3.h"
 
+MyStringView::MyStringView(const char* str, size_t len) noexcept :
+	str(str),
+	len((len == 0) ? strlen(str) : len),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
+
 MyStringView::MyStringView(const MyStringAnsi & str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
@@ -43,7 +51,7 @@ MyStringView::MyStringView(const std::vector<char>& v) noexcept :
 MyStringView & MyStringView::operator = (const char * str) noexcept
 {
 	this->str = str;
-	this->len = StringLengthCExpr(str);
+	this->len = strlen(str);
 	this->hash = std::numeric_limits<uint32_t>::max();// static_cast<uint32_t>(MurmurHash3_x86_32(str, len));
 	return *this;
 }
@@ -78,12 +86,17 @@ uint32_t MyStringView::GetHashCode() const noexcept
 
 char MyStringView::GetLastChar() const
 {	
+	if (len == 0)
+	{
+		return 0;
+	}
+
 	return this->str[len - 1];
 }
 
 void MyStringView::Trim()
 {
-	size_t newLength = this->length();
+	size_t oldLength = this->length();
 	
 	while ((*str > 0) && isspace(*str))
 	{
@@ -97,17 +110,34 @@ void MyStringView::Trim()
 		end--;
 		len--;
 	}
+
+	if (oldLength != len)
+	{
+		this->hash = std::numeric_limits<uint32_t>::max();
+	}
 }
 
-void MyStringView::RemoveFromStart(int count)
+void MyStringView::RemoveFromStart(size_t count)
 {
-	this->str++;
-	this->len--;
+	if (len < count)
+	{
+		count = len;
+	}
+
+	this->str += count;
+	this->len -= count;
+	this->hash = std::numeric_limits<uint32_t>::max();
 }
 
-void MyStringView::RemoveFromEnd(int count)
+void MyStringView::RemoveFromEnd(size_t count)
 {	
-	this->len--;
+	if (len < count)
+	{
+		count = len;
+	}
+
+	this->len -= count;
+	this->hash = std::numeric_limits<uint32_t>::max();
 }
 
 MyStringView MyStringView::SubString(int start, size_t length) const
