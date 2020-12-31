@@ -38,7 +38,7 @@ static const char* const conversions[] =
 	"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
 };
 
-enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, C_LIB = 3 };
+enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, DEFAULT = 3 };
 enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() };
 
 template <typename Type>
@@ -108,16 +108,17 @@ public:
 	template <typename RetVal = Type>
 	std::vector<RetVal> Split(const std::vector<char> & delimeters, bool keepEmptyValues = false) const;
 
-	size_t Count(const char str) const;
+	size_t Count(const char str) const noexcept;
 
+	bool EndsWith(MyStringView needle) const noexcept;
 
 	size_t Find(const char c) const noexcept;
 	size_t FindLast(const char c) const noexcept;
-	size_t Find(const Type& str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
-	size_t Find(MyStringView str, SearchAlgorithm algo = SearchAlgorithm::BF) const;
-	size_t Find(const char * str, SearchAlgorithm algo = SearchAlgorithm::C_LIB) const;
-	size_t Find(MyStringView str, size_t offset) const;
-	std::vector<size_t> FindAll(MyStringView str) const;
+	size_t Find(const Type& needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t Find(MyStringView needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t Find(const char * needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t Find(MyStringView needle, size_t offset) const;
+	std::vector<size_t> FindAll(MyStringView needle) const;
 
 
 	void Append(const char * str, size_t len = 0);

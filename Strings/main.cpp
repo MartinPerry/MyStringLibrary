@@ -355,6 +355,17 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+
+	MyStringView xxasas = "ahoj";
+	
+	MyStringAnsi sadasd = "wahojky";
+	bool ede = sadasd.EndsWith("ahojky");
+	
+	if (xxasas != "ahoj")
+	{
+		printf("x");
+	}
+
 	MyStringAnsi ere = "xxx   ";
 	ere.Trim();
 
@@ -472,7 +483,7 @@ int main(int argc, char ** argv)
 	tmpFind += "ahoj vojle ahoj kluku";
 	auto all = tmpFind.FindAll("ahoj");
 	auto ik1 = tmpFind.Find("klukuj", SearchAlgorithm::KMP);
-	auto ik2 = tmpFind.Find("klukuk", SearchAlgorithm::C_LIB);
+	auto ik2 = tmpFind.Find("klukuk", SearchAlgorithm::DEFAULT);
 	auto ik3 = tmpFind.Find("klukuk", SearchAlgorithm::BM);
 	auto ik4 = tmpFind.Find("klukuk", SearchAlgorithm::BF);
 

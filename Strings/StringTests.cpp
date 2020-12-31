@@ -525,7 +525,7 @@ void StringTests<T>::TestMethods()
 	}
 
 	auto ik1 = tmpFind.Find("kluk", SearchAlgorithm::KMP);
-	auto ik2 = tmpFind.Find("kluk", SearchAlgorithm::C_LIB);
+	auto ik2 = tmpFind.Find("kluk", SearchAlgorithm::DEFAULT);
 	auto ik3 = tmpFind.Find("kluk", SearchAlgorithm::BM);
 	auto ik4 = tmpFind.Find("kluk", SearchAlgorithm::BF);
 

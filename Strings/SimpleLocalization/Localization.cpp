@@ -243,8 +243,7 @@ void Localization::SetLang(Localization::StringView lang)
 }
 
 void Localization::LoadLocalization(const Localization::String & langID)
-{
-    
+{    
 	Localization::String path = DEFAULT_PATH;
 	path += "gen_stringtable-";
 	path += langID;
@@ -262,9 +261,11 @@ void Localization::LoadLocalization(const Localization::String & langID)
 			if (item->valuestring == nullptr)
 			{
 				std::unordered_map<Localization::String, LocalString> tmpInner;
-                if (groups.find(item->string) != groups.end())
+				
+				auto it = groups.find(item->string);
+                if (it != groups.end())
                 {
-                    tmpInner = groups[item->string];
+                    tmpInner = it->second;
                 }
 
 				int innerKeysCount = cJSON_GetArraySize(item);
@@ -276,11 +277,11 @@ void Localization::LoadLocalization(const Localization::String & langID)
 
 					if (inner->string == nullptr)
 					{
-						tmpInner[std::to_string(j)] = str;
+						tmpInner.emplace(std::to_string(j), std::move(str));						
 					}
 					else 
 					{
-						tmpInner[inner->string] = str;
+						tmpInner.emplace(inner->string, std::move(str));						
 					}
 				}
 
@@ -288,7 +289,7 @@ void Localization::LoadLocalization(const Localization::String & langID)
 			}
 			else
 			{
-				strs[item->string] = this->ProcessSingleInput(item->valuestring);				
+				strs.emplace(item->string, std::move(this->ProcessSingleInput(item->valuestring)));
 			}
 
 			
@@ -351,7 +352,7 @@ Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
 Localization::String Localization::LoadFile(const Localization::String & path)
 {
 #ifdef USE_VFS
-	Localization::String str =  VFS::GetInstance()->GetFileString(path.c_str()).c_str();
+	Localization::String str =  VFS::GetInstance()->GetFileString(path.c_str());
 #else
 	FILE * f = nullptr;
 	my_fopen(&f, path.c_str(), "rb");
@@ -380,8 +381,7 @@ Localization::String Localization::LoadFile(const Localization::String & path)
 		return str;
 	}
 
-	str = str.substr(foundPos);	
-	return str;
+	return str.substr(foundPos);		
 }
 
 Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, bool * exist)

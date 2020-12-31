@@ -717,6 +717,43 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 //====================================================================
 
 /// <summary>
+/// Test if string ends with suffix
+/// </summary>
+/// <param name="needle"></param>
+/// <returns></returns>
+template <typename Type>
+bool IStringAnsi<Type>::EndsWith(MyStringView needle) const noexcept
+{
+	size_t strLen = static_cast<const Type*>(this)->length();
+	const char* str = static_cast<const Type*>(this)->c_str();
+
+	if (strLen < needle.length())
+	{
+		return false;
+	}
+
+	// < strLen - not a bug
+	// feature - i wraps around when it goes under zero
+	//https://stackoverflow.com/questions/3623263/reverse-iteration-with-an-unsigned-loop-variable
+	for (size_t i = strLen - 1; i < strLen; i--)
+	{
+		if (str[i] != needle.GetLastChar())
+		{
+			return false;
+		}
+
+		needle.RemoveFromEnd();
+
+		if (needle.length() == 0)
+		{
+			break;
+		}
+	}
+
+	return true;
+}
+
+/// <summary>
 /// Find char within this string and return first position of
 /// occurence
 /// </summary>
@@ -756,7 +793,10 @@ size_t IStringAnsi<Type>::FindLast(const char c) const noexcept
 		return IStringAnsi<Type>::npos;
 	}
 
-	for (size_t i = strLen - 1; i >= 0; i--)
+	// < strLen - not a bug
+	// feature - i wraps around when it goes under zero
+	//https://stackoverflow.com/questions/3623263/reverse-iteration-with-an-unsigned-loop-variable
+	for (size_t i = strLen - 1; i < strLen; i--)
 	{
 		if (str[i] == c)
 		{
@@ -776,20 +816,20 @@ size_t IStringAnsi<Type>::FindLast(const char c) const noexcept
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const Type& str, SearchAlgorithm algo) const
+size_t IStringAnsi<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 {
-	if (str.c_str() == nullptr)
+	if (needle.c_str() == nullptr)
 	{
 		return IStringAnsi<Type>::npos;
 	}
 
-	if (algo == SearchAlgorithm::C_LIB)
+	if (algo == SearchAlgorithm::DEFAULT)
 	{
 		//non-null terminated string are not supported
-		return this->CLib(str.c_str());
+		return this->CLib(needle.c_str());
 	}
 
-	return this->Find(MyStringView(str), algo);
+	return this->Find(MyStringView(needle), algo);
 }
 
 /// <summary>
@@ -803,11 +843,11 @@ size_t IStringAnsi<Type>::Find(const Type& str, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: BF)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(MyStringView str, SearchAlgorithm algo) const
+size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 {
 	size_t pos = IStringAnsi<Type>::npos;
 
-	if (str.c_str() == nullptr)
+	if (needle.c_str() == nullptr)
 	{
 		return pos;
 	}
@@ -815,20 +855,20 @@ size_t IStringAnsi<Type>::Find(MyStringView str, SearchAlgorithm algo) const
 	size_t* last = nullptr;
 	if (algo == SearchAlgorithm::BM)
 	{
-		pos = this->BoyerMoore(str, last);
+		pos = this->BoyerMoore(needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
 	{
-		pos = this->KnuthMorisPrat(str, last);
+		pos = this->KnuthMorisPrat(needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{
-		pos = this->BruteForce(str);
+		pos = this->BruteForce(needle);
 	}
-	else if (algo == SearchAlgorithm::C_LIB)
+	else if (algo == SearchAlgorithm::DEFAULT)
 	{
-		//non-null terminated string are not supported
-		pos = this->BruteForce(str);
+		//non-null terminated string cannot use C-library search
+		pos = this->BruteForce(needle);
 	}
 
 	if (last != nullptr)
@@ -847,11 +887,11 @@ size_t IStringAnsi<Type>::Find(MyStringView str, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
+size_t IStringAnsi<Type>::Find(const char * needle, SearchAlgorithm algo) const
 {
 	size_t pos = IStringAnsi<Type>::npos;
 
-	if (str == nullptr)
+	if (needle == nullptr)
 	{
 		return pos;
 	}
@@ -859,19 +899,19 @@ size_t IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
 	size_t * last = nullptr;
 	if (algo == SearchAlgorithm::BM)
 	{
-		pos = this->BoyerMoore(str, last);
+		pos = this->BoyerMoore(needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
 	{
-		pos = this->KnuthMorisPrat(str, last);
+		pos = this->KnuthMorisPrat(needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{
-		pos = this->BruteForce(str);
+		pos = this->BruteForce(needle);
 	}
-	else if (algo == SearchAlgorithm::C_LIB)
+	else if (algo == SearchAlgorithm::DEFAULT)
 	{
-		pos = this->CLib(str);
+		pos = this->CLib(needle);
 	}
 
 	if (last != nullptr)
@@ -884,16 +924,16 @@ size_t IStringAnsi<Type>::Find(const char * str, SearchAlgorithm algo) const
 
 
 template <typename Type>
-size_t IStringAnsi<Type>::Find(MyStringView str, size_t offset) const
+size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset) const
 {
 	size_t count = 0;
-	size_t searchLength = str.length();
+	size_t searchLength = needle.length();
 	size_t * last = nullptr;
 	size_t pos = 0;
 
 	while (1)
 	{
-		pos = this->KnuthMorisPrat(str, last, pos); //better use this, because BM skipping
+		pos = this->KnuthMorisPrat(needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
 		if (pos == IStringAnsi<Type>::npos)
 		{ 
@@ -916,9 +956,9 @@ size_t IStringAnsi<Type>::Find(MyStringView str, size_t offset) const
 }
 
 template <typename Type>
-std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView str) const
+std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView needle) const
 {
-	size_t searchLength = str.length();
+	size_t searchLength = needle.length();
 	size_t * last = nullptr;
 	size_t pos = 0;
 
@@ -927,7 +967,7 @@ std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView str) const
 
 	while (1)
 	{
-		pos = this->KnuthMorisPrat(str, last, pos); //better use this, because BM skipping
+		pos = this->KnuthMorisPrat(needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
 		if (pos == IStringAnsi<Type>::npos)
 		{ 
@@ -1071,7 +1111,7 @@ void IStringAnsi<Type>::CopySubstring(int start, size_t length, char * destinati
 /// <param name="f"></param>
 /// <returns></returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Count(const char f) const
+size_t IStringAnsi<Type>::Count(const char f) const noexcept
 {
 	size_t count = 0;
 

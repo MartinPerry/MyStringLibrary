@@ -148,12 +148,25 @@ public:
 	~MyStringAnsi() = default;
 
 
-
+	/// <summary>
+	/// Get read-only inner pointer
+	/// </summary>
+	/// <returns></returns>
 	const char * c_str() const noexcept
 	{
 		return this->strPtr;
 	};
 
+	/// <summary>
+	/// Get raw inner memory pointer
+	/// data can be modified
+	/// NOTE: Beware of removing terminating NULL !!!
+	/// </summary>
+	/// <returns></returns>
+	char* data() const noexcept
+	{
+		return this->strPtr;
+	};
 
 	size_t length() const noexcept
 	{
