@@ -25,7 +25,7 @@ public:
 
 	MySmallStringAnsi()		
 	{
-		this->CtorInternal(nullptr);
+		this->CtorInternal(nullptr, 0);
 	}
 
 	MySmallStringAnsi(const char * newStr, size_t length)
@@ -57,7 +57,7 @@ public:
 		memcpy(local, other.local, sizeof(local));
 		if (this->IsLocal() == false)
 		{
-			this->CtorInternal(other.c_str());
+			this->CtorInternal(other.c_str(), other.length());
 		}
 		this->hashCode = other.hashCode;
 	};
@@ -141,7 +141,7 @@ protected:
 		memset(this->local, 0, sizeof(local));		
 	}
 
-	void CtorInternal(const char * newStr)
+	void CtorInternal(const char * newStr, size_t newStrLength)
 	{
 		memset(local, 0, sizeof(local));
 		if (newStr == nullptr)
@@ -151,7 +151,11 @@ protected:
 			return;
 		}
 
-		size_t strLength = strlen(newStr);
+		size_t strLength = newStrLength;
+		if (strLength == 0)
+		{
+			strLength = strlen(newStr);
+		}
 
 		//if strlen < 16 -> use local buffer, [15] = 0
 		//if strlen >= 16 -> use "heap"

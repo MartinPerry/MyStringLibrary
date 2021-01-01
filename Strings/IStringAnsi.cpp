@@ -23,8 +23,8 @@
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi()
-	: hashCode(std::numeric_limits<uint32_t>::max())
+IStringAnsi<Type>::IStringAnsi() : 
+	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	//static_cast<Type *>(this)->CtorInternal(nullptr);
 	static_cast<Type *>(this)->DefaultInit();
@@ -32,8 +32,8 @@ IStringAnsi<Type>::IStringAnsi()
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(size_t bufferSize)
-	: hashCode(std::numeric_limits<uint32_t>::max())
+IStringAnsi<Type>::IStringAnsi(size_t bufferSize) : 
+	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	if (bufferSize > Type::BUFFER_SIZE)
 	{
@@ -47,31 +47,31 @@ IStringAnsi<Type>::IStringAnsi(size_t bufferSize)
 	}
 	else
 	{
-		static_cast<Type *>(this)->CtorInternal(nullptr);
+		static_cast<Type *>(this)->CtorInternal(nullptr, 0);
 	}
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(char * str)
-	: hashCode(std::numeric_limits<uint32_t>::max())
+IStringAnsi<Type>::IStringAnsi(char * str) : 
+	hashCode(std::numeric_limits<uint32_t>::max())
 {
-	static_cast<Type *>(this)->CtorInternal(str);
+	static_cast<Type *>(this)->CtorInternal(str, 0);
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const char * str)
-	: hashCode(std::numeric_limits<uint32_t>::max())
+IStringAnsi<Type>::IStringAnsi(const char * str) : 
+	hashCode(std::numeric_limits<uint32_t>::max())
 {
-	static_cast<Type *>(this)->CtorInternal(str);
+	static_cast<Type *>(this)->CtorInternal(str, 0);
 }
 
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const std::string & str)
-	: hashCode(std::numeric_limits<uint32_t>::max())
+IStringAnsi<Type>::IStringAnsi(const std::string & str) : 
+	hashCode(std::numeric_limits<uint32_t>::max())
 {
-	static_cast<Type *>(this)->CtorInternal(str.c_str());
+	static_cast<Type *>(this)->CtorInternal(str.c_str(), str.length());
 }
 
 
@@ -90,7 +90,7 @@ template <typename Type>
 void IStringAnsi<Type>::Release()
 {
 	static_cast<Type *>(this)->ReleaseInternal();
-	static_cast<Type *>(this)->CtorInternal(nullptr);
+	static_cast<Type *>(this)->CtorInternal(nullptr, 0);
 }
 
 

@@ -83,17 +83,32 @@ public:
 	/// <returns></returns>
 	static uint8_t * UnpackFromMemory(uint8_t * memory, MyStringAnsi & str)
 	{
-		delete[] str.strPtr;
-
-		//restore unicode string
+		// restore string
 		int strBufferSize = 0;
 		memcpy(&strBufferSize, memory, sizeof(int));
 		memory += sizeof(int);
 
-		str.bufferCapacity = strBufferSize + 1;
-		str.strPtr = new char[str.bufferCapacity];
-		memcpy(str.strPtr, memory, strBufferSize);
-		str.strPtr[strBufferSize] = 0;
+		if (strBufferSize > 0)
+		{
+			if (str.bufferCapacity < strBufferSize + 1)
+			{
+				delete[] str.strPtr;
+				str.bufferCapacity = strBufferSize + 1;
+				str.strPtr = new char[str.bufferCapacity];
+			}
+			memcpy(str.strPtr, memory, strBufferSize);
+			str.strPtr[strBufferSize] = 0;
+
+			str.strLength = strBufferSize;
+		}
+		else
+		{
+			if (str.bufferCapacity > 0)
+			{
+				str.strPtr[0] = 0;
+				str.strLength = 0;
+			}
+		}
 
 		memory += (strBufferSize);
 
@@ -105,7 +120,7 @@ public:
 		bufferCapacity(0),
 		strLength(0)
 	{
-		this->CtorInternal(nullptr);
+		this->CtorInternal(nullptr, 0);
 	}
 
 	MyStringAnsi(const char * newStr, size_t length) : 
@@ -118,8 +133,8 @@ public:
 		this->strPtr[length] = 0;
 	}
 	
-	MyStringAnsi(const MyStringView & str)
-		: MyStringAnsi(str.c_str(), str.length())
+	MyStringAnsi(const MyStringView & str) : 
+		MyStringAnsi(str.c_str(), str.length())
 	{
 	}
 
@@ -128,7 +143,7 @@ public:
 		bufferCapacity(0),
 		strLength(0)		
 	{
-		this->CtorInternal(other.c_str());		
+		this->CtorInternal(other.c_str(), other.length());		
 		this->hashCode = other.hashCode;
 	};
 	
@@ -226,7 +241,7 @@ protected:
 		this->strLength = 0;
 	}
 
-	void CtorInternal(const char * newStr)
+	void CtorInternal(const char * newStr, size_t newStrLength)
 	{		
 		if (newStr == nullptr)
 		{
@@ -238,7 +253,14 @@ protected:
 			return;
 		}
 
-		this->strLength = strlen(newStr);
+		if (newStrLength == 0)
+		{
+			this->strLength = strlen(newStr);
+		}
+		else 
+		{
+			this->strLength = newStrLength;
+		}
 		this->bufferCapacity = this->strLength + 1;
 		
 		this->strPtr = new char[this->bufferCapacity];
