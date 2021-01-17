@@ -84,9 +84,11 @@ public:
 	static uint8_t * UnpackFromMemory(uint8_t * memory, MyStringAnsi & str)
 	{
 		// restore string
-		int strBufferSize = 0;
-		memcpy(&strBufferSize, memory, sizeof(int));
+		int tmp = 0;
+		memcpy(&tmp, memory, sizeof(int));
 		memory += sizeof(int);
+
+		size_t strBufferSize = static_cast<size_t>(tmp);
 
 		if (strBufferSize > 0)
 		{

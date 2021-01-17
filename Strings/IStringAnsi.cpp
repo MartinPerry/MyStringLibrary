@@ -427,6 +427,35 @@ void IStringAnsi<Type>::RemoveMultipleChars(char t)
 }
 
 
+/// <summary>
+/// Remove all ASCII characters that are not printable (<= 31)
+/// (but do not remove 0 as it is string end)
+/// </summary>
+template <typename Type>
+void IStringAnsi<Type>::RemoveNonPrintableChars()
+{
+	char* str = static_cast<Type*>(this)->str();
+	size_t j = 0;
+	char* start = str;
+	char c = 0;
+	while ((c = *start) != 0)
+	{
+		start++;
+
+		if ((c > 0) && (c <= 31))
+		{
+			continue;
+		}
+
+		str[j] = c;
+		j++;
+	}
+	str[j] = 0;
+
+	static_cast<Type*>(this)->SetLengthInternal(j);
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
 template <typename Type>
 void IStringAnsi<Type>::PopBack()
 {

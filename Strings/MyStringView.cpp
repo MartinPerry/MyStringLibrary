@@ -158,6 +158,42 @@ MyStringView MyStringView::SubString(int start, size_t length) const
 }
 
 /// <summary>
+/// Test if string ends with suffix
+/// </summary>
+/// <param name="needle"></param>
+/// <returns></returns>
+bool MyStringView::EndsWith(MyStringView needle) const noexcept
+{
+	size_t strLen = this->length();
+	const char* str = this->c_str();
+
+	if (strLen < needle.length())
+	{
+		return false;
+	}
+
+	// < strLen - not a bug
+	// feature - i wraps around when it goes under zero
+	//https://stackoverflow.com/questions/3623263/reverse-iteration-with-an-unsigned-loop-variable
+	for (size_t i = strLen - 1; i < strLen; i--)
+	{
+		if (str[i] != needle.GetLastChar())
+		{
+			return false;
+		}
+
+		needle.RemoveFromEnd();
+
+		if (needle.length() == 0)
+		{
+			break;
+		}
+	}
+
+	return true;
+}
+
+/// <summary>
 /// Find char within this string view and return first position of
 /// occurence
 /// </summary>

@@ -100,6 +100,7 @@ public:
 	void Reverse();
 	void RemoveChar(char t);
 	void RemoveMultipleChars(char t);
+	void RemoveNonPrintableChars();
 	void PopBack();
 
 	template <typename RetVal = Type>

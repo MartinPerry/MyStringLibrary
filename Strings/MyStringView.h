@@ -79,6 +79,7 @@ public:
 	void RemoveFromEnd(size_t count = 1);
 	MyStringView SubString(int start, size_t length) const;
 
+	bool EndsWith(MyStringView needle) const noexcept;
 	size_t Find(const char c) const noexcept;
 
 	MyStringView & operator = (const char * str) noexcept;
