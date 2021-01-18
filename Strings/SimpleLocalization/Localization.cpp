@@ -277,11 +277,15 @@ void Localization::LoadLocalization(const Localization::String & langID)
 
 					if (inner->string == nullptr)
 					{
-						tmpInner.emplace(std::to_string(j), std::move(str));						
+						//tmpInner.emplace(std::to_string(j), std::move(str));
+						//tmpInner[std::to_string(j)] = str;
+						tmpInner.insert_or_assign(std::to_string(j), std::move(str));
 					}
-					else 
+					else
 					{
-						tmpInner.emplace(inner->string, std::move(str));						
+						//tmpInner.emplace(inner->string, std::move(str));
+						//tmpInner[inner->string] = str;
+						tmpInner.insert_or_assign(inner->string, std::move(str));
 					}
 				}
 
@@ -289,7 +293,9 @@ void Localization::LoadLocalization(const Localization::String & langID)
 			}
 			else
 			{
-				strs.emplace(item->string, std::move(this->ProcessSingleInput(item->valuestring)));
+				//strs.emplace(item->string, this->ProcessSingleInput(item->valuestring));
+				//strs[item->string] = this->ProcessSingleInput(item->valuestring);
+				strs.insert_or_assign(item->string, this->ProcessSingleInput(item->valuestring));
 			}
 
 			
