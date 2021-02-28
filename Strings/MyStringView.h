@@ -81,6 +81,7 @@ public:
 
 	bool EndsWith(MyStringView needle) const noexcept;
 	size_t Find(const char c) const noexcept;
+	size_t Find(const char* needle) const noexcept;
 
 	MyStringView & operator = (const char * str) noexcept;
 
@@ -130,6 +131,7 @@ private:
 	size_t len;
 	stringHash hash;	
 
+	size_t BruteForce(MyStringView str, size_t start = 0) const;
 };
 
 

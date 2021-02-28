@@ -214,3 +214,60 @@ size_t MyStringView::Find(const char c) const noexcept
 
 	return MyStringView::npos;
 }
+
+size_t MyStringView::Find(const char* needle) const noexcept
+{
+	size_t pos = MyStringView::npos;
+
+	if (needle == nullptr)
+	{
+		return pos;
+	}
+
+	pos = this->BruteForce(needle);
+
+	return pos;
+}
+
+/// <summary>
+/// Perfrom BF searching. Suitable for small strings
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringView::BruteForce(MyStringView needle, size_t start) const
+{
+	size_t needleLen = needle.length();
+	size_t i = start;
+	size_t j = 0;
+	size_t lastPos = MyStringView::npos;
+	size_t strLen = this->length();
+	const char* str = this->c_str();
+
+	while (i < strLen)
+	{
+		j = 0;
+		while (j < needleLen)
+		{
+			if (str[i] == needle[j])
+			{
+				i++;
+				j++;
+				lastPos = i;
+			}
+			else
+			{
+				i++;
+				lastPos = MyStringView::npos;
+				break;
+			}
+		}
+
+		if (lastPos != MyStringView::npos)
+		{
+			return (lastPos - needleLen);
+		}
+	}
+
+	return MyStringView::npos;
+}

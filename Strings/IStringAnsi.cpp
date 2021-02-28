@@ -936,6 +936,8 @@ size_t IStringAnsi<Type>::Find(const char * needle, SearchAlgorithm algo) const
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{
+		//auto tmp = MyStringView(this);
+		//pos = tmp.Find(needle);
 		pos = this->BruteForce(needle);
 	}
 	else if (algo == SearchAlgorithm::DEFAULT)
