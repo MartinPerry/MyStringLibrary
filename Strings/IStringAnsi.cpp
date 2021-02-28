@@ -856,8 +856,7 @@ size_t IStringAnsi<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 	}
 
 	if (algo == SearchAlgorithm::DEFAULT)
-	{
-		//non-null terminated string are not supported
+	{		
 		return this->CLib(needle.c_str());
 	}
 
@@ -881,8 +880,7 @@ size_t IStringAnsi<Type>::Find(const char* needle, SearchAlgorithm algo) const
 	}
 
 	if (algo == SearchAlgorithm::DEFAULT)
-	{
-		//non-null terminated string are not supported
+	{		
 		return this->CLib(needle);
 	}
 
@@ -903,7 +901,7 @@ size_t IStringAnsi<Type>::Find(const char* needle, SearchAlgorithm algo) const
 template <typename Type>
 size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 {
-	size_t pos = IStringAnsi<Type>::npos;
+	size_t pos = MyStringUtils::npos;
 
 	if (needle.c_str() == nullptr)
 	{
@@ -913,24 +911,22 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	size_t* last = nullptr;
 	
 	if (algo == SearchAlgorithm::BM)
-	{
-		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
-		pos = MyStringUtils::SearchBoyerMoore(thisView, needle, last);
+	{	
+		pos = MyStringUtils::SearchBoyerMoore(static_cast<const Type*>(this), needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
-	{
-		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
-		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last);
+	{	
+		pos = MyStringUtils::SearchKnuthMorisPrat(static_cast<const Type*>(this), needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
-	{
-		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
-		pos = MyStringUtils::SearchBruteForce(thisView, needle);
+	{		
+		pos = MyStringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
 	}
 	else if (algo == SearchAlgorithm::DEFAULT)
-	{		
-		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
-		pos = MyStringUtils::SearchBruteForce(thisView, needle);
+	{				
+		//non-null terminated string are not supported with CLib
+		//and needle may not bet null terminated
+		pos = MyStringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
 	}
 
 	if (last != nullptr)
@@ -1162,7 +1158,7 @@ size_t IStringAnsi<Type>::Count(const char f) const noexcept
 
 /// <summary>
 /// Perfrom searching using strstr - standard C library
-/// needle must be null terminated
+/// !!!! str AND needle must be null terminated !!!
 /// </summary>
 /// <param name="needle">text to find</param>
 /// <param name="start">start position of searching (default: 0)</param>
