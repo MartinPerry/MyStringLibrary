@@ -235,9 +235,6 @@ protected:
 	void CreateNew(const char * str, size_t length = 0);
 
 	size_t CLib(const char * str, size_t start = 0) const;
-	size_t BruteForce(MyStringView str, size_t start = 0) const;
-	size_t BoyerMoore(MyStringView str, size_t * &lookUp, size_t start = 0) const;
-	size_t KnuthMorisPrat(MyStringView str, size_t * &lookUp, size_t start = 0) const;
 
 
 };

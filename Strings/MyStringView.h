@@ -51,14 +51,14 @@ constexpr inline StringLiteral operator"" _L(const char* str, size_t)
 class MyStringView 
 {
 public:
-
-	static const size_t npos = static_cast<size_t>(-1);
-
+	
 	constexpr MyStringView() noexcept;
 	constexpr MyStringView(StringLiteral l) noexcept;
 	MyStringView(const char * str, size_t len = 0) noexcept;
-	MyStringView(const MyStringAnsi & str) noexcept;
+	MyStringView(const MyStringAnsi& str) noexcept;
+	MyStringView(const MyStringAnsi* str) noexcept;
 	MyStringView(const MySmallStringAnsi & str) noexcept;
+	MyStringView(const MySmallStringAnsi* str) noexcept;
 	MyStringView(const MyStringView & v) noexcept;
 
 	MyStringView(const std::string& str) noexcept;
@@ -130,8 +130,6 @@ private:
 	const char * str;
 	size_t len;
 	stringHash hash;	
-
-	size_t BruteForce(MyStringView str, size_t start = 0) const;
 };
 
 

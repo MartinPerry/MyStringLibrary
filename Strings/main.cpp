@@ -355,8 +355,10 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	
+	MyStringView xxasas = "okokok";
 
-	MyStringView xxasas = "ahoj";
+	auto rehhs = xxasas.Find("ok");
 	
 	MyStringAnsi sadasd = "wahojky";
 	bool ede = sadasd.EndsWith("ahojky");

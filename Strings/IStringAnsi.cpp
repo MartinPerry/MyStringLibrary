@@ -491,9 +491,12 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, si
 	std::vector<size_t> startPos;
 	size_t foundOffset = 0;
 
+	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+
+
 	while (1)
 	{
-		pos = this->KnuthMorisPrat(oldValue, last, pos); //better use this, because BM skipping
+		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, oldValue, last, pos); //better use this, because BM skipping
 													   //is calculated from haystack, not needle
 		if (pos == IStringAnsi<Type>::npos)
 		{ 
@@ -861,6 +864,32 @@ size_t IStringAnsi<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 	return this->Find(MyStringView(needle), algo);
 }
 
+
+/// <summary>
+/// Find str within this string and return first position of
+/// occurence
+/// </summary>
+/// <param name="str">text to find</param>
+/// <param name="algo">specify searching algorithm (default: CLib)</param>
+/// <returns>position of occurence needle in haystack</returns>
+template <typename Type>
+size_t IStringAnsi<Type>::Find(const char* needle, SearchAlgorithm algo) const
+{
+	if (needle == nullptr)
+	{
+		return IStringAnsi<Type>::npos;
+	}
+
+	if (algo == SearchAlgorithm::DEFAULT)
+	{
+		//non-null terminated string are not supported
+		return this->CLib(needle);
+	}
+
+	return this->Find(MyStringView(needle), algo);
+}
+
+
 /// <summary>
 /// Find str within this string and return first position of
 /// occurence
@@ -882,22 +911,26 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	}
 
 	size_t* last = nullptr;
+	
 	if (algo == SearchAlgorithm::BM)
 	{
-		pos = this->BoyerMoore(needle, last);
+		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+		pos = MyStringUtils::SearchBoyerMoore(thisView, needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
 	{
-		pos = this->KnuthMorisPrat(needle, last);
+		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{
-		pos = this->BruteForce(needle);
+		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+		pos = MyStringUtils::SearchBruteForce(thisView, needle);
 	}
 	else if (algo == SearchAlgorithm::DEFAULT)
-	{
-		//non-null terminated string cannot use C-library search
-		pos = this->BruteForce(needle);
+	{		
+		MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+		pos = MyStringUtils::SearchBruteForce(thisView, needle);
 	}
 
 	if (last != nullptr)
@@ -908,50 +941,6 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	return pos;
 }
 
-/// <summary>
-/// Find str within this string and return first position of
-/// occurence
-/// </summary>
-/// <param name="str">text to find</param>
-/// <param name="algo">specify searching algorithm (default: CLib)</param>
-/// <returns>position of occurence needle in haystack</returns>
-template <typename Type>
-size_t IStringAnsi<Type>::Find(const char * needle, SearchAlgorithm algo) const
-{
-	size_t pos = IStringAnsi<Type>::npos;
-
-	if (needle == nullptr)
-	{
-		return pos;
-	}
-
-	size_t * last = nullptr;
-	if (algo == SearchAlgorithm::BM)
-	{
-		pos = this->BoyerMoore(needle, last);
-	}
-	else if (algo == SearchAlgorithm::KMP)
-	{
-		pos = this->KnuthMorisPrat(needle, last);
-	}
-	else if (algo == SearchAlgorithm::BF)
-	{
-		//auto tmp = MyStringView(this);
-		//pos = tmp.Find(needle);
-		pos = this->BruteForce(needle);
-	}
-	else if (algo == SearchAlgorithm::DEFAULT)
-	{
-		pos = this->CLib(needle);
-	}
-
-	if (last != nullptr)
-	{
-		delete[] last;
-	}
-
-	return pos;
-}
 
 
 template <typename Type>
@@ -962,11 +951,13 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset) const
 	size_t * last = nullptr;
 	size_t pos = 0;
 
+	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+
 	while (1)
 	{
-		pos = this->KnuthMorisPrat(needle, last, pos); //better use this, because BM skipping
+		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
-		if (pos == IStringAnsi<Type>::npos)
+		if (pos == MyStringUtils::npos)
 		{ 
 			//not found
 			break; 
@@ -995,12 +986,14 @@ std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView needle) const
 
 	std::vector<size_t> startPos;
 	int foundOffset = 0;
+	
+	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
 
 	while (1)
 	{
-		pos = this->KnuthMorisPrat(needle, last, pos); //better use this, because BM skipping
+		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
-		if (pos == IStringAnsi<Type>::npos)
+		if (pos == MyStringUtils::npos)
 		{ 
 			//not found
 			break; 
@@ -1165,198 +1158,6 @@ size_t IStringAnsi<Type>::Count(const char f) const noexcept
 //====================================================================
 // Searching
 //====================================================================
-
-/// <summary>
-/// Perfrom Boyer-Moore searching. Last function can be passed in
-/// in "last". If "last" is NULL, last function is calculated
-/// and filled to "last" array
-/// !Important!"last" array must be freed outside this method
-/// </summary>
-/// <param name="needle">text to find</param>
-/// <param name="last">pointer to array of last function (in / out)</param>
-/// <param name="start">start position of searching (default: 0)</param>
-/// <returns>position of occurence needle in haystack</returns>
-template <typename Type>
-size_t IStringAnsi<Type>::BoyerMoore(MyStringView needle, size_t * &last, size_t start) const
-{
-	const char * str = static_cast<const Type *>(this)->c_str();
-	size_t needleLen = needle.length();
-
-	
-	if (needleLen == 0)
-	{
-		return IStringAnsi<Type>::npos;
-	}
-
-	size_t strLength = static_cast<const Type *>(this)->length();
-
-	if (last == nullptr)
-	{
-		last = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
-		size_t val = IStringAnsi<Type>::npos;
-		std::fill(last, last + std::numeric_limits<uint8_t>::max(), val);
-		for (size_t i = 0; i < strLength; i++)
-		{
-			last[static_cast<uint8_t>(str[i])] = i;
-		}
-	}
-
-	size_t index = needleLen - 1;
-	size_t cmpIndex = index;
-	index += start;
-	while (index < strLength)
-	{
-		if (str[index] == needle[cmpIndex])
-		{				
-			if (cmpIndex == 0)
-			{
-				return index;
-			}
-
-			index--;
-			cmpIndex--;
-		}
-		else
-		{
-			size_t offset = last[static_cast<int>(str[index])];
-			index = index + needleLen - ((cmpIndex < offset + 1) ? cmpIndex : offset + 1);
-			cmpIndex = needleLen - 1;
-		}
-	}
-
-
-	return IStringAnsi<Type>::npos;
-
-}
-
-/// <summary>
-/// Perfrom KMP (KnuthMorisPrat) searching. Last function can be passed in
-/// in "last".If "last" is NULL, last function is calculated
-/// and filled to "last" array
-/// !Important!"last" array must be freed outside this method
-/// </summary>
-/// <param name="needle">text to find</param>
-/// <param name="last">pointer to array of last function (in / out)</param>
-/// <param name="start">start position of searching (default: 0)</param>
-/// <returns>position of occurence needle in haystack</returns>
-template <typename Type>
-size_t IStringAnsi<Type>::KnuthMorisPrat(MyStringView needle, size_t * &last, size_t start) const
-{
-	size_t needleLen = needle.length();
-
-	if (needleLen == 0)
-	{
-		return IStringAnsi<Type>::npos;
-	}
-
-	size_t index = 1;
-	size_t cmpIndex = 0;
-	size_t * failFce = last;
-	size_t strLen = static_cast<const Type *>(this)->length();
-	const char * str = static_cast<const Type *>(this)->c_str();
-
-	if (failFce == nullptr)
-	{
-		failFce = new size_t[needleLen];
-		last = failFce;
-		//buil Fail fce
-		failFce[0] = 0;
-		index = 1;
-		cmpIndex = 0;
-		while (index < needleLen)
-		{
-			if (needle[index] == needle[cmpIndex])
-			{
-				failFce[index] = failFce[index - 1] + 1;
-				cmpIndex++;
-			}
-			else
-			{
-				failFce[index] = 0;
-				if ((failFce[index - 1] != 0) && (cmpIndex != 0))
-				{
-					cmpIndex = 0;
-					index--;
-				}
-			}
-			index++;
-		}
-
-	}
-	index = start;
-	cmpIndex = 0;
-	while (index < strLen)
-	{
-		if (str[index] == needle[cmpIndex])
-		{
-			index++;
-			cmpIndex++;
-			if (cmpIndex == needleLen)
-			{
-
-				return (index - cmpIndex);
-			}
-		}
-		else
-		{
-			if (cmpIndex == 0)
-			{
-				index++;
-			}
-			else
-			{				
-				cmpIndex = failFce[cmpIndex - 1];
-			}
-		}
-	}
-
-
-	return IStringAnsi<Type>::npos;
-}
-
-/// <summary>
-/// Perfrom BF searching. Suitable for small strings
-/// </summary>
-/// <param name="needle">text to find</param>
-/// <param name="start">start position of searching (default: 0)</param>
-/// <returns>position of occurence needle in haystack</returns>
-template <typename Type>
-size_t IStringAnsi<Type>::BruteForce(MyStringView needle, size_t start) const
-{
-	size_t needleLen = needle.length();
-	size_t i = start;
-	size_t j = 0;
-	size_t lastPos = IStringAnsi<Type>::npos;
-	size_t strLen = static_cast<const Type *>(this)->length();
-	const char * str = static_cast<const Type *>(this)->c_str();
-
-	while (i < strLen)
-	{
-		j = 0;
-		while (j < needleLen)
-		{
-			if (str[i] == needle[j])
-			{
-				i++;
-				j++;
-				lastPos = i;
-			}
-			else
-			{
-				i++;
-				lastPos = IStringAnsi<Type>::npos;
-				break;
-			}
-		}
-
-		if (lastPos != IStringAnsi<Type>::npos)
-		{
-			return (lastPos - needleLen);
-		}
-	}
-
-	return IStringAnsi<Type>::npos;
-}
 
 
 /// <summary>

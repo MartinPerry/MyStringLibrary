@@ -8,11 +8,12 @@ class MyStringAnsi;
 #include <type_traits>
 #include <vector>
 
+#include "./MyStringView.h"
 #include "./MyStringMacros.h"
 
 struct MyStringUtils 
 {
-		
+	static const size_t npos = static_cast<size_t>(-1);
 
 	//https://tombarta.wordpress.com/2008/04/23/specializing-atoi/
 
@@ -205,6 +206,11 @@ struct MyStringUtils
 	static uint64_t ReversDigits(uint64_t num) noexcept;
 
 	static std::vector<std::vector<MyStringAnsi>> LoadCsv(const char* fileName, char delim);
+
+
+	static size_t SearchBruteForce(MyStringView haystack, MyStringView needle, size_t start = 0);
+	static size_t SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
+	static size_t SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 
 };
 

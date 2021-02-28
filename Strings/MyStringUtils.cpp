@@ -9,6 +9,7 @@
 
 #include "./MyStringAnsi.h"
 
+
 /// <summary>
 /// Simple conversion of double value to string
 /// with given number of fractional places
@@ -174,4 +175,201 @@ std::vector<std::vector<MyStringAnsi>> MyStringUtils::LoadCsv(const char* fileNa
 	}
 
 	return res;
+}
+
+
+//====================================================================
+// Searching
+//====================================================================
+
+/// <summary>
+/// Perfrom Boyer-Moore searching. Last function can be passed in
+/// in "last". If "last" is NULL, last function is calculated
+/// and filled to "last" array
+/// !Important!"last" array must be freed outside this method
+/// </summary>
+/// <param name="haystack">where to find</param>
+/// <param name="needle">text to find</param>
+/// <param name="last">pointer to array of last function (in / out)</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& last, size_t start)
+{
+	const char* str = haystack.c_str();
+	size_t needleLen = needle.length();
+
+
+	if (needleLen == 0)
+	{
+		return MyStringUtils::npos;
+	}
+
+	size_t strLength = haystack.length();
+
+	if (last == nullptr)
+	{
+		last = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
+		size_t val = MyStringUtils::npos;
+		std::fill(last, last + std::numeric_limits<uint8_t>::max(), val);
+		for (size_t i = 0; i < strLength; i++)
+		{
+			last[static_cast<uint8_t>(str[i])] = i;
+		}
+	}
+
+	size_t index = needleLen - 1;
+	size_t cmpIndex = index;
+	index += start;
+	while (index < strLength)
+	{
+		if (str[index] == needle[cmpIndex])
+		{
+			if (cmpIndex == 0)
+			{
+				return index;
+			}
+
+			index--;
+			cmpIndex--;
+		}
+		else
+		{
+			size_t offset = last[static_cast<int>(str[index])];
+			index = index + needleLen - ((cmpIndex < offset + 1) ? cmpIndex : offset + 1);
+			cmpIndex = needleLen - 1;
+		}
+	}
+
+
+	return MyStringUtils::npos;
+
+}
+
+/// <summary>
+/// Perfrom KMP (KnuthMorisPrat) searching. Last function can be passed in
+/// in "last".If "last" is NULL, last function is calculated
+/// and filled to "last" array
+/// !Important!"last" array must be freed outside this method
+/// </summary>
+/// <param name="haystack">where to find</param>
+/// <param name="needle">text to find</param>
+/// <param name="last">pointer to array of last function (in / out)</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& last, size_t start)
+{
+	size_t needleLen = needle.length();
+
+	if (needleLen == 0)
+	{
+		return MyStringUtils::npos;
+	}
+
+	size_t index = 1;
+	size_t cmpIndex = 0;
+	size_t* failFce = last;
+	size_t strLen = haystack.length();
+	const char* str = haystack.c_str();
+
+	if (failFce == nullptr)
+	{
+		failFce = new size_t[needleLen];
+		last = failFce;
+		//buil Fail fce
+		failFce[0] = 0;
+		index = 1;
+		cmpIndex = 0;
+		while (index < needleLen)
+		{
+			if (needle[index] == needle[cmpIndex])
+			{
+				failFce[index] = failFce[index - 1] + 1;
+				cmpIndex++;
+			}
+			else
+			{
+				failFce[index] = 0;
+				if ((failFce[index - 1] != 0) && (cmpIndex != 0))
+				{
+					cmpIndex = 0;
+					index--;
+				}
+			}
+			index++;
+		}
+
+	}
+	index = start;
+	cmpIndex = 0;
+	while (index < strLen)
+	{
+		if (str[index] == needle[cmpIndex])
+		{
+			index++;
+			cmpIndex++;
+			if (cmpIndex == needleLen)
+			{
+
+				return (index - cmpIndex);
+			}
+		}
+		else
+		{
+			if (cmpIndex == 0)
+			{
+				index++;
+			}
+			else
+			{
+				cmpIndex = failFce[cmpIndex - 1];
+			}
+		}
+	}
+
+
+	return MyStringUtils::npos;
+}
+
+/// <summary>
+/// Perfrom BF searching. Suitable for small strings
+/// </summary>
+/// <param name="haystack">where to find</param>
+/// <param name="needle">text to find</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringUtils::SearchBruteForce(MyStringView haystack, MyStringView needle, size_t start)
+{
+	size_t needleLen = needle.length();
+	size_t i = start;
+	size_t j = 0;
+	size_t lastPos = MyStringUtils::npos;
+	size_t strLen = haystack.length();
+	const char* str = haystack.c_str();
+
+	while (i < strLen)
+	{
+		j = 0;
+		while (j < needleLen)
+		{
+			if (str[i] == needle[j])
+			{
+				i++;
+				j++;
+				lastPos = i;
+			}
+			else
+			{
+				i++;
+				lastPos = MyStringUtils::npos;
+				break;
+			}
+		}
+
+		if (lastPos != MyStringUtils::npos)
+		{
+			return (lastPos - needleLen);
+		}
+	}
+
+	return MyStringUtils::npos;
 }
