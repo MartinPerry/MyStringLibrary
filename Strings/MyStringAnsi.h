@@ -56,6 +56,17 @@ public:
 	}
 
 	/// <summary>
+	/// Get size of string after it will be packed with 
+	/// PackToMemory
+	/// </summary>
+	/// <param name="str"></param>
+	/// <returns></returns>
+	static int GetPackSize(const MyStringAnsi& str)
+	{
+		return sizeof(int) + sizeof(uint8_t) * str.length();
+	}
+
+	/// <summary>
 	/// Pack string to memory for e.g. serialization
 	/// </summary>
 	/// <param name="str"></param>
