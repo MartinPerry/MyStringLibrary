@@ -299,6 +299,36 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+/// <summary>
+/// Fill string buffer with char
+/// starting from offset
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <param name="t"></param>
+/// <param name="offset"></param>
+template <typename Type>
+void IStringAnsi<Type>::AppendMultiple(char t, size_t count)
+{
+	size_t curSize = static_cast<const Type*>(this)->capacity();
+	size_t strLength = static_cast<const Type*>(this)->length();
+
+	if (curSize <= strLength + count)
+	{
+		curSize = CalcNewBufferSize(curSize, strLength + count);
+		this->ResizeBuffer(curSize);
+	}
+		
+	char* str = static_cast<Type*>(this)->str();
+	
+	memset(str + strLength, t, count);
+
+	strLength += count;
+	str[strLength] = 0;
+	static_cast<Type*>(this)->SetLengthInternal(strLength);
+
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
 
 /// <summary>
 /// Clear string, but keep allocated memory

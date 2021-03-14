@@ -95,13 +95,14 @@ public:
 
 
 	void ResizeBuffer(size_t bufferSize);
+	
 	void Clear();
 	void Trim();
 	void Reverse();
 	void RemoveChar(char t);
 	void RemoveMultipleChars(char t);
 	void RemoveNonPrintableChars();
-	void PopBack();
+	void PopBack();	
 
 	template <typename RetVal = Type>
 	std::vector<RetVal> Split(char delimeter, bool keepEmptyValues = false) const;
@@ -123,6 +124,7 @@ public:
 
 
 	void Append(const char * str, size_t len = 0);
+	void AppendMultiple(char t, size_t count);
 
 	template<typename T>
 	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);

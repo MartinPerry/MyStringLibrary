@@ -16,7 +16,26 @@ public:
 
 	void reserve(size_t s)
 	{
-		static_cast<Type *>(this)->ResizeBuffer(s);
+		static_cast<Type *>(this)->ResizeBuffer(s + 1);
+	}
+
+	void resize(size_t s, char t = 0)
+	{
+		size_t strLength = static_cast<const Type*>(this)->length();
+		if (s > strLength)
+		{
+			size_t dif = s - strLength;
+			static_cast<Type*>(this)->ResizeBuffer(s + 1);
+			static_cast<Type*>(this)->AppendMultiple(t, dif);
+		}		
+		else if (s < strLength)
+		{
+			size_t dif = strLength - s;
+			for (size_t i = 0; i < dif; i++)
+			{
+				static_cast<Type*>(this)->PopBack();
+			}
+		}
 	}
 
 	size_t find(const char c) const

@@ -343,6 +343,22 @@ constexpr double foo(double x, bool b) {
 	else return bar(x);
 }
 
+MyStringAnsi php_bin2hex(const MyStringAnsi& str)
+{
+	static const char hexconvtab[] = "0123456789abcdef";
+
+	MyStringAnsi result;
+	result.resize(str.length() * 2 + 1);
+	size_t i, j;
+
+	for (i = j = 0; i < str.length(); i++) {
+		result[j++] = hexconvtab[str[i] >> 4];
+		result[j++] = hexconvtab[str[i] & 15];
+	}
+	result[j] = '\0';
+	return result;
+}
+
 int main(int argc, char ** argv)
 {
 #ifdef VLD_ENABLED
@@ -355,7 +371,18 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
-	
+	std::string ress = "akxxxx";
+	ress.resize(4, 'o');
+	ress += "oo";
+
+	MyStringAnsi resi = "akxxxx";
+	resi.resize(4, 'o');
+	resi += "oo";
+	resi.AppendMultiple('x', 1);
+
+	auto hex = php_bin2hex(resi);
+
+	return 0;
 	MyStringView xxasas = "okokok";
 
 	auto rehhs = xxasas.Find("ok");

@@ -52,6 +52,8 @@ class MyStringView
 {
 public:
 	
+	static const size_t npos = static_cast<size_t>(-1);
+
 	constexpr MyStringView() noexcept;
 	constexpr MyStringView(StringLiteral l) noexcept;
 	MyStringView(const char * str, size_t len = 0) noexcept;

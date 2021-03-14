@@ -63,7 +63,7 @@ public:
 	/// <returns></returns>
 	static int GetPackSize(const MyStringAnsi& str)
 	{
-		return sizeof(int) + sizeof(uint8_t) * str.length();
+		return static_cast<int>(sizeof(int) + sizeof(uint8_t) * str.length());
 	}
 
 	/// <summary>
