@@ -87,10 +87,20 @@ public:
 		return this->operator[](length - 1);
 	};
 
-	char & GetLastChar()
+	char& GetLastChar()
 	{
 		size_t length = static_cast<const Type*>(this)->length();
 		return this->operator[](length - 1);
+	};
+
+	char GetFirstChar() const
+	{		
+		return this->operator[](0);
+	};
+
+	char& GetFirstChar()
+	{
+		return this->operator[](0);
 	};
 
 
@@ -112,7 +122,8 @@ public:
 
 	size_t Count(const char str) const noexcept;
 
-	bool EndsWith(MyStringView needle) const noexcept;
+	bool StartWith(MyStringView needle) const noexcept;
+	bool EndWith(MyStringView needle) const noexcept;
 
 	size_t Find(const char c) const noexcept;
 	size_t FindLast(const char c) const noexcept;

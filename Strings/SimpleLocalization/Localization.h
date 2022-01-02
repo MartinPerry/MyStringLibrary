@@ -5,17 +5,19 @@
 #include <unordered_map>
 #include <map>
 #include <vector>
+#include <list>
 #include <initializer_list>
 
-#if __has_include("./TinyUtf8Wrapper.h")
-#	include "./TinyUtf8Wrapper.h"
+#if __has_include("../Unicode/TinyUtf8Wrapper.h")
+#	include "../Unicode/TinyUtf8Wrapper.h"
 #endif
 
-#if __has_include("./IcuUnicodeStringWrapper.h")
-#	include "./IcuUnicodeStringWrapper.h"
+#if __has_include("../Unicode/IcuUnicodeStringWrapper.h")
+#	include "../Unicode/IcuUnicodeStringWrapper.h"
 #endif
 
 #include "../MyString.h"
+
 
 class Localization
 {
@@ -24,10 +26,20 @@ public:
 	using String = MyStringAnsi;	
 	using StringView = MyStringView;
 	using UnicodeStringWrapper = TinyUtf8Wrapper;
-	
+
+	class ILocalizationObserver
+	{
+	public:
+		virtual ~ILocalizationObserver() {};
+		virtual void OnLanguageChange(StringView lang, Localization* loc) = 0;
+	};
+
 	Localization(StringView lang, StringView defLang = "en", StringView defPath = "");
 	~Localization();
 	
+	void AddObserver(ILocalizationObserver* observer);
+	void RemoveObserver(ILocalizationObserver* observer);
+
 	const std::map<StringView, StringView> & GetAllSupportedLanguages() const;
 
     void SetLang(StringView lang);
@@ -64,6 +76,8 @@ protected:
 	std::unordered_map<String, LocalString> strs; //ordinary translation [key] = value
 	std::unordered_map<String, std::unordered_map<String, LocalString>> groups; //special translation [group][key] = value
 	
+	std::list<ILocalizationObserver *> observers;
+
 	void GenerateSupportedLanguagesList();
 
 	void LoadLocalization(const String & langID);

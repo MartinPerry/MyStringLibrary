@@ -52,7 +52,7 @@ public:
 	{
 		return static_cast<const Type*>(this)->Find(str.c_str(), offset);
 	}
-
+	
 	Type substr(const size_t start = 0, const size_t length = Type::npos) const
 	{
 		if (length == Type::npos)

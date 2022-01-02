@@ -73,6 +73,16 @@ Localization::~Localization()
 {
 }
 
+void Localization::AddObserver(ILocalizationObserver* observer)
+{
+	this->observers.push_back(observer);
+}
+
+void Localization::RemoveObserver(ILocalizationObserver* observer)
+{
+	this->observers.remove(observer);
+}
+
 const std::map<Localization::StringView, Localization::StringView> & Localization::GetAllSupportedLanguages() const
 {
 #ifdef GENERATED_LANG_LIST_H
@@ -240,6 +250,12 @@ void Localization::SetLang(Localization::StringView lang)
     {
         this->LoadLocalization(this->lang);
     }
+
+	for (auto tmp : this->observers)
+	{
+		tmp->OnLanguageChange(lang, this);
+	}
+
 }
 
 void Localization::LoadLocalization(const Localization::String & langID)

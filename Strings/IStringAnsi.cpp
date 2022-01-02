@@ -779,12 +779,46 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 //====================================================================
 
 /// <summary>
-/// Test if string ends with suffix
+/// Test if string start with suffix
 /// </summary>
 /// <param name="needle"></param>
 /// <returns></returns>
 template <typename Type>
-bool IStringAnsi<Type>::EndsWith(MyStringView needle) const noexcept
+bool IStringAnsi<Type>::StartWith(MyStringView needle) const noexcept
+{
+	size_t strLen = static_cast<const Type*>(this)->length();
+	const char* str = static_cast<const Type*>(this)->c_str();
+
+	if (strLen < needle.length())
+	{
+		return false;
+	}
+	
+	for (size_t i = 0; i < strLen; i++)
+	{
+		if (str[i] != needle[0])
+		{
+			return false;
+		}
+
+		needle.RemoveFromStart();
+
+		if (needle.length() == 0)
+		{
+			break;
+		}
+	}
+
+	return true;
+}
+
+/// <summary>
+/// Test if string end with suffix
+/// </summary>
+/// <param name="needle"></param>
+/// <returns></returns>
+template <typename Type>
+bool IStringAnsi<Type>::EndWith(MyStringView needle) const noexcept
 {
 	size_t strLen = static_cast<const Type*>(this)->length();
 	const char* str = static_cast<const Type*>(this)->c_str();

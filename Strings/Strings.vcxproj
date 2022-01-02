@@ -483,10 +483,7 @@
     <ClInclude Include="MyStringView.h" />
     <ClInclude Include="SimpleLocalization\cJSON_JS.h" />
     <ClInclude Include="SimpleLocalization\generated_localization.h" />
-    <ClInclude Include="SimpleLocalization\IcuUnicodeStringWrapper.h" />
     <ClInclude Include="SimpleLocalization\Localization.h" />
-    <ClInclude Include="SimpleLocalization\tinyutf8.h" />
-    <ClInclude Include="SimpleLocalization\TinyUtf8Wrapper.h" />
     <ClInclude Include="SimpleLocalization\win_dirent.h" />
     <ClInclude Include="StdStringCompatibility.h" />
     <ClInclude Include="StringBenchmarks.h">
@@ -502,6 +499,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Unicode\IcuUnicodeStringWrapper.h" />
+    <ClInclude Include="Unicode\tinyutf8.h" />
+    <ClInclude Include="Unicode\TinyUtf8Wrapper.h" />
+    <ClInclude Include="Unicode\UnicodeUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl" />
@@ -521,7 +522,6 @@
     <ClCompile Include="MyStringView.cpp" />
     <ClCompile Include="SimpleLocalization\cJSON_JS.c" />
     <ClCompile Include="SimpleLocalization\Localization.cpp" />
-    <ClCompile Include="SimpleLocalization\tinyutf8.cpp" />
     <ClCompile Include="StringBenchmarks.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>

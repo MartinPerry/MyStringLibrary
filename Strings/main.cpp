@@ -371,6 +371,9 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	MyStringView sdsad = "Kolomat";
+	auto subsasd = sdsad.SubString(3);
+
 	std::string ress = "akxxxx";
 	ress.resize(4, 'o');
 	ress += "oo";
@@ -388,7 +391,7 @@ int main(int argc, char ** argv)
 	auto rehhs = xxasas.Find("ok");
 	
 	MyStringAnsi sadasd = "wahojky";
-	bool ede = sadasd.EndsWith("ahojky");
+	bool ede = sadasd.EndWith("ahojky");
 	
 	if (xxasas != "ahoj")
 	{

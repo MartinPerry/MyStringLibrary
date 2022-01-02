@@ -74,14 +74,17 @@ public:
 	size_t length() const noexcept;
 
 	char GetLastChar() const;
+	char GetFirstChar() const;
 
 	void Trim();
 
 	void RemoveFromStart(size_t count = 1);
 	void RemoveFromEnd(size_t count = 1);
+	MyStringView SubString(int start) const;
 	MyStringView SubString(int start, size_t length) const;
 
-	bool EndsWith(MyStringView needle) const noexcept;
+	bool StartWith(MyStringView needle) const noexcept;
+	bool EndWith(MyStringView needle) const noexcept;
 	size_t Find(const char c) const noexcept;
 	size_t Find(const char* needle) const noexcept;
 

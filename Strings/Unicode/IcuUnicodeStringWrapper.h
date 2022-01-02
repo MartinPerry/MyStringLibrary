@@ -31,6 +31,11 @@ struct IcuUnicodeStringWrapper
 	{
 	}
 
+	IcuUnicodeStringWrapper(const char* str, size_t length) :
+		str(icu::UnicodeString::fromUTF8(icu::StringPiece(str, length)))
+	{
+	}
+
 	template <typename S>
 	S getAs() const
 	{

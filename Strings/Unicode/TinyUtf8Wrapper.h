@@ -9,25 +9,30 @@
 struct TinyUtf8Wrapper
 {
 	constexpr static size_t npos = -1;
-	utf8_string str;
+	tiny_utf8::string str;
 
 	TinyUtf8Wrapper() :
-		str(utf8_string())
+		str(tiny_utf8::string())
 	{
 	}
 
-	TinyUtf8Wrapper(const utf8_string & str) :
+	TinyUtf8Wrapper(const tiny_utf8::string& str) :
 		str(str)
 	{
 	}
 
-	TinyUtf8Wrapper(utf8_string && str) :
+	TinyUtf8Wrapper(tiny_utf8::string&& str) :
 		str(std::move(str))
 	{
 	}
 	
 	TinyUtf8Wrapper(const char * str) :
 		str(str)
+	{
+	}
+
+	TinyUtf8Wrapper(const char* str, size_t length) :
+		str(str, length)
 	{
 	}
 

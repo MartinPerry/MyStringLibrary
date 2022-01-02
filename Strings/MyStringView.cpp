@@ -108,6 +108,17 @@ char MyStringView::GetLastChar() const
 	return this->str[len - 1];
 }
 
+char MyStringView::GetFirstChar() const
+{
+	if (len == 0)
+	{
+		return 0;
+	}
+
+	return this->str[0];
+}
+
+
 void MyStringView::Trim()
 {
 	size_t oldLength = this->length();
@@ -154,6 +165,12 @@ void MyStringView::RemoveFromEnd(size_t count)
 	this->hash = std::numeric_limits<uint32_t>::max();
 }
 
+MyStringView MyStringView::SubString(int start) const
+{
+	return this->SubString(start, std::numeric_limits<size_t>::max());
+}
+
+
 MyStringView MyStringView::SubString(int start, size_t length) const
 {	
 	MyStringView v = *this;
@@ -176,7 +193,40 @@ MyStringView MyStringView::SubString(int start, size_t length) const
 /// </summary>
 /// <param name="needle"></param>
 /// <returns></returns>
-bool MyStringView::EndsWith(MyStringView needle) const noexcept
+bool MyStringView::StartWith(MyStringView needle) const noexcept
+{
+	size_t strLen = this->length();
+	const char* str = this->c_str();
+
+	if (strLen < needle.length())
+	{
+		return false;
+	}
+
+	for (size_t i = 0; i < strLen; i++)
+	{
+		if (str[i] != needle[0])
+		{
+			return false;
+		}
+
+		needle.RemoveFromStart();
+
+		if (needle.length() == 0)
+		{
+			break;
+		}
+	}
+
+	return true;
+}
+
+/// <summary>
+/// Test if string ends with suffix
+/// </summary>
+/// <param name="needle"></param>
+/// <returns></returns>
+bool MyStringView::EndWith(MyStringView needle) const noexcept
 {
 	size_t strLen = this->length();
 	const char* str = this->c_str();
