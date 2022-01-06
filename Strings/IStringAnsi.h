@@ -51,6 +51,10 @@ public:
 		
 	static const size_t npos = static_cast<size_t>(-1);
 
+	//======================================================================
+	// ctors
+	//======================================================================
+
 	IStringAnsi();
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
@@ -59,6 +63,10 @@ public:
 	IStringAnsi(size_t bufferSize);
 
 	virtual ~IStringAnsi();
+
+	//======================================================================
+	// Factory init
+	//======================================================================
 
 	template <typename RetVal = Type>
 	static RetVal LoadFromFile(MyStringView fileName);
@@ -122,6 +130,12 @@ public:
 
 	size_t Count(const char str) const noexcept;
 
+	void Transform(std::function<char(char)> t);
+
+	//==============================================================
+	// Finding
+	//==============================================================
+
 	bool StartWith(MyStringView needle) const noexcept;
 	bool EndWith(MyStringView needle) const noexcept;
 
@@ -133,6 +147,9 @@ public:
 	size_t Find(MyStringView needle, size_t offset) const;
 	std::vector<size_t> FindAll(MyStringView needle) const;
 
+	//==============================================================
+	// Appending
+	//==============================================================
 
 	void Append(const char * str, size_t len = 0);
 	void AppendMultiple(char t, size_t count);
@@ -145,10 +162,18 @@ public:
 
 	void AppendFormat(const char* str, va_list args);
 	
+	//==============================================================
+	// Replacing
+	//==============================================================
+
 	void Replace(MyStringView oldValue, MyStringView newValue);	
 	void Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset);
 	void Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos);
 	Type CreateReplaced(MyStringView src, MyStringView dest) const;
+
+	//==============================================================
+	// Substrings
+	//==============================================================
 
 	Type SubString(int start) const;
 	Type SubString(int start, size_t length) const;
@@ -157,13 +182,19 @@ public:
 	void CopySubstring(int start, char * destination) const;
 	void CopySubstring(int start, size_t length, char * destination) const;
 
+	//==============================================================
+	// Numbers
+	//==============================================================
+
 	std::vector<double> GetAllNumbers() const;
 
 	bool IsNumber() const;
 	bool IsIntNumber() const;
 	bool IsFloatNumber() const;
-
-	void Transform(std::function<char(char)> t);
+	
+	//==============================================================
+	// Append operators
+	//==============================================================
 
 	template <typename T>	
 	RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) operator += (T number);
@@ -190,6 +221,10 @@ public:
     operator + (const T & str) const;
 	Type operator + (const char * str) const;
 
+	//==============================================================
+	// Assign operators
+	//==============================================================
+
 	template <typename T>
 	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || 
 		std::is_same<T, MySmallStringAnsi>::value ||
@@ -198,6 +233,9 @@ public:
 	Type& operator = (const char * str);
 	Type& operator = (Type && other);
 
+	//==============================================================
+	// Indexing operators
+	//==============================================================
 
 	template <typename T>
 	RET_VAL_STR(char, (std::is_integral<T>::value))
@@ -207,20 +245,18 @@ public:
 	RET_VAL_STR(char&, (std::is_integral<T>::value))
     operator [](const T index);
 
-
-	//template <typename T>
-	//RET_VAL_STR( (std::is_integral<T>::value))
-	//template<typename T, typename = typename std::is_integral<T>::value>
-
+	//==============================================================
+	// Casting
+	//==============================================================
+	
+	//explicit cast to numbers
 	template <typename T,
 		typename = typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type
 	>
 	explicit operator T() const;
 
-	//template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>	
-	//IStringAnsi operator + (T number) const;
-
-	//operator uint32_t() const { return GetHashCode(); }
+	//auto cast to std::string
+	operator std::string() const;
 
 
 protected:
@@ -776,6 +812,12 @@ template <typename T,
 inline IStringAnsi<Type>::operator T() const
 {
 	return MyStringUtils::ToNumber<T>(static_cast<const Type *>(this)->c_str());
+}
+
+template <typename Type>
+inline IStringAnsi<Type>::operator std::string() const
+{
+	return std::string(static_cast<const Type*>(this)->c_str(), static_cast<const Type*>(this)->length());
 }
 
 //====================================================================
