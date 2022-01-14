@@ -64,6 +64,7 @@ public:
 	MyStringView(const MyStringView & v) noexcept;
 
 	MyStringView(const std::string& str) noexcept;
+	MyStringView(const std::string_view& str) noexcept;
 	MyStringView(const std::vector<char>& v) noexcept;
 
 

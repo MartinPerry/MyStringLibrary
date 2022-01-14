@@ -55,6 +55,14 @@ MyStringView::MyStringView(const std::string& str) noexcept :
 {
 }
 
+MyStringView::MyStringView(const std::string_view& str) noexcept :
+	str(str.data()),
+	len(str.length()),
+	hash(std::numeric_limits<uint32_t>::max())
+{
+}
+
+
 MyStringView::MyStringView(const std::vector<char>& v) noexcept :
 	str(v.data()),
 	len(v.size()),
