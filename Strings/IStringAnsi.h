@@ -80,7 +80,7 @@ public:
 	//======================================================================
 	
 	void Release();
-	bool SaveToFile(const char * fileName) const;
+	bool SaveToFile(MyStringView fileName) const;
 
 
 	uint32_t GetHashCode() const noexcept;
@@ -166,6 +166,7 @@ public:
 	// Replacing
 	//==============================================================
 
+	void Replace(char oldValue, char newValue);
 	void Replace(MyStringView oldValue, MyStringView newValue);	
 	void Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset);
 	void Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos);

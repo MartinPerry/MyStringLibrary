@@ -222,11 +222,10 @@ uint32_t IStringAnsi<Type>::GetHashCode() const noexcept
 // Helper methods
 //====================================================================
 template <typename Type>
-bool IStringAnsi<Type>::SaveToFile(const char * fileName) const
-{
-
+bool IStringAnsi<Type>::SaveToFile(MyStringView fileName) const
+{	
 	FILE *f = nullptr;  //pointer to file we will read in
-	my_fopen(&f, fileName, "wb");
+	my_fopen(&f, fileName.c_str(), "wb");
 	if (f == nullptr)
 	{
 		return false;
@@ -498,6 +497,26 @@ void IStringAnsi<Type>::PopBack()
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+
+template <typename Type>
+void IStringAnsi<Type>::Replace(char oldValue, char newValue)
+{
+	size_t length = static_cast<const Type*>(this)->length();
+	if (length == 0)
+	{
+		return;
+	}
+
+	char* str = static_cast<Type*>(this)->str();
+		
+	for (size_t i = 0; i < length; i++)
+	{
+		if (str[i] == oldValue)
+		{
+			str[i] = newValue;
+		}
+	}
+}
 
 template <typename Type>
 void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue)
