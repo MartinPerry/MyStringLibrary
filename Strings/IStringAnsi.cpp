@@ -244,6 +244,14 @@ bool IStringAnsi<Type>::SaveToFile(MyStringView fileName) const
 // Methods for string manipulation
 //====================================================================
 
+template <typename Type>
+void IStringAnsi<Type>::ToLower()
+{
+	this->Transform([](unsigned char c) -> char {
+		return std::tolower(c);
+	});
+}
+
 /// <summary>
 /// Transform every character of string with a transfrom callback
 /// </summary>
@@ -1077,7 +1085,7 @@ std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView needle) const
 			//not found
 			break; 
 		}        
-		startPos.push_back(pos);    //store found start positions of serach words
+		startPos.push_back(pos);    //store found start positions of searched needle
 
 		pos += searchLength;        //set new search start
 
