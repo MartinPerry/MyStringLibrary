@@ -73,6 +73,7 @@ public:
 	uint32_t GetHashCode() const noexcept;
 	const char * c_str() const noexcept;
 	size_t length() const noexcept;
+	bool empty() const noexcept;
 
 	char GetLastChar() const;
 	char GetFirstChar() const;
@@ -83,6 +84,7 @@ public:
 	void RemoveFromEnd(size_t count = 1);
 	MyStringView SubString(int start) const;
 	MyStringView SubString(int start, size_t length) const;
+	MyStringView substr(int start, size_t length) const;
 
 	bool StartWith(MyStringView needle) const noexcept;
 	bool EndWith(MyStringView needle) const noexcept;

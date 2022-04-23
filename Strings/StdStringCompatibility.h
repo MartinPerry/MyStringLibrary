@@ -53,6 +53,11 @@ public:
 		return static_cast<const Type*>(this)->Find(str.c_str(), offset);
 	}
 	
+	bool empty() const
+	{
+		return static_cast<const Type*>(this)->length() == 0;
+	}
+
 	Type substr(const size_t start = 0, const size_t length = Type::npos) const
 	{
 		if (length == Type::npos)

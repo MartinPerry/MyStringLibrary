@@ -88,6 +88,11 @@ size_t MyStringView::length() const noexcept
 	return this->len;
 };
 
+bool MyStringView::empty() const noexcept
+{
+	return ((this->len == 0) || (this->str == nullptr));
+};
+
 
 uint32_t MyStringView::GetHashCode() const noexcept
 {
@@ -194,6 +199,11 @@ MyStringView MyStringView::SubString(int start, size_t length) const
 		v.len = length;
 	}
 	return v;
+}
+
+MyStringView MyStringView::substr(int start, size_t length) const
+{
+	return this->SubString(start, length);
 }
 
 /// <summary>

@@ -252,6 +252,14 @@ void IStringAnsi<Type>::ToLower()
 	});
 }
 
+template <typename Type>
+void IStringAnsi<Type>::ToUpper()
+{
+	this->Transform([](unsigned char c) -> char {
+		return std::toupper(c);
+		});
+}
+
 /// <summary>
 /// Transform every character of string with a transfrom callback
 /// </summary>

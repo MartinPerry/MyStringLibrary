@@ -131,6 +131,7 @@ public:
 	size_t Count(const char str) const noexcept;
 
 	void ToLower();
+	void ToUpper();
 	void Transform(std::function<char(char)> t);
 
 	//==============================================================
