@@ -1,7 +1,7 @@
 #ifndef UCI_UNICODE_STRING_WRAPPER_H
 #define UCI_UNICODE_STRING_WRAPPER_H
 
-#if __has_include(<unicode/unistr.h>)
+#if (defined(ENABLE_ICU) && (__has_include(<unicode/unistr.h>)))
 
 #include <unicode/unistr.h>
 

@@ -1,7 +1,7 @@
 #ifndef UNICODE_UTILS_H
 #define UNICODE_UTILS_H
 
-#if __has_include(<unicode/unistr.h>)
+#if (defined(ENABLE_ICU) && (__has_include(<unicode/unistr.h>)))
 #	include "./IcuUnicodeStringWrapper.h"
 
 #	define HAS_UNICODE
