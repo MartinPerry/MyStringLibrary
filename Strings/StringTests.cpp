@@ -447,7 +447,7 @@ void StringTests<T>::TestMethods()
 	printf("==== Split (not keep empty) (%s) ==== ", __func__);
 
 	inputs = { " xxx xxx ", "hellox hello", "x", "xax", "xxaxxxaxx", " xx xx   xx" };
-	std::vector<int> outputs2 = { 2, 2, 1, 1, 1, 3 };
+	std::vector<size_t> outputs2 = { 2, 2, 1, 1, 1, 3 };
 
 	for (size_t i = 0; i < inputs.size(); i++)
 	{

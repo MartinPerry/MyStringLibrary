@@ -552,6 +552,7 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, si
 	size_t oldValueLen = oldValue.length();
 	size_t * last = nullptr;
 	size_t pos = 0;
+	size_t lastPos = 0;
 
 	std::vector<size_t> startPos;
 	size_t foundOffset = 0;
@@ -577,9 +578,16 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, si
 			startPos.push_back(pos);    //store found start positions of search words
 			break;
 		}
+		
+		lastPos = pos;
 		pos += oldValueLen;        //set new search start
 
-		foundOffset++;
+		foundOffset++;		
+	}
+
+	if (replaceOffset == StringConstants::REPLACE_LAST)
+	{		
+		startPos.push_back(lastPos);    //store all found start positions of search words
 	}
 
 	delete[] last;

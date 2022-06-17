@@ -1,26 +1,30 @@
-CC = g++
+CC = /opt/rh/devtoolset-7/root/usr/bin/g++
+#CC = g++
 
-INCLUDE_DIRS = 
+INCLUDE_DIRS = -I/usr/include/
 
 LIB_DIRS = -L./ -L/usr/lib64/
 
 LIBS = -lm -lpthread -lstdc++ -ldl
 
-LINKER_OPTS = -Wall -O2
+LINKER_OPTS = -Wall -g -O3
 
-CFLAGS = -g -std=c++11 $(INCLUDE_DIRS)
+CFLAGS = -std=c++17 -mavx2 -mfma -g -Wall -O3 -Wunknown-pragmas \
+		 -Wno-unused-function -Wno-unused-value \
+		 $(INCLUDE_DIRS)
 
+BIN = libstrings.a
 
+#=================================================================================
 
-BIN = string_test
-
-
-STRING_FILES = $(wildcard ./Strings/*.cpp)
+LOCALIZATION_FILES = $(wildcard ./SimpleLocalization/*.cpp)
+UNICODE_FILES = $(wildcard ./Unicode/*.cpp)
 ROOT_FILES = $(wildcard ./*.cpp)
 
 
-OBJ = $(addprefix ,$(notdir $(STRING_FILES:.cpp=.obj))) \
-      $(addprefix ,$(notdir $(ROOT_FILES:.cpp=.obj)))
+OBJ = $(addprefix ,$(notdir $(LOCALIZATION_FILES:.cpp=.obj))) \
+	  $(addprefix ,$(notdir $(UNICODE_FILES:.cpp=.obj))) \
+	  $(addprefix ,$(notdir $(ROOT_FILES:.cpp=.obj)))
 
 
 .PHONY: sestav
@@ -44,16 +48,22 @@ sestav: ${BIN}
 #-----------------------------------------
 #$(CC) $(LIB_DIRS) $(LINKER_OPTS) -o $@ $^  $(LIBS)
 
-$(BIN): $(OBJ)	
-	$(CC) $(LINKER_OPTS) $^ $(LIB_DIRS) $(LIBS) -o $@
+#$(BIN): $(OBJ)	
+#	$(CC) $(LINKER_OPTS) $^ $(LIB_DIRS) $(LIBS) -o $@
+
+$(BIN): $(OBJ)
+	ar rc $@ $(OBJ)
+	ranlib $@
 #-----------------------------------------
 
 
 #----------- Strings
 
-%.obj: ./Strings/%.cpp
+%.obj: ./SimpleLocalization/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< 
-
+	
+%.obj: ./Unicode/%.cpp
+	$(CC) $(CFLAGS) -c -o $@ $< 	
 
 
 %.obj: ./%.cpp

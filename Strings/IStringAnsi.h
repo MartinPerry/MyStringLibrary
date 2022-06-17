@@ -39,7 +39,10 @@ static const char* const conversions[] =
 };
 
 enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, DEFAULT = 3 };
-enum StringConstants { REPLACE_ALL = std::numeric_limits<size_t>::max() };
+enum StringConstants { 
+	REPLACE_ALL = std::numeric_limits<size_t>::max(), 
+	REPLACE_LAST = std::numeric_limits<size_t>::max() - 1,
+};
 
 template <typename Type>
 class IStringAnsi : 

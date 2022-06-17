@@ -59,9 +59,9 @@
 Localization::Localization(Localization::StringView lang,
 	Localization::StringView defLang,
 	Localization::StringView defPath) :
-	lang(""), 
-	DEFAULT_LANGUAGE(defLang), 
-	DEFAULT_PATH(defPath)
+	DEFAULT_LANGUAGE(defLang),
+	DEFAULT_PATH(defPath),
+	lang("")
 {	
 	this->GenerateSupportedLanguagesList();
     this->SetLang(lang);
