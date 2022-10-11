@@ -501,19 +501,50 @@ void IStringAnsi<Type>::RemoveNonPrintableChars()
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
+/// <summary>
+/// Pop one character from back of the string
+/// and return it
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <returns></returns>
 template <typename Type>
-void IStringAnsi<Type>::PopBack()
+Type IStringAnsi<Type>::PopBack()
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t length = static_cast<const Type *>(this)->length();
 
+	Type val = str[length - 1];
 	str[length - 1] = 0;
 		
 	static_cast<Type *>(this)->SetLengthInternal(length - 1);
 	this->hashCode = std::numeric_limits<uint32_t>::max();
+
+	return val;
 }
 
+/// <summary>
+/// Move end of the string to the new position
+/// eg: Hello world => index: 5 => Hello
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <param name="index"></param>
+template <typename Type>
+void IStringAnsi<Type>::CutFromBack(size_t index)
+{
+	char* str = static_cast<Type*>(this)->str();
+	
+	str[index] = 0;
 
+	static_cast<Type*>(this)->SetLengthInternal(index);
+	this->hashCode = std::numeric_limits<uint32_t>::max();
+}
+
+/// <summary>
+/// Replace all occurence of a single char with another one
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <param name="oldValue"></param>
+/// <param name="newValue"></param>
 template <typename Type>
 void IStringAnsi<Type>::Replace(char oldValue, char newValue)
 {
@@ -746,6 +777,11 @@ std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
 	return s;
 }
 
+/// <summary>
+/// Check if string is a number
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <returns></returns>
 template <typename Type>
 bool IStringAnsi<Type>::IsNumber() const
 {
@@ -1045,7 +1081,16 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 }
 
 
-
+/// <summary>
+/// Find str within this string and return offset position of
+/// occurence
+/// Offset is the number of occurences we want to skip
+/// NOT the starting position of search
+/// </summary>
+/// <typeparam name="Type"></typeparam>
+/// <param name="needle"></param>
+/// <param name="offset"></param>
+/// <returns></returns>
 template <typename Type>
 size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset) const
 {

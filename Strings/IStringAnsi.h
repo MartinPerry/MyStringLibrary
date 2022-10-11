@@ -123,7 +123,8 @@ public:
 	void RemoveChar(char t);
 	void RemoveMultipleChars(char t);
 	void RemoveNonPrintableChars();
-	void PopBack();	
+	Type PopBack();
+	void CutFromBack(size_t index);
 
 	template <typename RetVal = Type>
 	std::vector<RetVal> Split(char delimeter, bool keepEmptyValues = false) const;
