@@ -1080,11 +1080,57 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	return pos;
 }
 
+template <typename Type>
+size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm algo) const
+{
+	size_t pos = MyStringUtils::npos;
+
+
+	size_t len = static_cast<const Type*>(this)->length();
+	if (offset >= len)
+	{
+		return pos;
+	}
+
+	const char* str = static_cast<const Type*>(this)->c_str();
+	str += offset;	
+	len -= offset;
+
+	MyStringView strView = MyStringView(str, len);
+
+	size_t* last = nullptr;
+
+	if (algo == SearchAlgorithm::BM)
+	{
+		pos = MyStringUtils::SearchBoyerMoore(strView, needle, last);
+	}
+	else if (algo == SearchAlgorithm::KMP)
+	{
+		pos = MyStringUtils::SearchKnuthMorisPrat(strView, needle, last);
+	}
+	else if (algo == SearchAlgorithm::BF)
+	{
+		pos = MyStringUtils::SearchBruteForce(strView, needle);
+	}
+	else if (algo == SearchAlgorithm::DEFAULT)
+	{
+		//non-null terminated string are not supported with CLib
+		//and needle may not bet null terminated
+		pos = MyStringUtils::SearchBruteForce(strView, needle);
+	}
+
+	if (last != nullptr)
+	{
+		delete[] last;
+	}
+	
+	return offset + pos;
+}
 
 /// <summary>
 /// Find str within this string and return offset position of
 /// occurence
-/// Offset is the number of occurences we want to skip
+/// skipOccurences Offset is the number of occurences we want to skip
 /// NOT the starting position of search
 /// </summary>
 /// <typeparam name="Type"></typeparam>
@@ -1092,7 +1138,7 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 /// <param name="offset"></param>
 /// <returns></returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset) const
+size_t IStringAnsi<Type>::FindWithSkip(MyStringView needle, size_t skipOccurences) const
 {
 	size_t count = 0;
 	size_t searchLength = needle.length();
@@ -1111,7 +1157,7 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset) const
 			break; 
 		}       
 
-		if (count == offset)
+		if (count == skipOccurences)
 		{
 			break;
 		}

@@ -150,7 +150,8 @@ public:
 	size_t Find(const Type& needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
 	size_t Find(MyStringView needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
 	size_t Find(const char * needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
-	size_t Find(MyStringView needle, size_t offset) const;
+	size_t Find(MyStringView needle, size_t offset, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t FindWithSkip(MyStringView needle, size_t skipOccurences) const;
 	std::vector<size_t> FindAll(MyStringView needle) const;
 
 	//==============================================================
