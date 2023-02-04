@@ -1124,6 +1124,11 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset, SearchAlgorit
 		delete[] last;
 	}
 	
+	if (pos == MyStringUtils::npos)
+	{
+		return MyStringUtils::npos;
+	}
+
 	return offset + pos;
 }
 

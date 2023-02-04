@@ -782,7 +782,19 @@ IStringAnsi<Type>::operator = (const T & str)
 	}
 	*/
 
-	this->CreateNew(str.c_str(), str.length());
+	size_t len = str.length();
+	if (len == 0)
+	{
+		//StringView can be zero size - in this case
+		//do not create new string
+		//if we use 0 len and str, str will be auto-computed from view
+		//and incorrect
+		this->CreateNew(nullptr, len);
+	}
+	else
+	{
+		this->CreateNew(str.c_str(), len);
+	}
 	return *static_cast<Type *>(this);
 };
 

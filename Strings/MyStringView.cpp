@@ -310,3 +310,29 @@ size_t MyStringView::Find(const char* needle) const noexcept
 
 	return pos;
 }
+
+size_t MyStringView::Find(const char* needle, size_t offset) const noexcept
+{
+	size_t pos = MyStringUtils::npos;
+
+	if (needle == nullptr)
+	{
+		return pos;
+	}
+
+	size_t len = this->length();
+	const char* str = this->c_str();
+	str += offset;
+	len -= offset;
+
+	MyStringView strViewOffset = MyStringView(str, len);
+
+	pos = MyStringUtils::SearchBruteForce(strViewOffset, needle);
+
+	if (pos == MyStringUtils::npos)
+	{
+		return MyStringUtils::npos;
+	}
+
+	return offset + pos;
+}

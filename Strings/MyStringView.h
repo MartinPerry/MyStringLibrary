@@ -91,6 +91,7 @@ public:
 	bool EndWith(MyStringView needle) const noexcept;
 	size_t Find(const char c) const noexcept;
 	size_t Find(const char* needle) const noexcept;
+	size_t Find(const char* needle, size_t offset) const noexcept;
 
 	MyStringView & operator = (const char * str) noexcept;
 
