@@ -136,6 +136,7 @@ public:
 
 	void ToLower();
 	void ToUpper();
+	void ToUpperFirst();
 	void Transform(std::function<char(char)> t);
 
 	//==============================================================

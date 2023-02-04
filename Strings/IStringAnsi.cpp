@@ -260,6 +260,27 @@ void IStringAnsi<Type>::ToUpper()
 		});
 }
 
+template <typename Type>
+void IStringAnsi<Type>::ToUpperFirst()
+{
+	this->Transform([](unsigned char c) -> char {		
+		return std::tolower(c);		
+	});
+
+	char* end = static_cast<Type*>(this)->str();
+	char c = 0;
+	char prev = ' ';
+	while ((c = *end) != 0)
+	{
+		if (prev == ' ')
+		{
+			*end = std::toupper(c);
+		}
+		prev = c;
+		end++;
+	}
+}
+
 /// <summary>
 /// Transform every character of string with a transfrom callback
 /// </summary>
