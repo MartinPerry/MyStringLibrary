@@ -132,6 +132,9 @@ public:
 	template <typename RetVal = Type>
 	std::vector<RetVal> Split(const std::vector<char> & delimeters, bool keepEmptyValues = false) const;
 
+	template <typename RetVal = Type>
+	std::vector<RetVal> Split(MyStringView delimeter, bool keepEmptyValues = false) const;
+
 	size_t Count(const char str) const noexcept;
 
 	void ToLower();
@@ -923,6 +926,39 @@ std::vector<RetVal> IStringAnsi<Type>::Split(const std::vector<char> & delimeter
 }
 
 
+template <typename Type>
+template <typename RetVal>
+std::vector<RetVal> IStringAnsi<Type>::Split(MyStringView delimeter, bool keepEmptyValues) const
+{
+	size_t delimLen = delimeter.length();
 
+	auto pos = this->FindAll(delimeter);
+	pos.push_back(static_cast<const Type*>(this)->length());
+	
+	const char* str = static_cast<const Type*>(this)->c_str();
+
+	std::vector<RetVal> res;
+
+	size_t startPos = 0;
+
+	for (size_t i = 0; i < pos.size(); i++)
+	{
+		size_t len = pos[i] - startPos;
+		if ((len == 0) && (keepEmptyValues == false))
+		{
+			startPos = (pos[i] + delimLen);
+			continue;
+		}
+
+		//RetVal r = this->SubString(startPos, len);
+		RetVal r = RetVal(str + startPos, len);
+		res.push_back(r);
+
+		startPos = (pos[i] + delimLen);
+	}
+
+
+	return res;
+}
 
 #endif

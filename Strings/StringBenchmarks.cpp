@@ -11,7 +11,9 @@
 #include "StringTests.h"
 #include "MyString.h"
 
-#define NOMINMAX
+#ifndef NOMINMAX
+#	define NOMINMAX
+#endif
 
 #ifdef _WIN32
 #include <windows.h>   // WinApi header
