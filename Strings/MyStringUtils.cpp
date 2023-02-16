@@ -246,8 +246,47 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 }
 
 /// <summary>
+/// Calculate last function lookup
+/// !Important! returned array must be freed outside this method
+/// </summary>
+/// <param name="needle">text to find</param>
+/// <returns>pointer to array of last function</returns>
+size_t* MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle)
+{
+	size_t needleLen = needle.length();
+
+	size_t* failFce = new size_t[needleLen];
+	
+	//buil Fail fce
+	failFce[0] = 0;
+	size_t index = 1;
+	size_t cmpIndex = 0;
+
+	while (index < needleLen)
+	{
+		if (needle[index] == needle[cmpIndex])
+		{
+			failFce[index] = failFce[index - 1] + 1;
+			cmpIndex++;
+		}
+		else
+		{
+			failFce[index] = 0;
+			if ((failFce[index - 1] != 0) && (cmpIndex != 0))
+			{
+				cmpIndex = 0;
+				index--;
+			}
+		}
+		index++;
+	}
+
+	return failFce;
+}
+
+/// <summary>
 /// Perfrom KMP (KnuthMorisPrat) searching. Last function can be passed in
-/// in "last".If "last" is NULL, last function is calculated
+/// in "last". If "last" is NULL, last function is calculated
 /// and filled to "last" array
 /// !Important!"last" array must be freed outside this method
 /// </summary>
@@ -273,32 +312,9 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 
 	if (failFce == nullptr)
 	{
-		failFce = new size_t[needleLen];
-		last = failFce;
-		//buil Fail fce
-		failFce[0] = 0;
-		index = 1;
-		cmpIndex = 0;
-		while (index < needleLen)
-		{
-			if (needle[index] == needle[cmpIndex])
-			{
-				failFce[index] = failFce[index - 1] + 1;
-				cmpIndex++;
-			}
-			else
-			{
-				failFce[index] = 0;
-				if ((failFce[index - 1] != 0) && (cmpIndex != 0))
-				{
-					cmpIndex = 0;
-					index--;
-				}
-			}
-			index++;
-		}
-
+		failFce = MyStringUtils::KnuthMorisPratBuildFailLookup(needle);		
 	}
+
 	index = start;
 	cmpIndex = 0;
 	while (index < strLen)

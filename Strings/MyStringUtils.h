@@ -212,6 +212,8 @@ struct MyStringUtils
 	static size_t SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 	static size_t SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 
+	static size_t* KnuthMorisPratBuildFailLookup(MyStringView needle);
+
 };
 
 
