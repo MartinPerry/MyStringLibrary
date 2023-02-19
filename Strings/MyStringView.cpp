@@ -297,25 +297,23 @@ size_t MyStringView::Find(const char c) const noexcept
 	return MyStringUtils::npos;
 }
 
-size_t MyStringView::Find(const char* needle) const noexcept
+size_t MyStringView::Find(MyStringView needle) const noexcept
 {
 	size_t pos = MyStringUtils::npos;
 
-	if (needle == nullptr)
+	if (needle.length() == 0)
 	{
 		return pos;
 	}
 
-	pos = MyStringUtils::SearchBruteForce(*this, needle);
-
-	return pos;
+	return MyStringUtils::SearchBruteForce(*this, needle);
 }
 
-size_t MyStringView::Find(const char* needle, size_t offset) const noexcept
+size_t MyStringView::Find(MyStringView needle, size_t offset) const noexcept
 {
 	size_t pos = MyStringUtils::npos;
 
-	if (needle == nullptr)
+	if (needle.length() == 0)
 	{
 		return pos;
 	}
@@ -335,4 +333,35 @@ size_t MyStringView::Find(const char* needle, size_t offset) const noexcept
 	}
 
 	return offset + pos;
+}
+
+
+std::vector<size_t> MyStringView::FindAll(MyStringView needle) const
+{
+	size_t searchLength = needle.length();
+	size_t* last = nullptr;
+	size_t pos = 0;
+
+	std::vector<size_t> startPos;
+	int foundOffset = 0;
+	
+	while (1)
+	{
+		pos = MyStringUtils::SearchKnuthMorisPrat(*this, needle, last, pos); //better use this, because BM skipping
+		//is calculated from haystack, not needle
+		if (pos == MyStringUtils::npos)
+		{
+			//not found
+			break;
+		}
+		startPos.push_back(pos);    //store found start positions of searched needle
+
+		pos += searchLength;        //set new search start
+
+		foundOffset++;
+	}
+
+	delete[] last;
+
+	return startPos;
 }

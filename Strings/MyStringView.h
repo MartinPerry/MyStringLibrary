@@ -90,8 +90,9 @@ public:
 	bool StartWith(MyStringView needle) const noexcept;
 	bool EndWith(MyStringView needle) const noexcept;
 	size_t Find(const char c) const noexcept;
-	size_t Find(const char* needle) const noexcept;
-	size_t Find(const char* needle, size_t offset) const noexcept;
+	size_t Find(MyStringView needle) const noexcept;
+	size_t Find(MyStringView needle, size_t offset) const noexcept;
+	std::vector<size_t> FindAll(MyStringView needle) const;
 
 	MyStringView & operator = (const char * str) noexcept;
 
