@@ -75,6 +75,13 @@ IStringAnsi<Type>::IStringAnsi(const std::string & str) :
 }
 
 
+template <typename Type>
+IStringAnsi<Type>::IStringAnsi(const std::string_view& str) :
+	hashCode(std::numeric_limits<uint32_t>::max())
+{
+	static_cast<Type*>(this)->CtorInternal(str.data(), str.length());
+}
+
 
 template <typename Type>
 IStringAnsi<Type>::~IStringAnsi()

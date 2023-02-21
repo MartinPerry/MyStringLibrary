@@ -62,6 +62,7 @@ public:
 	IStringAnsi(char * str);
 	IStringAnsi(const char * str);
 	IStringAnsi(const std::string & str);
+	IStringAnsi(const std::string_view& str);
 	
 	IStringAnsi(size_t bufferSize);
 
