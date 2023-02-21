@@ -247,15 +247,21 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 
 /// <summary>
 /// Calculate last function lookup
-/// !Important! returned array must be freed outside this method
+/// Pass prealocated buffer for lookup function
+/// or nullptr.
+/// If nullptr is passed, lookup function is allocated and must be 
+/// freed outside this method
 /// </summary>
-/// <param name="needle">text to find</param>
-/// <returns>pointer to array of last function</returns>
-size_t* MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle)
+/// <param name="needle"></param>
+/// <param name="failFce"></param>
+void MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle, size_t*& failFce)
 {
 	size_t needleLen = needle.length();
 
-	size_t* failFce = new size_t[needleLen];
+	if (failFce == nullptr)
+	{
+		failFce = new size_t[needleLen];
+	}
 	
 	//buil Fail fce
 	failFce[0] = 0;
@@ -280,8 +286,6 @@ size_t* MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle)
 		}
 		index++;
 	}
-
-	return failFce;
 }
 
 /// <summary>
@@ -312,7 +316,7 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 
 	if (failFce == nullptr)
 	{
-		failFce = MyStringUtils::KnuthMorisPratBuildFailLookup(needle);		
+		MyStringUtils::KnuthMorisPratBuildFailLookup(needle, failFce);
 	}
 
 	index = start;
