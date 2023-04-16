@@ -161,16 +161,11 @@ public:
 	};
 	
 	MyStringAnsi(MyStringAnsi && other) noexcept  :
-		strPtr(other.strPtr), 
-		bufferCapacity(other.bufferCapacity),
-		strLength(other.strLength)		
+		strPtr(std::exchange(other.strPtr, nullptr)),
+		bufferCapacity(std::exchange(other.bufferCapacity, 0)),
+		strLength(std::exchange(other.strLength, 0))
 	{				
-		this->hashCode = other.hashCode;
-
-		other.strPtr = nullptr;
-		other.bufferCapacity = 0;
-		other.strLength = 0;
-		other.hashCode = std::numeric_limits<uint32_t>::max();
+		this->hashCode = std::exchange(other.hashCode, std::numeric_limits<uint32_t>::max());
 	};
 
 	~MyStringAnsi() = default;
@@ -206,9 +201,18 @@ public:
 		return this->bufferCapacity;
 	};
 
-	MyStringAnsi & operator = (const MyStringAnsi & str)
+	MyStringAnsi & operator = (const MyStringAnsi & other)
 	{
-		return IStringAnsi<MyStringAnsi>::operator=(str);
+		return IStringAnsi<MyStringAnsi>::operator=(other);
+	};
+
+	MyStringAnsi& operator = (MyStringAnsi&& other) noexcept
+	{
+		std::swap(strPtr, other.strPtr);
+		std::swap(bufferCapacity, other.bufferCapacity);
+		std::swap(strLength, other.strLength);
+		std::swap(hashCode, other.hashCode);
+		return *this;
 	};
 		
 	/// <summary>
@@ -218,7 +222,7 @@ public:
 	/// <returns></returns>
 	operator char *() && noexcept
 	{
-		char * m = this->strPtr;
+		char* m = this->strPtr;
 		this->strPtr = nullptr;
 		this->bufferCapacity = 0;
 		this->strLength = 0;
