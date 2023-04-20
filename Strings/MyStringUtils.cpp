@@ -309,14 +309,13 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 	}
 
 	size_t index = 1;
-	size_t cmpIndex = 0;
-	size_t* failFce = last;
+	size_t cmpIndex = 0;	
 	size_t strLen = haystack.length();
 	const char* str = haystack.c_str();
 
-	if (failFce == nullptr)
+	if (last == nullptr)
 	{
-		MyStringUtils::KnuthMorisPratBuildFailLookup(needle, failFce);
+		MyStringUtils::KnuthMorisPratBuildFailLookup(needle, last);
 	}
 
 	index = start;
@@ -341,7 +340,7 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 			}
 			else
 			{
-				cmpIndex = failFce[cmpIndex - 1];
+				cmpIndex = last[cmpIndex - 1];
 			}
 		}
 	}
