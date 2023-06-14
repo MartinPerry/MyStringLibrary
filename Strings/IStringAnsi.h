@@ -45,9 +45,9 @@ enum StringConstants {
 };
 
 template <typename Type>
-class IStringAnsi : 
+class IStringAnsi 
 #ifdef STD_STRING_COMPATIBILITY
-	public StdStringCompatibility<Type>
+	: public StdStringCompatibility<Type>
 #endif
 {
 public:
