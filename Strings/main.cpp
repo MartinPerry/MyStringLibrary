@@ -371,6 +371,25 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	Localization l("en", "en", "../test_data/");
+
+	std::unordered_map<Localization::String, Localization::UnicodeStringWrapper> items;
+	items["menuHelp"] = "xxx";
+	items["lat"] = "yyy";
+
+	auto res = l.Localize("searchCoords", "", items);
+	auto res2 = res.getAs<Localization::String>();
+
+
+	printf("%s\n", (l.Localize("searchCoords").getAs<Localization::String>()).c_str());
+	//printf("%s\n", (l.Localize("temperature", "layers").getAs<Localization::String>()).c_str());
+	//printf("%s\n", (l.Localize("searchCoords", { "kccc", "x", "xxcxc7" }).getAs<Localization::String>()).c_str());
+
+	
+
+	return 0;
+
+	
 	MyStringView sdsad = "Kolomat";
 	auto subsasd = sdsad.SubString(3);
 
@@ -418,17 +437,7 @@ int main(int argc, char ** argv)
 	auto xxgf = MyStringAnsi::CreateFormated("xxx %d", 45);
 	xxgf.AppendFormat("%d %d", 45, 45);
 
-	Localization l("en", "en", "../test_data/");
-	auto res = l.Localize("searchCoords");
-	auto res2 = res.getAs<Localization::String>();
-
-
-	printf("%s\n", (l.Localize("searchCoords").getAs<Localization::String>()).c_str());
-	printf("%s\n", (l.Localize("temperature", "layers").getAs<Localization::String>()).c_str());
-	printf("%s\n", (l.Localize("searchCoords", { "kccc", "x", "xxcxc7" }).getAs<Localization::String>()).c_str());
-
-
-
+	
 	MyStringAnsi xxs = "ahoj";
 	xxs[0] = 'x';
 	double d = 3.0;// +xxs.length();

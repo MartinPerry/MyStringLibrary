@@ -406,47 +406,24 @@ Localization::String Localization::LoadFile(const Localization::String & path)
 	return str.substr(foundPos);		
 }
 
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key, bool* exist)
 {
 	return this->Localize(key, "", exist);
 }
 
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
-	const Localization::String & group, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
+	const Localization::String& group, bool* exist)
 {
-	std::unordered_map<Localization::String, LocalString>::const_iterator it;
-
-	if (group.length() == 0)
+	bool found;
+	const LocalString& str = GetLocalStringInfo(key, group, found);
+	if (found == false)
 	{
-		it = this->strs.find(key);
-
-		if (it == this->strs.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
+		if (exist != nullptr) *exist = false;
+		return key.c_str();
 	}
-	else 
-	{
-		auto jt = this->groups.find(group);
-		if (jt == this->groups.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
-		it = jt->second.find(key);
 
-		if (it == jt->second.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
-	}
-		
 	if (exist != nullptr) *exist = true;
 
-	const Localization::LocalString & str = it->second;
-	
 	if (str.replaceNames.size() != 0)
 	{
 		std::vector<Localization::UnicodeStringWrapper> t;
@@ -473,14 +450,15 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 ///
 /// Call with 
 /// Localize("key", {"Peter", "123"}) => Hello Peter from prison 123
-/// -> replacement is used only for "variables", that are not found in other keys
+/// -> replacement is used only for "variables", that are not found in other keys of translation file
+/// in this case, country is key in translation file
 /// </summary>
 /// <param name="key"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
-	const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
-{	
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
+	const std::vector<Localization::UnicodeStringWrapper>& params, bool* exist)
+{
 	return this->Localize(key, "", params, exist);
 }
 
@@ -492,54 +470,32 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 ///
 /// Call with 
 /// Localize("key", "", {"Peter", "123"}) => Hello Peter from prison 123
-/// -> replacement is used only for "variables", that are not found in other keys
+/// -> replacement is used only for "variables", that are not found in other keys of translation file
+/// in this case, country is key in translation file
 /// </summary>
 /// <param name="key"></param>
 /// <param name="group"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String & key, 
-	const Localization::String & group, 
-	const std::vector<Localization::UnicodeStringWrapper> & params, bool * exist)
+Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
+	const Localization::String& group,
+	const std::vector<Localization::UnicodeStringWrapper>& params, bool* exist)
 {
-	std::unordered_map<Localization::String, LocalString>::const_iterator it;
-
-	if (group.length() == 0)
+	bool found;
+	const LocalString& str = GetLocalStringInfo(key, group, found);
+	if (found == false)
 	{
-		it = this->strs.find(key);
-
-		if (it == this->strs.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
+		if (exist != nullptr) *exist = false;
+		return key.c_str();
 	}
-	else
-	{
-		auto jt = this->groups.find(group);
-		if (jt == this->groups.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
-		it = jt->second.find(key);
 
-		if (it == jt->second.end())
-		{
-			if (exist != nullptr) *exist = false;
-			return key.c_str();
-		}
-	}		
-
-
-	const LocalString & str = it->second;	
 	std::vector<Localization::UnicodeStringWrapper> t;
 
 	int index = 0;
-	for (const auto & elem : params)
-	{		
+	for (const auto& elem : params)
+	{
 		bool found = false;
-		Localization::UnicodeStringWrapper s = this->Localize(str.replaceNames[index], 
+		Localization::UnicodeStringWrapper s = this->Localize(str.replaceNames[index],
 			str.replaceNameGroups[index], &found);
 		if (found)
 		{
@@ -562,6 +518,93 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 	if (exist != nullptr) *exist = true;
 	return this->LocalizeWithReplace(str, t);
 }
+/// <summary>
+/// localize string with replacement of "unknown" variables
+/// eg:
+/// key = "Hello {name} from {country} {xy}
+///
+/// Call with
+/// Localize("key", "", {"name"=>"Peter", "country" => "prison", "xy" => "123"}) => Hello Peter from prison 123
+/// -> replacement keys override keys from translation file
+/// </summary>
+/// <param name="key"></param>
+/// <param name="group"></param>
+/// <param name="params"></param>
+/// <param name="exist"></param>
+Localization::UnicodeStringWrapper Localization::Localize(const String& key, const String& group, const std::unordered_map<String, UnicodeStringWrapper>& params, bool* exist)
+{
+	bool found;
+	const LocalString& str = GetLocalStringInfo(key, group, found);
+	if (found == false)
+	{
+		if (exist != nullptr) *exist = false;
+		return key.c_str();
+	}
+
+	std::vector<Localization::UnicodeStringWrapper> t;
+
+	for (const auto& k : str.replaceNames)
+	{
+		for (const auto& [key, value] : params)
+		{		
+			if (k == key)
+			{
+				t.push_back(value);
+				break;
+			}
+		}
+	}
+
+
+	if (exist != nullptr) *exist = true;
+	return this->LocalizeWithReplace(str, t);
+}
+
+
+/// <summary>
+/// Get localization info based on key and group
+///
+/// If no info is found, return first one - it is ok, since we dont use it
+/// it is just to return something valid
+/// </summary>
+/// <param name="key"></param>
+/// <param name="group"></param>
+/// <param name="found"></param>
+const Localization::LocalString& Localization::GetLocalStringInfo(const Localization::String& key, const Localization::String& group, bool& found)
+{
+	std::unordered_map<Localization::String, LocalString>::const_iterator it;
+
+	if (group.length() == 0)
+	{
+		it = this->strs.find(key);
+
+		if (it == this->strs.end())
+		{
+			found = false;
+			return this->strs.begin()->second;
+		}
+	}
+	else
+	{
+		auto jt = this->groups.find(group);
+		if (jt == this->groups.end())
+		{
+			found = false;
+			return this->strs.begin()->second;
+		}
+		it = jt->second.find(key);
+
+		if (it == jt->second.end())
+		{
+			found = false;
+			return this->strs.begin()->second;
+		}
+	}
+
+	found = true;
+	return it->second;
+}
+
 
 /// <summary>
 /// Internal method - go over string and replace each {} with param at appropriate index

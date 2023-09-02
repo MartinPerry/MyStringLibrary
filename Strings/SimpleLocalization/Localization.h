@@ -49,6 +49,7 @@ public:
 	UnicodeStringWrapper Localize(const String & key, const String & group, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const std::vector<UnicodeStringWrapper> & params, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const String & group, const std::vector<UnicodeStringWrapper> & params, bool * exist = nullptr);
+	UnicodeStringWrapper Localize(const String& key, const String& group, const std::unordered_map<String, UnicodeStringWrapper>& params, bool* exist = nullptr);
 
 protected:
 
@@ -85,6 +86,8 @@ protected:
 
 	String LoadFile(const String & path);
 	void LoadLangInfo(const String & data, String & code, String & label);
+	
+	const Localization::LocalString& GetLocalStringInfo(const Localization::String& key, const Localization::String& group, bool& found);
 
 	UnicodeStringWrapper LocalizeWithReplace(const LocalString & input, const std::vector<UnicodeStringWrapper> & params);
 };
