@@ -244,21 +244,45 @@ void Localization::SetLang(Localization::StringView lang)
     
     this->lang = lang;
     
-    this->LoadLocalization(DEFAULT_LANGUAGE);
+    this->LoadLocalization(DEFAULT_LANGUAGE, this->strs, this->groups);
     
     if (this->lang != DEFAULT_LANGUAGE)
     {
-        this->LoadLocalization(this->lang);
+        this->LoadLocalization(this->lang, this->strs, this->groups);
     }
 
 	for (auto tmp : this->observers)
 	{
 		tmp->OnLanguageChange(lang, this);
 	}
+}
+
+void Localization::ReplaceKeysByLang(Localization::StringView lang, 
+	std::initializer_list< Localization::String> keys)
+{
+	if (this->lang == lang)
+	{
+		return;
+	}
+
+	std::unordered_map<String, LocalString> strsOther;
+	std::unordered_map<String, std::unordered_map<String, LocalString>> groupsOther;
+
+	this->LoadLocalization(lang, strsOther, groupsOther);
+
+	for (const auto& key : keys)
+	{
+		if (auto it = strsOther.find(key); it != strsOther.end())
+		{
+			this->strs.insert_or_assign(key, it->second);
+		}
+	}
 
 }
 
-void Localization::LoadLocalization(const Localization::String & langID)
+void Localization::LoadLocalization(const Localization::String & langID,
+	std::unordered_map<String, LocalString>& strs,
+	std::unordered_map<String, std::unordered_map<String, LocalString>>& groups) const
 {    
 	Localization::String path = DEFAULT_PATH;
 	path += "gen_stringtable-";
@@ -322,7 +346,7 @@ void Localization::LoadLocalization(const Localization::String & langID)
 	}	
 }
 
-Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
+Localization::LocalString Localization::ProcessSingleInput(const char * rawData) const
 {
 	const String EMPTY = String();
 
@@ -371,7 +395,7 @@ Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
 	return str;
 }
 
-Localization::String Localization::LoadFile(const Localization::String & path)
+Localization::String Localization::LoadFile(const Localization::String & path) const
 {
 #ifdef USE_VFS
 	Localization::String str =  VFS::GetInstance()->GetFileString(path.c_str());

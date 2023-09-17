@@ -45,6 +45,8 @@ public:
     void SetLang(StringView lang);
     const String & GetLang() const;
     
+	void ReplaceKeysByLang(Localization::StringView lang, std::initializer_list< Localization::String> keys);
+
 	UnicodeStringWrapper Localize(const String & key, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const String & group, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const std::vector<UnicodeStringWrapper> & params, bool * exist = nullptr);
@@ -81,10 +83,12 @@ protected:
 
 	void GenerateSupportedLanguagesList();
 
-	void LoadLocalization(const String & langID);
-	LocalString ProcessSingleInput(const char * rawData);
+	void LoadLocalization(const String & langID,
+		std::unordered_map<String, LocalString>& strs,
+		std::unordered_map<String, std::unordered_map<String, LocalString>>& groups) const;
+	LocalString ProcessSingleInput(const char * rawData) const;
 
-	String LoadFile(const String & path);
+	String LoadFile(const String & path) const;
 	void LoadLangInfo(const String & data, String & code, String & label);
 	
 	const Localization::LocalString& GetLocalStringInfo(const Localization::String& key, const Localization::String& group, bool& found);

@@ -371,7 +371,11 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
-	Localization l("en", "en", "../test_data/");
+	Localization l("cs", "cs", "../test_data/");
+	auto tmp0 = l.Localize("timeFormatWheel");
+
+	l.ReplaceKeysByLang("en-us", { "timeFormatWheel", "timeFormatLine" });
+	auto tmp1 = l.Localize("timeFormatWheel");
 
 	std::unordered_map<Localization::String, Localization::UnicodeStringWrapper> items;
 	items["menuHelp"] = "xxx";
