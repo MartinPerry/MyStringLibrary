@@ -1,9 +1,10 @@
 #ifndef MY_STRING_ANSI_H
 #define MY_STRING_ANSI_H
 
-#include <string.h>
+#include <cstring>
 #include <vector>
 #include <limits>
+#include <utility>
 
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"

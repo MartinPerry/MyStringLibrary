@@ -10,9 +10,9 @@ class MySmallStringAnsi;
 #include <string> //std::string
 #include <cstring> //strlen and other
 #include <functional> //lambdas
-#include <stdarg.h> //var args
+#include <cstdarg> //var args
 #include <algorithm> //std::find
-#include <stdio.h>
+#include <cstdio>
 
 #if __has_include("./StdStringCompatibility.h")
 #	include "./StdStringCompatibility.h"

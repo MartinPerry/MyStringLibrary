@@ -3,8 +3,8 @@
 
 class MyStringAnsi;
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <type_traits>
 #include <vector>
 

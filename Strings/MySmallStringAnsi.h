@@ -1,7 +1,7 @@
 #ifndef MY_SMALL_STRING_ANSI_H
 #define MY_SMALL_STRING_ANSI_H
 
-#include <string.h>
+#include <cstring>
 #include <vector>
 #include <limits>
 

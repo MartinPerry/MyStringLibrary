@@ -6,7 +6,7 @@ class MySmallStringAnsi;
 
 #include <type_traits>
 #include <unordered_map>
-#include <stdint.h>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <cstring>

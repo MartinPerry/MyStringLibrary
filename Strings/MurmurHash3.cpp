@@ -9,9 +9,9 @@
 
 #include "MurmurHash3.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros
