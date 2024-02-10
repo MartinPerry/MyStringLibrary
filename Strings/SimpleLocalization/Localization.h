@@ -47,6 +47,9 @@ public:
     
 	void ReplaceKeysByLang(Localization::StringView lang, std::initializer_list< Localization::String> keys);
 
+	template <typename T>
+	T LocalizeAs(const String& key, bool* exist = nullptr);
+
 	UnicodeStringWrapper Localize(const String & key, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const String & group, bool * exist = nullptr);
 	UnicodeStringWrapper Localize(const String & key, const std::vector<UnicodeStringWrapper> & params, bool * exist = nullptr);
@@ -95,5 +98,14 @@ protected:
 
 	UnicodeStringWrapper LocalizeWithReplace(const LocalString & input, const std::vector<UnicodeStringWrapper> & params);
 };
+
+
+template <typename T>
+T Localization::LocalizeAs(const String& key, bool* exist)
+{
+	auto tmp = this->Localize(key, exist);
+	return tmp.getAs<T>();
+}
+
 
 #endif

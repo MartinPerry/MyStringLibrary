@@ -298,7 +298,12 @@ void Localization::LoadLocalization(const Localization::String & langID,
 		{
 			cJSON *item = cJSON_GetArrayItem(root, i);
 			
-			if (item->valuestring == nullptr)
+			if ((item->type & 0xFF) == cJSON_Number)
+			{
+				std::string tmp = std::to_string(item->valueint);
+				strs.insert_or_assign(item->string, this->ProcessSingleInput(tmp.c_str()));
+			}
+			else if (item->valuestring == nullptr)
 			{
 				std::unordered_map<Localization::String, LocalString> tmpInner;
 				
