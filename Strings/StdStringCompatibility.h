@@ -37,10 +37,10 @@ public:
 			}
 		}
 	}
-
-	size_t find(const char c) const
+	
+	size_t find(const char c, size_t offset = 0) const
 	{
-		return static_cast<const Type *>(this)->Find(c);
+		return static_cast<const Type*>(this)->Find(c);
 	}
 
 	size_t find(const char * str, size_t offset = 0) const

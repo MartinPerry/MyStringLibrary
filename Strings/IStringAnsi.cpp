@@ -961,14 +961,15 @@ bool IStringAnsi<Type>::EndWith(MyStringView needle) const noexcept
 /// occurence
 /// </summary>
 /// <param name="str">char to find</param>
+/// <param name="offset">start offset</param> 
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const char c) const noexcept
+size_t IStringAnsi<Type>::Find(const char c, size_t offset) const noexcept
 {
-	size_t strLen = static_cast<const Type *>(this)->length();
-	const char * str = static_cast<const Type *>(this)->c_str();
+	size_t strLen = static_cast<const Type *>(this)->length();	
+	const char* str = static_cast<const Type*>(this)->c_str();
 
-	for (size_t i = 0; i < strLen; i++)
+	for (size_t i = offset; i < strLen; i++)
 	{
 		if (str[i] == c) 
 		{

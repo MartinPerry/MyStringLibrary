@@ -150,7 +150,7 @@ public:
 	bool StartWith(MyStringView needle) const noexcept;
 	bool EndWith(MyStringView needle) const noexcept;
 
-	size_t Find(const char c) const noexcept;
+	size_t Find(const char c, size_t offset = 0) const noexcept;
 	size_t FindLast(const char c) const noexcept;
 	size_t Find(const Type& needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
 	size_t Find(MyStringView needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
