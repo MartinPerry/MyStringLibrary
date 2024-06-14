@@ -371,6 +371,11 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	const MyStringAnsi oo7 = "xxx";
+	const MyStringAnsi& oor = oo7;
+	const char* t = &oor[0];
+	char x7 = oo7[0];
+
 	Localization l("cs", "cs", "../test_data/");
 	auto tmp0 = l.Localize("timeFormatWheel");
 

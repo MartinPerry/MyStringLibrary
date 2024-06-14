@@ -1,15 +1,14 @@
-CC = /opt/rh/devtoolset-7/root/usr/bin/g++
-#CC = g++
+CC = g++
 
 INCLUDE_DIRS = -I/usr/include/
 
-LIB_DIRS = -L./ -L/usr/lib64/
+LIB_DIRS = -L./ -L/usr/lib/
 
 LIBS = -lm -lpthread -lstdc++ -ldl
 
 LINKER_OPTS = -Wall -g -O3
 
-CFLAGS = -std=c++17 -mavx2 -mfma -g -Wall -O3 -Wunknown-pragmas \
+CFLAGS = -std=c++20 -mavx2 -mfma -g -Wall -O3 -Wunknown-pragmas \
 		 -Wno-unused-function -Wno-unused-value \
 		 $(INCLUDE_DIRS)
 

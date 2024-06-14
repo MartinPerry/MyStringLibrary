@@ -12,6 +12,7 @@ class MySmallStringAnsi;
 #include <functional> //lambdas
 #include <cstdarg> //var args
 #include <algorithm> //std::find
+#include <filesystem>
 #include <cstdio>
 
 #if __has_include("./StdStringCompatibility.h")
@@ -251,7 +252,7 @@ public:
 	//==============================================================
 
 	template <typename T>
-	RET_VAL_STR(char, (std::is_integral<T>::value))
+	RET_VAL_STR(const char&, (std::is_integral<T>::value))
     operator [](const T index) const;
     
     template <typename T>
@@ -271,6 +272,8 @@ public:
 	//auto cast to std::string
 	operator std::string() const;
 
+	//auto cast to std::filesystem::path
+	operator std::filesystem::path() const;
 
 protected:
 
@@ -758,7 +761,7 @@ inline Type IStringAnsi<Type>::operator + (const char * str) const
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(char, (std::is_integral<T>::value))
+RET_VAL_STR(const char&, (std::is_integral<T>::value))
 IStringAnsi<Type>::operator [](const T index) const
 {
 	return static_cast<const Type *>(this)->c_str()[index];
@@ -843,6 +846,12 @@ template <typename Type>
 inline IStringAnsi<Type>::operator std::string() const
 {
 	return std::string(static_cast<const Type*>(this)->c_str(), static_cast<const Type*>(this)->length());
+}
+
+template <typename Type>
+inline IStringAnsi<Type>::operator std::filesystem::path() const
+{
+	return std::filesystem::path(static_cast<const Type*>(this)->c_str());
 }
 
 //====================================================================
