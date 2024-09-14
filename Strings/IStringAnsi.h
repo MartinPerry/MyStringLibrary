@@ -410,7 +410,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, Args ...args)
 
 	//always store in heap
 	size_t bufferSize = appendLength + 16;
-	RetVal newStr = RetVal(bufferSize);
+	RetVal newStr = RetVal::CreateWithBufferSize(bufferSize);
 
 	char * str = newStr.str();
 	
@@ -463,7 +463,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, va_list args)
 
 	//always store in heap
 	size_t bufferSize = appendLength + 16;
-	RetVal newStr = RetVal(bufferSize);
+	RetVal newStr = RetVal::CreateWithBufferSize(bufferSize);
 
 	char * str = newStr.str();
 	

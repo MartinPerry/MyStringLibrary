@@ -1260,7 +1260,7 @@ Type IStringAnsi<Type>::SubString(int start, size_t length) const
 
 	const char * str = static_cast<const Type *>(this)->c_str();
 
-	Type s(length + 1);
+	Type s = Type::CreateWithBufferSize(length + 1);
 
 	char * newStr = s.str();
 	memcpy(newStr, str + start, length);
