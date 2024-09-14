@@ -30,36 +30,22 @@ IStringAnsi<Type>::IStringAnsi() :
 	static_cast<Type *>(this)->DefaultInit();
 }
 
-
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(size_t bufferSize) : 
+IStringAnsi<Type>::IStringAnsi(char letter) :
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
-	if (bufferSize > Type::BUFFER_SIZE)
-	{
-		static_cast<Type *>(this)->SetBufferSizeInternal(bufferSize);
-
-		char * str = new char[bufferSize];
-		str[0] = 0;
-
-		static_cast<Type *>(this)->SetLengthInternal(0);
-		static_cast<Type *>(this)->SetStrInternal(str);
-	}
-	else
-	{
-		static_cast<Type *>(this)->CtorInternal(nullptr, 0);
-	}
+	static_cast<Type*>(this)->CtorInternal(&letter, 1);
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(char * str) : 
+IStringAnsi<Type>::IStringAnsi(char* str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str, 0);
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const char * str) : 
+IStringAnsi<Type>::IStringAnsi(const char* str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str, 0);
@@ -68,7 +54,7 @@ IStringAnsi<Type>::IStringAnsi(const char * str) :
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const std::string & str) : 
+IStringAnsi<Type>::IStringAnsi(const std::string& str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str.c_str(), str.length());
@@ -536,12 +522,12 @@ void IStringAnsi<Type>::RemoveNonPrintableChars()
 /// <typeparam name="Type"></typeparam>
 /// <returns></returns>
 template <typename Type>
-Type IStringAnsi<Type>::PopBack()
+char IStringAnsi<Type>::PopBack()
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t length = static_cast<const Type *>(this)->length();
 
-	Type val = str[length - 1];
+	char val = str[length - 1];
 	str[length - 1] = 0;
 		
 	static_cast<Type *>(this)->SetLengthInternal(length - 1);

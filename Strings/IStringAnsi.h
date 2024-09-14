@@ -60,18 +60,25 @@ public:
 	//======================================================================
 
 	IStringAnsi();
-	IStringAnsi(char * str);
-	IStringAnsi(const char * str);
-	IStringAnsi(const std::string & str);
+	IStringAnsi(char letter);
+	IStringAnsi(char* str);
+	IStringAnsi(const char* str);
+	IStringAnsi(const std::string& str);
 	IStringAnsi(const std::string_view& str);
-	
-	IStringAnsi(size_t bufferSize);
+			
+	template <typename T,
+		typename = typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type
+	>
+	explicit IStringAnsi(T val);
 
 	virtual ~IStringAnsi();
 
 	//======================================================================
 	// Factory init
 	//======================================================================
+
+	template <typename RetVal = Type>
+	static RetVal CreateWithBufferSize(size_t bufferSize);
 
 	template <typename RetVal = Type>
 	static RetVal LoadFromFile(MyStringView fileName);
@@ -125,7 +132,7 @@ public:
 	void RemoveChar(char t);
 	void RemoveMultipleChars(char t);
 	void RemoveNonPrintableChars();
-	Type PopBack();
+	char PopBack();
 	void CutFromBack(size_t index);
 
 	template <typename RetVal = Type>
@@ -310,6 +317,29 @@ protected:
 // Static methods
 //====================================================================
 
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::CreateWithBufferSize(size_t bufferSize)
+{
+	RetVal res = RetVal();
+	if (bufferSize > Type::BUFFER_SIZE)
+	{
+		res.SetBufferSizeInternal(bufferSize);
+
+		char* str = new char[bufferSize];
+		str[0] = 0;
+
+		res.SetLengthInternal(0);
+		res.SetStrInternal(str);
+	}
+	else
+	{
+		res.CtorInternal(nullptr, 0);
+	}
+
+	return res;
+}
+
 /// <summary>
 /// Load string from file "fileName"
 /// </summary>
@@ -451,6 +481,18 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, va_list args)
 	newStr.hashCode = std::numeric_limits<uint32_t>::max();
 	newStr.SetLengthInternal(strLength);
 	return newStr;
+}
+
+//====================================================================
+// 
+//====================================================================
+
+template <typename Type>
+template <typename T, typename>
+IStringAnsi<Type>::IStringAnsi(T val) : 
+	IStringAnsi<Type>()
+{
+	this->operator+=(val);
 }
 
 /// <summary>

@@ -371,6 +371,13 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+	MyStringAnsi xxxx = 'a';
+
+	size_t bufSize = 77;
+	MyStringAnsi nnn7 = MyStringAnsi::CreateWithBufferSize(bufSize);
+	MyStringAnsi nnn77 = MyStringAnsi(8);
+	MyStringAnsi nnn = static_cast<MyStringAnsi>(77.7);
+
 	const MyStringAnsi oo7 = "xxx";
 	const MyStringAnsi& oor = oo7;
 	const char* t = &oor[0];

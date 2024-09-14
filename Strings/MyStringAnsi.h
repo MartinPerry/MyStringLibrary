@@ -229,7 +229,7 @@ public:
 		this->strLength = 0;
 		return m;
 	};
-
+	
 	friend class IStringAnsi<MyStringAnsi>;
 	friend class MyStringView;
 
