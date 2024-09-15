@@ -320,22 +320,21 @@ protected:
 template <typename Type>
 template <typename RetVal>
 RetVal IStringAnsi<Type>::CreateWithBufferSize(size_t bufferSize)
-{
+{	
+	if (bufferSize < Type::BUFFER_SIZE)
+	{		
+		return RetVal();
+	}
+	
+	char* str = new char[bufferSize];
+	str[0] = 0;
+
 	RetVal res = RetVal();
-	if (bufferSize > Type::BUFFER_SIZE)
-	{
-		res.SetBufferSizeInternal(bufferSize);
+	res.ReleaseInternal();
 
-		char* str = new char[bufferSize];
-		str[0] = 0;
-
-		res.SetLengthInternal(0);
-		res.SetStrInternal(str);
-	}
-	else
-	{
-		res.CtorInternal(nullptr, 0);
-	}
+	res.SetLengthInternal(0);
+	res.SetStrInternal(str);
+	res.SetBufferSizeInternal(bufferSize);
 
 	return res;
 }

@@ -30,6 +30,7 @@ IStringAnsi<Type>::IStringAnsi() :
 	static_cast<Type *>(this)->DefaultInit();
 }
 
+
 template <typename Type>
 IStringAnsi<Type>::IStringAnsi(char letter) :
 	hashCode(std::numeric_limits<uint32_t>::max())
