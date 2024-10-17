@@ -83,6 +83,9 @@ public:
 	template <typename RetVal = Type>
 	static RetVal LoadFromFile(MyStringView fileName);
 
+	template <typename RetVal = Type>
+	static RetVal LoadFromFile(FILE * f);
+
 	template <typename ...Args, typename RetVal = Type>	
 	static RetVal CreateFormated(const char * str, Args ...args);
 
@@ -348,11 +351,24 @@ template <typename Type>
 template <typename RetVal>
 RetVal IStringAnsi<Type>::LoadFromFile(MyStringView fileName)
 {
-	FILE *f = nullptr;  //pointer to file we will read in
+	FILE* f = nullptr;  //pointer to file we will read in
 	my_fopen(&f, fileName.c_str(), "rb");
 	if (f == nullptr)
 	{
 		printf("Failed to open file: \"%s\"\n", fileName.c_str());
+		return "";
+	}
+
+	return RetVal::LoadFromFile(f);
+}
+
+template <typename Type>
+template <typename RetVal>
+RetVal IStringAnsi<Type>::LoadFromFile(FILE* f)
+{	
+	if (f == nullptr)
+	{
+		printf("File not opened");
 		return "";
 	}
 
