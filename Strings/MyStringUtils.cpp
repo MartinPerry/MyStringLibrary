@@ -245,6 +245,70 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 
 }
 
+
+bool MyStringUtils::IsSame(const char* str1, const char* str2, size_t len)
+{
+	size_t i = len - 1;
+
+	while (str1[i] == str2[i])
+	{
+		if (i == 0)
+		{
+			return true;
+		}
+		i--;
+	}
+	return false;
+}
+
+/// <summary>
+/// Perfrom Boyer-Moore-Horspool searching. Lookup function can be passed in
+/// in "lookUp". If "lookUp" is NULL, lookUp function is calculated
+/// and filled to "lookUp" array
+/// !Important!"lookUp" array must be freed outside this method
+/// </summary>
+/// <param name="haystack">where to find</param>
+/// <param name="needle">text to find</param>
+/// <param name="last">pointer to array of lookUp function (in / out)</param>
+/// <param name="start">start position of searching (default: 0)</param>
+/// <returns>position of occurence needle in haystack</returns>
+size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start)
+{
+	size_t haystackLen = haystack.length();
+	size_t needleLen = needle.length();
+
+	if (needleLen == 0)
+	{
+		return MyStringUtils::npos;
+	}
+
+	if (lookUp == nullptr)
+	{
+		lookUp = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
+		std::fill(lookUp, lookUp + std::numeric_limits<uint8_t>::max() + 1, needleLen);
+
+		for (int i = 0; i < needleLen - 1; i++)
+		{
+			lookUp[static_cast<uint8_t>(needle[i])] = needleLen - 1 - i;
+		}
+	}
+
+	size_t skip = start;
+	while (haystackLen - skip >= needleLen)
+	{
+		if (IsSame(haystack.c_str() + skip, needle.c_str(), needleLen))
+		{
+			//found at skip
+			return skip;
+		}
+
+		auto c = static_cast<uint8_t>(haystack[skip + needleLen - 1]);
+		skip += lookUp[c];
+	}
+
+	return MyStringUtils::npos;
+}
+
 /// <summary>
 /// Calculate last function lookup
 /// Pass prealocated buffer for lookup function

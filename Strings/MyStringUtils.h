@@ -210,11 +210,12 @@ struct MyStringUtils
 
 	static size_t SearchBruteForce(MyStringView haystack, MyStringView needle, size_t start = 0);
 	static size_t SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
+	static size_t SearchBoyerMooreHorspool(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 	static size_t SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 	
 protected:
 	static void KnuthMorisPratBuildFailLookup(MyStringView needle, size_t*& lookUp);
-
+	static bool IsSame(const char* str1, const char* str2, size_t len);
 };
 
 
