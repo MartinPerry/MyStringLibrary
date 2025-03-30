@@ -475,19 +475,19 @@ size_t MyStringUtils::SearchBruteForce(MyStringView haystack, MyStringView needl
 //===========================================================================================
 
 
-AhoCorsick::AhoCorsick() :
+AhoCorasick::AhoCorasick() :
 	root(new TrieNode()),
 	failCreated(false)
 {
 }
 
-AhoCorsick::~AhoCorsick()
+AhoCorasick::~AhoCorasick()
 {
 	this->Release();
 	delete root;
 }
 
-void AhoCorsick::Release()
+void AhoCorasick::Release()
 {
 	std::unordered_set<TrieNode*> visited;
 
@@ -520,12 +520,12 @@ void AhoCorsick::Release()
 }
 
 
-void AhoCorsick::AddPattern(const std::string& pattern)
+void AhoCorasick::AddPattern(const std::string& pattern)
 {
 	this->AddPattern(pattern.c_str(), pattern.length());
 }
 
-void AhoCorsick::AddPattern(const char* pattern, size_t patternLength)
+void AhoCorasick::AddPattern(const char* pattern, size_t patternLength)
 {
 	TrieNode* node = root;
 	for (size_t i = 0; i < patternLength; i++)
@@ -543,7 +543,7 @@ void AhoCorsick::AddPattern(const char* pattern, size_t patternLength)
 	failCreated = false;
 }
 
-void AhoCorsick::BuildFailTransitions()
+void AhoCorasick::BuildFailTransitions()
 {
 	if (failCreated)
 	{
@@ -609,7 +609,7 @@ void AhoCorsick::BuildFailTransitions()
 	this->failCreated = true;
 }
 
-bool AhoCorsick::ContainsPatterns(const std::string& haystack)
+bool AhoCorasick::ContainsPatterns(const std::string& haystack)
 {
 	this->BuildFailTransitions();
 
@@ -650,7 +650,7 @@ bool AhoCorsick::ContainsPatterns(const std::string& haystack)
 	return false;
 }
 
-void AhoCorsick::SearchPatterns(const std::string& haystack)
+void AhoCorasick::SearchPatterns(const std::string& haystack)
 {
 	this->BuildFailTransitions();
 

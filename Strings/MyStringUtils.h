@@ -231,11 +231,11 @@ protected:
 /// <summary>
 /// https://blog.kelynnjeri.me/aho-corasick-algorithm-efficient-string-matching-for-text-processing
 /// </summary>
-class AhoCorsick
+class AhoCorasick
 {
 public:
-	AhoCorsick();
-	~AhoCorsick();
+	AhoCorasick();
+	~AhoCorasick();
 
 	void Release();
 

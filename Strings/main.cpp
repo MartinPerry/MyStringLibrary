@@ -376,7 +376,7 @@ int main(int argc, char ** argv)
 	size_t* lut = nullptr;
 	auto tt = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut);
 	
-	AhoCorsick ah;
+	AhoCorasick ah;
 	ah.AddPattern("cuni.cz");
 	ah.AddPattern("google.com");
 	auto v7 = ah.ContainsPatterns(text);
