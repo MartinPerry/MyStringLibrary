@@ -8,6 +8,9 @@ class MyStringAnsi;
 #include <type_traits>
 #include <vector>
 
+#include <array>
+#include <unordered_map>
+
 #include "./MyStringView.h"
 #include "./MyStringMacros.h"
 
@@ -213,11 +216,94 @@ struct MyStringUtils
 	static size_t SearchBoyerMooreHorspool(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 	static size_t SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
 	
+	friend class AhoCorsick;
+	
 protected:
-	static void KnuthMorisPratBuildFailLookup(MyStringView needle, size_t*& lookUp);
+	static size_t* BuildBoyerMooreHorspoolLookup(MyStringView needle);
+	static size_t* BuildKnuthMorisPratBuildFailLookup(MyStringView needle);
 	static bool IsSame(const char* str1, const char* str2, size_t len);
 };
 
+//===========================================================================================
+//===========================================================================================
+//===========================================================================================
+
+/// <summary>
+/// https://blog.kelynnjeri.me/aho-corasick-algorithm-efficient-string-matching-for-text-processing
+/// </summary>
+class AhoCorsick
+{
+public:
+	AhoCorsick();
+	~AhoCorsick();
+
+	void Release();
+
+	void AddPattern(const std::string& pattern);
+	void AddPattern(const char* pattern, size_t patternLength);
+
+	void SearchPatterns(const std::string& haystack);
+	bool ContainsPatterns(const std::string& haystack);
+
+private:
+	struct TrieNode
+	{
+		std::unordered_map<uint8_t, TrieNode*> children;
+
+		//flag used for fast check if char is in children
+		//each bit represent group of four values
+		//so if bit is 1, we must heck map, if it is 0, we dont need to
+		uint64_t flag = 0;
+
+		//std::vector<std::string> output;
+
+		TrieNode* fail = nullptr;
+		bool hasOutput = false;
+
+		//==================
+
+		TrieNode* try_emplace_child(uint8_t c)
+		{
+			uint64_t bit = c & (256 - 1); //c % 256
+			flag |= (uint64_t(1) << bit);
+
+			auto it = children.try_emplace(c, new TrieNode());
+			return it.first->second;
+		}
+
+		bool has_child(uint8_t c) const
+		{
+			uint64_t bit = c & (256 - 1); //c % 256
+
+			if (flag & uint64_t(uint64_t(1) << bit))
+			{
+				return children.contains(c);
+			}
+
+			return false;
+		}
+
+		TrieNode* find_child(uint8_t c) const
+		{
+			auto it = children.find(c);
+			return (it == children.end()) ? nullptr : it->second;
+		}
+
+		//==================
+	};
+
+	TrieNode* root;
+	bool failCreated;
+
+	std::unordered_map<TrieNode*, std::vector<std::string>> nodePatterns;
+	
+	void BuildFailTransitions();
+};
+
+
+//===========================================================================================
+//===========================================================================================
+//===========================================================================================
 
 /// <summary>
 /// Calculate number of digits in uint8_t

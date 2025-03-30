@@ -371,6 +371,16 @@ int main(int argc, char ** argv)
 	installSignal(SIGSEGV);
 #endif
 
+
+	MyStringAnsi text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
+	size_t* lut = nullptr;
+	auto tt = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut);
+	
+	AhoCorsick ah;
+	ah.AddPattern("cuni.cz");
+	ah.AddPattern("google.com");
+	auto v7 = ah.ContainsPatterns(text);
+
 	MyStringAnsi xxxx = 'a';
 
 	size_t bufSize = 77;

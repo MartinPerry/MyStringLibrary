@@ -1073,6 +1073,10 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	{	
 		pos = MyStringUtils::SearchBoyerMoore(static_cast<const Type*>(this), needle, last);
 	}
+	else if (algo == SearchAlgorithm::BMH)
+	{
+		pos = MyStringUtils::SearchBoyerMooreHorspool(static_cast<const Type*>(this), needle, last);
+	}
 	else if (algo == SearchAlgorithm::KMP)
 	{	
 		pos = MyStringUtils::SearchKnuthMorisPrat(static_cast<const Type*>(this), needle, last);

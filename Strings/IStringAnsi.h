@@ -39,7 +39,7 @@ static const char* const conversions[] =
 	"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"
 };
 
-enum class SearchAlgorithm { BM = 0, KMP = 1, BF = 2, DEFAULT = 3 };
+enum class SearchAlgorithm { BM = 0, BMH = 1, KMP = 2, BF = 3, DEFAULT = 4 };
 enum StringConstants { 
 	REPLACE_ALL = std::numeric_limits<size_t>::max(), 
 	REPLACE_LAST = std::numeric_limits<size_t>::max() - 1,

@@ -7,6 +7,9 @@
 #include <cfloat>
 #include <cmath>
 
+#include <unordered_set>
+#include <deque>
+
 #include "./MyStringAnsi.h"
 
 
@@ -245,6 +248,21 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 
 }
 
+size_t* MyStringUtils::BuildBoyerMooreHorspoolLookup(MyStringView needle)
+{
+	size_t needleLen = needle.length();
+
+	size_t* lookUp = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
+	std::fill(lookUp, lookUp + std::numeric_limits<uint8_t>::max() + 1, needleLen);
+
+	for (int i = 0; i < needleLen - 1; i++)
+	{
+		lookUp[static_cast<uint8_t>(needle[i])] = needleLen - 1 - i;
+	}
+
+	return lookUp;
+}
+
 
 bool MyStringUtils::IsSame(const char* str1, const char* str2, size_t len)
 {
@@ -282,17 +300,12 @@ size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringVi
 		return MyStringUtils::npos;
 	}
 
+
 	if (lookUp == nullptr)
 	{
-		lookUp = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
-		std::fill(lookUp, lookUp + std::numeric_limits<uint8_t>::max() + 1, needleLen);
-
-		for (int i = 0; i < needleLen - 1; i++)
-		{
-			lookUp[static_cast<uint8_t>(needle[i])] = needleLen - 1 - i;
-		}
+		lookUp = MyStringUtils::BuildBoyerMooreHorspoolLookup(needle);
 	}
-
+	
 	size_t skip = start;
 	while (haystackLen - skip >= needleLen)
 	{
@@ -309,6 +322,7 @@ size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringVi
 	return MyStringUtils::npos;
 }
 
+
 /// <summary>
 /// Calculate last function lookup
 /// Pass prealocated buffer for lookup function
@@ -318,14 +332,11 @@ size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringVi
 /// </summary>
 /// <param name="needle"></param>
 /// <param name="failFce"></param>
-void MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle, size_t*& failFce)
+size_t* MyStringUtils::BuildKnuthMorisPratBuildFailLookup(MyStringView needle)
 {
 	size_t needleLen = needle.length();
 
-	if (failFce == nullptr)
-	{
-		failFce = new size_t[needleLen];
-	}
+	size_t* failFce = new size_t[needleLen];	
 	
 	//buil Fail fce
 	failFce[0] = 0;
@@ -350,6 +361,8 @@ void MyStringUtils::KnuthMorisPratBuildFailLookup(MyStringView needle, size_t*& 
 		}
 		index++;
 	}
+
+	return failFce;
 }
 
 /// <summary>
@@ -379,7 +392,7 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 
 	if (last == nullptr)
 	{
-		MyStringUtils::KnuthMorisPratBuildFailLookup(needle, last);
+		last = MyStringUtils::BuildKnuthMorisPratBuildFailLookup(needle);
 	}
 
 	index = start;
@@ -455,4 +468,240 @@ size_t MyStringUtils::SearchBruteForce(MyStringView haystack, MyStringView needl
 	}
 
 	return MyStringUtils::npos;
+}
+
+//===========================================================================================
+//===========================================================================================
+//===========================================================================================
+
+
+AhoCorsick::AhoCorsick() :
+	root(new TrieNode()),
+	failCreated(false)
+{
+}
+
+AhoCorsick::~AhoCorsick()
+{
+	this->Release();
+	delete root;
+}
+
+void AhoCorsick::Release()
+{
+	std::unordered_set<TrieNode*> visited;
+
+	std::deque<TrieNode*> q;
+	q.emplace_back(root);
+	visited.emplace(root);
+
+	while (!q.empty())
+	{
+		TrieNode* currentNode = q.front();
+		q.pop_front();
+
+		for (const auto& [_, child] : currentNode->children)
+		{
+			q.emplace_back(child);
+			visited.emplace(child);
+		}
+	}
+
+	for (auto v : visited)
+	{
+		delete v;
+	}
+
+	root = new TrieNode();
+	failCreated = false;
+
+	
+	nodePatterns.clear();
+}
+
+
+void AhoCorsick::AddPattern(const std::string& pattern)
+{
+	this->AddPattern(pattern.c_str(), pattern.length());
+}
+
+void AhoCorsick::AddPattern(const char* pattern, size_t patternLength)
+{
+	TrieNode* node = root;
+	for (size_t i = 0; i < patternLength; i++)
+	{
+		node = node->try_emplace_child(pattern[i]);
+	}
+
+	//node->output.push_back(pattern);
+	node->hasOutput = true;
+
+	auto it = nodePatterns.try_emplace(node);
+	it.first->second.emplace_back(pattern);
+
+	
+	failCreated = false;
+}
+
+void AhoCorsick::BuildFailTransitions()
+{
+	if (failCreated)
+	{
+		return;
+	}
+
+	std::deque<TrieNode*> queue;
+	for (const auto& [_, node] : root->children)
+	{
+		queue.emplace_back(node);
+		node->fail = root;
+	}
+
+	while (!queue.empty())
+	{
+		TrieNode* currentNode = queue.front();
+		queue.pop_front();
+
+		for (const auto& [c, child] : currentNode->children)
+		{
+			queue.emplace_back(child);
+
+			TrieNode* failNode = currentNode->fail;
+
+			while ((failNode != root) && (failNode->has_child(c) == false))
+			{
+				failNode = failNode->fail;
+			}
+
+			if (auto childNode = failNode->find_child(c))
+			{
+				child->fail = childNode;
+			}
+			else
+			{
+				child->fail = root;
+			}
+
+
+			auto failPatterns = nodePatterns.find(child->fail);
+			if (failPatterns != nodePatterns.end())
+			{
+				child->hasOutput = (failPatterns->second.size() > 0);
+
+				auto jt = nodePatterns.try_emplace(child);
+				jt.first->second.insert(
+					jt.first->second.end(),
+					failPatterns->second.begin(),
+					failPatterns->second.end()
+				);
+			}
+
+			/*
+			child->output.insert(
+				child->output.end(),
+				std::make_move_iterator(child->fail->output.begin()),
+				std::make_move_iterator(child->fail->output.end())
+			);
+			*/
+		}
+	}
+
+	this->failCreated = true;
+}
+
+bool AhoCorsick::ContainsPatterns(const std::string& haystack)
+{
+	this->BuildFailTransitions();
+
+	TrieNode* node = root;
+
+	size_t i = 0;
+	while (i < haystack.length())
+	{
+		char c = haystack[i];
+
+		while ((node != root) && (node->has_child(c) == false))
+		{
+			node = node->fail;
+		}
+
+		auto tmp = node->find_child(c);
+		if (tmp != nullptr)
+		{
+			node = tmp;			
+		}
+		
+
+		if (node->hasOutput)
+		{
+			return true;
+			/*
+			auto it = nodePatterns.find(node);
+			if (it != nodePatterns.end())
+			{
+				return true;
+			}
+			*/
+		}
+
+		i++;
+	}
+
+	return false;
+}
+
+void AhoCorsick::SearchPatterns(const std::string& haystack)
+{
+	this->BuildFailTransitions();
+
+	TrieNode* node = root;
+	//std::vector<std::string> patterns_found;
+
+	size_t i = 0;
+	while (i < haystack.length())
+	{
+		char c = haystack[i];
+
+		while ((node != root) && (node->has_child(c) == false))
+		{
+			node = node->fail;
+		}
+
+		auto tmp = node->find_child(c);
+		if (tmp != nullptr)
+		{
+			node = tmp;
+		}
+
+		if (node->hasOutput)
+		{
+			auto it = nodePatterns.find(node);
+			if (it != nodePatterns.end())
+			{
+				//todo
+				//printf("Pattern(s) found at index %d:\n", i);
+
+				for (const auto& s : it->second)
+				{
+					//printf("=> %s\n", s.c_str());
+				}
+			}
+		}
+
+		i++;
+
+		/*
+		patterns_found.insert(patterns_found.end(), node->output.begin(), node->output.end());
+
+		if (!patterns_found.empty())
+		{
+			printf("=> Pattern(s) found at index %d:", index);
+
+			for (const auto& s : patterns_found)
+			{
+				printf("=> %s\n", s.c_str());
+			}
+		}
+		*/
+	}
 }
