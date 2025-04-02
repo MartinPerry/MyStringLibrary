@@ -267,8 +267,16 @@ private:
 			uint64_t bit = c & (256 - 1); //c % 256
 			flag |= (uint64_t(1) << bit);
 
-			auto it = children.try_emplace(c, new TrieNode());
-			return it.first->second;
+			auto it = children.find(c);
+			if (it != children.end())
+			{
+				return it->second;
+			}
+
+
+			auto n = new TrieNode();
+			children.emplace(c, n);
+			return n;
 		}
 
 		bool has_child(uint8_t c) const
