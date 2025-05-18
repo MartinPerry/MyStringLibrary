@@ -46,12 +46,13 @@ struct MyStringUtils
 		}
 
 		uint64_t value = 0;
-		while ((*str >= '0') && (*str <= '9'))
+		char c;
+		while ((c = *str) >= '0' && c <= '9')
 		{
-			value = value * 10 + (*str - '0');
+			value = value * 10 + (c - '0');
 			++str;
 		}
-
+		
 		if ((*str != '.') && (*str != 'e'))
 		{
 			if (ret) *ret = str;
@@ -74,13 +75,13 @@ struct MyStringUtils
 			++str;
 			
 			const char * startStr = str;
-
-			while ((*str >= '0') && (*str <= '9'))
+			
+			while ((c = *str) >= '0' && c <= '9')
 			{
-				fractValue = fractValue * 10 + (*str - '0');				
+				fractValue = fractValue * 10 + (c - '0');
 				++str;
 			}
-
+			
 			size_t len = str - startStr;
 			if (len <= 14)
 			{
@@ -122,12 +123,12 @@ struct MyStringUtils
 				++str;
 			}
 
-			while ((*str >= '0') && (*str <= '9'))
+			while ((c = *str) >= '0' && c <= '9')
 			{
-				expon = expon * 10 + (*str - '0');
+				expon = expon * 10 + (c - '0');
 				++str;
 			}
-						
+								
 			
 			//pow 10^exp
 			if (exponSign == -1)
@@ -159,8 +160,10 @@ struct MyStringUtils
 	template <typename T>
 	static RET_VAL_STR(T, (std::is_integral<T>::value)) ToNumber(const char * str, const char * ret = nullptr)
 	{
-		//skip leading whitespace
-		while ((*str <= ' ') && (*str != 0))
+		char c;
+
+		//skip leading whitespace		
+		while (((c = *str) <= ' ') && (c != 0))
 		{
 			++str;
 		}
@@ -174,10 +177,10 @@ struct MyStringUtils
 		}
 
 		uint64_t value = 0;
-				
-		while ((*str >= '0') && (*str <= '9'))
+						
+		while (((c = *str) >= '0') && (c <= '9'))
 		{
-			value = value * 10 + (*str - '0');
+			value = value * 10 + (c - '0');
 			++str;
 		}
 
