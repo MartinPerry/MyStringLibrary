@@ -370,8 +370,21 @@ int main(int argc, char ** argv)
 	// For crashes, SIGSEV should be enough.
 	installSignal(SIGSEGV);
 #endif
+	
+	{
+		double x = 7.5;
+		int r = 778;
 
+		double fractional, integer;
 
+		fractional = modf(x, &integer);
+
+		MyStringAnsi xstr = "";
+		//xstr.AppendWithDigitsCount(r, 3);
+		xstr.AppendWithDecimalsCount(x, 2);
+		printf("x");
+	}
+	
 	MyStringAnsi text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
 	size_t* lut = nullptr;
 	auto tt = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut);

@@ -9,6 +9,7 @@ class MySmallStringAnsi;
 #include <vector>
 #include <string> //std::string
 #include <cstring> //strlen and other
+#include <cmath>
 #include <functional> //lambdas
 #include <cstdarg> //var args
 #include <algorithm> //std::find
@@ -179,6 +180,9 @@ public:
 
 	template<typename T>
 	RET_VAL_STR(void, (std::is_integral<T>::value)) AppendWithDigitsCount(T number, size_t digitsCount);
+
+	template<typename T>
+	RET_VAL_STR(void, (std::is_floating_point<T>::value)) AppendWithDecimalsCount(T number, size_t decimalsCount, bool removeTrailingZeroes = false);
 
 	template<typename ...Args>
 	void AppendFormat(const char* str, Args ...args);
@@ -570,6 +574,51 @@ RET_VAL_STR(void, (std::is_integral<T>::value)) IStringAnsi<Type>::AppendWithDig
 	}
 
 	this->operator+=(number);
+}
+
+/// <summary>
+/// Append floating point  number with a given count of decimal numbers
+/// Eg. 5.6799 -> 2 decimals -> 5.68 (will round the last number)
+/// Eg. 5.5 -> 2 decimals -> 5.50 (if removeTrailingZeroes is true => 5.5)
+/// </summary>
+/// <param name="number"></param>
+/// <param name="decimalsCount"></param>
+/// <param name="removeTrailingZeroes"></param>
+template <typename Type>
+template<typename T>
+RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::AppendWithDecimalsCount(T number, size_t decimalsCount, bool removeTrailingZeroes)
+{
+	T fractional, intPart;
+
+	fractional = std::modf(number, &intPart);
+
+	static const uint64_t pow10[15] = {
+		1, 10, 100, 1000, 10000,
+		100000, 1000000, 10000000, 100000000, 1000000000,
+		10000000000, 100000000000, 1000000000000, 10000000000000, 100000000000000
+	};
+	
+	if (decimalsCount >= 15)
+	{
+		decimalsCount = 14;
+	}
+
+	double mul = pow10[decimalsCount];
+
+	fractional *= mul;
+
+	int fractInt = static_cast<int>(fractional + 0.5);  //+0.5 - round to correct int
+	if (removeTrailingZeroes)
+	{
+		while (fractInt % 10 == 0)
+		{
+			fractInt /= 10;
+		}
+	}
+
+	this->operator+=(static_cast<int>(intPart));
+	this->operator+=('.');
+	this->operator+=(fractInt);
 }
 
 //====================================================================
