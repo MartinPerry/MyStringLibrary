@@ -199,32 +199,33 @@ void Localization::LoadLangInfo(const Localization::String & data, Localization:
 	label = "";
 	if (cJSON *root = cJSON_Parse(data.c_str()))
 	{
-		int keysCount = cJSON_GetArraySize(root);
-		for (int i = 0; i < keysCount; i++)
-		{
-			cJSON *item = cJSON_GetArrayItem(root, i);
+		cJSON* arrayItem = nullptr;
 
-			if (strcmp(item->string, "code") == 0)
+		cJSON_ArrayForEach(arrayItem, root)
+		{
+			if (strcmp(arrayItem->string, "code") == 0)
 			{
-				code = item->valuestring;
+				code = arrayItem->valuestring;
+
 				if (label != "")
 				{
 					break;
 				}
 			}
-			if (strcmp(item->string, "label") == 0)
+			if (strcmp(arrayItem->string, "label") == 0)
 			{
-				label = item->valuestring;
+				label = arrayItem->valuestring;
 				if (code != "")
 				{
 					break;
 				}
 			}
-						
+
 		}
 
 		cJSON_Delete(root);
 	}
+
 }
 
 const Localization::String & Localization::GetLang() const
@@ -234,10 +235,15 @@ const Localization::String & Localization::GetLang() const
 
 void Localization::SetLang(Localization::StringView lang)
 {
-	if (this->lang == lang)
+	this->SetLang(lang, false);
+}
+
+void Localization::SetLang(StringView lang, bool forceReload)
+{
+	if ((forceReload == false) && (this->lang == lang))
 	{
 		return;
-	}
+	}	
 
     this->strs.clear();
     this->groups.clear();
@@ -291,13 +297,13 @@ void Localization::LoadLocalization(const Localization::String & langID,
 
 	Localization::String str = this->LoadFile(path);
 
-	if (cJSON *root = cJSON_Parse(str.c_str()))
+	if (cJSON* root = cJSON_Parse(str.c_str()))
 	{
-		int keysCount = cJSON_GetArraySize(root);
-		for (int i = 0; i < keysCount; i++)
+		cJSON* item = nullptr;
+
+		cJSON_ArrayForEach(item, root)
 		{
-			cJSON *item = cJSON_GetArrayItem(root, i);
-			
+
 			if ((item->type & 0xFF) == cJSON_Number)
 			{
 				std::string tmp = std::to_string(item->valueint);
@@ -306,17 +312,17 @@ void Localization::LoadLocalization(const Localization::String & langID,
 			else if (item->valuestring == nullptr)
 			{
 				std::unordered_map<Localization::String, LocalString> tmpInner;
-				
-				auto it = groups.find(item->string);
-                if (it != groups.end())
-                {
-                    tmpInner = it->second;
-                }
 
-				int innerKeysCount = cJSON_GetArraySize(item);
-				for (int j = 0; j < innerKeysCount; j++)
+				auto it = groups.find(item->string);
+				if (it != groups.end())
 				{
-					cJSON *inner = cJSON_GetArrayItem(item, j);
+					tmpInner = it->second;
+				}
+
+				int j = 0;
+				cJSON* inner = nullptr;
+				cJSON_ArrayForEach(inner, item)
+				{
 
 					Localization::LocalString str = this->ProcessSingleInput(inner->valuestring);
 
@@ -332,6 +338,8 @@ void Localization::LoadLocalization(const Localization::String & langID,
 						//tmpInner[inner->string] = str;
 						tmpInner.insert_or_assign(inner->string, std::move(str));
 					}
+
+					j++;
 				}
 
 				groups[item->string] = tmpInner;
@@ -339,16 +347,16 @@ void Localization::LoadLocalization(const Localization::String & langID,
 			else
 			{
 				//strs.emplace(item->string, this->ProcessSingleInput(item->valuestring));
-				//strs[item->string] = this->ProcessSingleInput(item->valuestring);
+				//strs[item->string] = this->ProcessSingleInput(item->valuestring);				
 				strs.insert_or_assign(item->string, this->ProcessSingleInput(item->valuestring));
 			}
 
-			
+
 			//printf("%s = %s\n", item->string, item->valuestring);
 		}
 
 		cJSON_Delete(root);
-	}	
+	}
 }
 
 Localization::LocalString Localization::ProcessSingleInput(const char * rawData) const

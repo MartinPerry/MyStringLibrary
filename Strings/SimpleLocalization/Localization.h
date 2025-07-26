@@ -43,6 +43,7 @@ public:
 	const std::map<StringView, StringView> & GetAllSupportedLanguages() const;
 
     void SetLang(StringView lang);
+	void SetLang(StringView lang, bool forceReload);
     const String & GetLang() const;
     
 	void ReplaceKeysByLang(Localization::StringView lang, std::initializer_list< Localization::String> keys);
