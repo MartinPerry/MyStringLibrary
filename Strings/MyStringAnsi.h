@@ -93,7 +93,7 @@ public:
 	/// <param name="memory"></param>
 	/// <param name="str"></param>
 	/// <returns></returns>
-	static uint8_t * UnpackFromMemory(uint8_t * memory, MyStringAnsi & str)
+	static const uint8_t * UnpackFromMemory(const uint8_t * memory, MyStringAnsi & str)
 	{
 		// restore string
 		int tmp = 0;

@@ -256,7 +256,8 @@ public:
 	template <typename T>
 	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || 
 		std::is_same<T, MySmallStringAnsi>::value ||
-		std::is_same<T, MyStringView>::value))
+		std::is_same<T, MyStringView>::value ||
+		std::is_same<T, std::string>::value))
     operator = (const T & str);	
 	Type& operator = (const char * str);
 	Type& operator = (Type && other);
@@ -603,7 +604,7 @@ RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::AppendW
 		decimalsCount = 14;
 	}
 
-	double mul = pow10[decimalsCount];
+	double mul = static_cast<double>(pow10[decimalsCount]);
 
 	fractional *= mul;
 
@@ -886,7 +887,8 @@ template <typename Type>
 template <typename T>
 RET_VAL_STR(Type&, (std::is_same<T, MyStringAnsi>::value || 
 	std::is_same<T, MySmallStringAnsi>::value ||
-	std::is_same<T, MyStringView>::value))
+	std::is_same<T, MyStringView>::value ||
+	std::is_same<T, std::string>::value))
 IStringAnsi<Type>::operator = (const T & str)
 {
 	/*
