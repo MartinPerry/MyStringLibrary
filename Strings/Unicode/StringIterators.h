@@ -21,19 +21,19 @@
 /// Input string is ASCII string
 /// Will return uint32_t -> ASCII id
 /// </summary>
+template <typename StringType>
 struct CustomAsciiIterator 
 {	
+	using CharType = StringType::value_type;
+
 	static inline uint32_t DONE = std::numeric_limits<uint32_t>::max();
 
-	CustomAsciiIterator(const std::string & str) :
-		CustomAsciiIterator(std::string_view(str))
-	{}
-
-	CustomAsciiIterator(const std::string_view & view) :
-		v(view),
+	CustomAsciiIterator(const StringType& str) :
+		v(std::basic_string_view<CharType>(str)),
 		index(0)
 	{}
 
+	
 	CustomAsciiIterator(const CustomAsciiIterator& other) :
 		v(other.v),
 		index(other.index)
@@ -42,8 +42,8 @@ struct CustomAsciiIterator
 	void SetOffsetFromStart(uint32_t offset) { index = offset; }
 	void SetOffsetFromCurrent(uint32_t offset) { index += offset; }
 
-	uint32_t GetFirst() { return this->v[0]; }
-	uint32_t GetCurrent() { return this->v[index]; }
+	uint32_t GetFirst() { return static_cast<uint32_t>(this->v[0]); }
+	uint32_t GetCurrent() { return static_cast<uint32_t>(this->v[index]); }
 	uint32_t GetNext() { this->index++; return this->GetCurrent(); }
 	uint32_t GetCurrentAndAdvance() 
 	{ 
@@ -51,14 +51,14 @@ struct CustomAsciiIterator
 		{
 			return CustomAsciiIterator::DONE;
 		}
-		uint32_t c = this->v[this->index];
+		uint32_t c = static_cast<uint32_t>(this->v[this->index]);
 		this->index++; 		
 		return c;
 	}
 	bool HasNext() { return index < v.length(); }
 
 protected:
-	std::string_view v;
+	std::basic_string_view<CharType> v;
 	size_t index;
 };
 
@@ -290,21 +290,61 @@ protected:
 		{
 			return false;
 		}
-
-		if (curCodePoint > 0x10FFFFu || (curCodePoint >= 0xD800u && curCodePoint <= 0xDFFFu))
+		
+		if constexpr (std::is_same<UnicodeIterator, CustomAsciiIterator<typename std::basic_string_view<uint8_t>>>::value)
 		{
-			// replace with U+FFFD (or throw)
-			curCodePoint = 0xFFFDu;
+			//Custom raw data iterator - exects data already in UTF8 bytes, so just return the bytes
+			buf[0] = static_cast<uint8_t>(curCodePoint);
+			return true;
 		}
+		else
+		{
+			if (curCodePoint > 0x10FFFFu || (curCodePoint >= 0xD800u && curCodePoint <= 0xDFFFu))
+			{
+				// replace with U+FFFD (or throw)
+				curCodePoint = 0xFFFDu;
+			}
 
-		buf = { 0,0,0,0 };
-		char* it = reinterpret_cast<char*>(buf.data());
-		utf8::append(static_cast<char32_t>(curCodePoint), it);		
+			//buf = { 0,0,0,0 };
+			//char* it = reinterpret_cast<char*>(buf.data());
+			//utf8::append(static_cast<char32_t>(curCodePoint), it);		
+			this->UnicodeToUtf8(curCodePoint, buf.data());
+			return true;
+		}		
+	}
 
-		return true;
+	void UnicodeToUtf8(uint32_t cp, uint8_t* result) const noexcept
+	{
+		if (cp < 0x80) {                   // one octet
+			*(result++) = static_cast<uint8_t>(cp);
+			*(result++) = 0;
+			*(result++) = 0;
+			*(result++) = 0;
+		}
+		else if (cp < 0x800) {                // two octets
+			*(result++) = static_cast<uint8_t>((cp >> 6) | 0xc0);
+			*(result++) = static_cast<uint8_t>((cp & 0x3f) | 0x80);
+			*(result++) = 0;
+			*(result++) = 0;
+		}
+		else if (cp < 0x10000) {              // three octets
+			*(result++) = static_cast<uint8_t>((cp >> 12) | 0xe0);
+			*(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f) | 0x80);
+			*(result++) = static_cast<uint8_t>((cp & 0x3f) | 0x80);
+			*(result++) = 0;
+		}
+		else {                                // four octets
+			*(result++) = static_cast<uint8_t>((cp >> 18) | 0xf0);
+			*(result++) = static_cast<uint8_t>(((cp >> 12) & 0x3f) | 0x80);
+			*(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f) | 0x80);
+			*(result++) = static_cast<uint8_t>((cp & 0x3f) | 0x80);
+		}
 	}
 };
 
+
+//========================================================================
+//========================================================================
 //========================================================================
 
 struct CustomIteratorCreator
@@ -340,6 +380,27 @@ struct CustomIteratorCreator
 			return CustomUnicodeIterator(str);
 		}
 #endif
+	}
+
+	template <typename T>
+	static auto CreateUtf8Bytes(const T& str)
+	{
+		auto iter = CustomIteratorCreator::Create(str);
+		return CustomUtf8BytesIterator(iter);
+	}
+	
+	/// <summary>
+	/// Data are raw string data as-is so we expect they are already in UTF8 bytes
+	/// </summary>
+	/// <param name="strData"></param>
+	/// <param name="dataSize"></param>
+	/// <returns></returns>
+	static auto CreateUtf8Bytes(const char* utf8StrData, size_t dataSize)
+	{
+		std::basic_string_view<uint8_t> ut8Bytes((uint8_t *)utf8StrData, dataSize);
+
+		auto iter = CustomAsciiIterator(ut8Bytes);		
+		return CustomUtf8BytesIterator(iter);
 	}
 };
 
