@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Testing">
       <UniqueIdentifier>{54d23255-0d1d-4200-a4d5-a86d77f5c4b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Unicode\3rdParty">
+      <UniqueIdentifier>{78071727-63c0-4afd-b257-4e32069dc8cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Unicode\3rdParty\utf8">
+      <UniqueIdentifier>{1b935f58-de35-4054-9d28-2a97145514c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyString.h">
@@ -57,9 +63,6 @@
     <ClInclude Include="SimpleLocalization\cJSON_JS.h">
       <Filter>Header Files\SimpleLocalization</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleLocalization\win_dirent.h">
-      <Filter>Header Files\SimpleLocalization</Filter>
-    </ClInclude>
     <ClInclude Include="SimpleLocalization\generated_localization.h">
       <Filter>Header Files\SimpleLocalization</Filter>
     </ClInclude>
@@ -70,9 +73,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Unicode\IcuUnicodeStringWrapper.h">
-      <Filter>Header Files\Unicode</Filter>
-    </ClInclude>
-    <ClInclude Include="Unicode\tinyutf8.h">
       <Filter>Header Files\Unicode</Filter>
     </ClInclude>
     <ClInclude Include="Unicode\TinyUtf8Wrapper.h">
@@ -110,6 +110,33 @@
     </ClInclude>
     <ClInclude Include="Testing\StringTests.h">
       <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\core.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\cpp11.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\cpp17.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\cpp20.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\checked.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\unchecked.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\utf8\utf8.h">
+      <Filter>Header Files\Unicode\3rdParty\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\3rdParty\tinyutf8.h">
+      <Filter>Header Files\Unicode\3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Unicode\StringIterators.h">
+      <Filter>Header Files\Unicode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

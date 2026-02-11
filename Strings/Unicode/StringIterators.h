@@ -4,29 +4,29 @@
 #include <string>
 #include <string_view>
 #include <limits>
-
+#include <array>
 
 #ifdef USE_ICU_LIBRARY
 #	include <unicode/unistr.h>
 #	include <unicode/schriter.h>
 #endif
 
-#if __has_include("./utf8.h")
-#	include "./utf8.h"
+#if __has_include("./3rdParty/utf8/utf8.h")
+#	include "./3rdParty/utf8/utf8.h"
 #endif
 
 //========================================================================
 
 /// <summary>
 /// Input string is ASCII string
-/// Will return uint32_t -> ASCII id
+/// Will return char32_t -> ASCII code point (same as Unicode code point)
 /// </summary>
 template <typename StringType>
 struct CustomAsciiIterator 
 {	
 	using CharType = StringType::value_type;
 
-	static inline uint32_t DONE = std::numeric_limits<uint32_t>::max();
+	static inline char32_t DONE = std::numeric_limits<char32_t>::max();
 
 	CustomAsciiIterator(const StringType& str) :
 		v(std::basic_string_view<CharType>(str)),
@@ -42,16 +42,16 @@ struct CustomAsciiIterator
 	void SetOffsetFromStart(uint32_t offset) { index = offset; }
 	void SetOffsetFromCurrent(uint32_t offset) { index += offset; }
 
-	uint32_t GetFirst() { return static_cast<uint32_t>(this->v[0]); }
-	uint32_t GetCurrent() { return static_cast<uint32_t>(this->v[index]); }
-	uint32_t GetNext() { this->index++; return this->GetCurrent(); }
-	uint32_t GetCurrentAndAdvance() 
+	char32_t GetFirst() { return static_cast<uint32_t>(this->v[0]); }
+	char32_t GetCurrent() { return static_cast<uint32_t>(this->v[index]); }
+	char32_t GetNext() { this->index++; return this->GetCurrent(); }
+	char32_t GetCurrentAndAdvance()
 	{ 
 		if (this->HasNext() == false)
 		{
 			return CustomAsciiIterator::DONE;
 		}
-		uint32_t c = static_cast<uint32_t>(this->v[this->index]);
+		char32_t c = static_cast<char32_t>(this->v[this->index]);
 		this->index++; 		
 		return c;
 	}
@@ -64,11 +64,11 @@ protected:
 
 //========================================================================
 
-#if __has_include("./utf8.h")
+#if __has_include("./3rdParty/utf8/utf8.h")
 
 /// <summary>
 /// Input string is unicode string
-/// Will return uint32_t -> unicode code point
+/// Will return char32_t -> unicode code point
 /// 
 /// Example:
 /// std::u8string testUnicode = u8"ABC"
@@ -83,7 +83,7 @@ protected:
 /// </summary>
 struct CustomU8Iterator
 {
-	static inline uint32_t DONE = std::numeric_limits<uint32_t>::max();
+	static inline char32_t DONE = std::numeric_limits<char32_t>::max();
 
 	CustomU8Iterator(const std::u8string& str) :
 		CustomU8Iterator(std::u8string_view(str))		
@@ -117,12 +117,12 @@ struct CustomU8Iterator
 		}
 	}
 
-	uint32_t GetFirst() 
+	char32_t GetFirst()
 	{ 
 		it = v.data();
 		return utf8::unchecked::peek_next(it); 
 	}
-	uint32_t GetCurrent() 
+	char32_t GetCurrent()
 	{ 
 		if (this->HasNext() == false)
 		{
@@ -131,7 +131,7 @@ struct CustomU8Iterator
 		return utf8::unchecked::peek_next(it); 
 	}
 
-	uint32_t GetNext() 
+	char32_t GetNext()
 	{ 
 		if (this->HasNext() == false)
 		{
@@ -141,13 +141,13 @@ struct CustomU8Iterator
 
 		return this->GetCurrent();
 	}
-	uint32_t GetCurrentAndAdvance()
+	char32_t GetCurrentAndAdvance()
 	{
 		if (this->HasNext() == false)
 		{
 			return CustomU8Iterator::DONE;
 		}
-		uint32_t c = utf8::unchecked::next(it);		
+		char32_t c = utf8::unchecked::next(it);
 		return c;
 	}
 	bool HasNext() { return it < itEnd; }
@@ -175,10 +175,10 @@ struct CustomUnicodeIterator : public icu::StringCharacterIterator
 
 	void SetOffsetFromStart(uint32_t offset) { this->move32(offset, icu::CharacterIterator::EOrigin::kStart); }
 	void SetOffsetFromCurrent(uint32_t offset) { this->move32(offset, icu::CharacterIterator::EOrigin::kCurrent); }
-	uint32_t GetFirst() { return this->first32(); }
-	uint32_t GetCurrent() { return this->current32(); }
-	uint32_t GetNext() { return this->next32(); }
-	uint32_t GetCurrentAndAdvance() { return this->next32PostInc(); }
+	char32_t GetFirst() { return this->first32(); }
+	char32_t GetCurrent() { return this->current32(); }
+	char32_t GetNext() { return this->next32(); }
+	char32_t GetCurrentAndAdvance() { return this->next32PostInc(); }
 	bool HasNext() { return this->hasNext(); }
 		
 };
@@ -279,7 +279,7 @@ struct CustomUtf8BytesIterator
 
 protected:
 	UnicodeIterator it;
-	uint32_t curCodePoint;
+	char32_t curCodePoint;
 	std::array<uint8_t, 4> buf;
 	int bufIndex;
 
@@ -313,7 +313,7 @@ protected:
 		}		
 	}
 
-	void UnicodeToUtf8(uint32_t cp, uint8_t* result) const noexcept
+	void UnicodeToUtf8(char32_t cp, uint8_t* result) const noexcept
 	{
 		if (cp < 0x80) {                   // one octet
 			*(result++) = static_cast<uint8_t>(cp);
@@ -362,7 +362,7 @@ struct CustomIteratorCreator
 			return CustomAsciiIterator(str);
 		}
 
-#if __has_include("./utf8.h")
+#if __has_include("./3rdParty/utf8/utf8.h")
 		if constexpr (std::is_same<T, std::u8string>::value)
 		{
 			return CustomU8Iterator(str);

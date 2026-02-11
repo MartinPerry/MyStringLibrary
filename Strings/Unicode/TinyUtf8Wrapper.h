@@ -1,9 +1,9 @@
 #ifndef TINY_UTF8_WRAPPER_H
 #define TINY_UTF8_WRAPPER_H
 
-#if __has_include("./tinyutf8.h")
+#if __has_include("./3rdParty/tinyutf8.h")
 
-#include "./tinyutf8.h"
+#include "./3rdParty/tinyutf8.h"
 
 
 struct TinyUtf8Wrapper

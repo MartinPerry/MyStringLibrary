@@ -211,6 +211,7 @@ namespace mystrlib
 			return digits;
 		}
 
+		static MyString php_bin2hex(const MyString& str);
 
 		static MyString ToStringSimple(double val, int fractPlaces);
 		static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept;

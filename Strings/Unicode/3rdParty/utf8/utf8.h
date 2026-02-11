@@ -42,7 +42,7 @@ If you leave UTF_CPP_CPLUSPLUS undefined, it will be internally assigned to __cp
 
 #define UTF_CPP_CPLUSPLUS 202002L
 
-#include "utf8/checked.h"
-#include "utf8/unchecked.h"
+#include "checked.h"
+#include "unchecked.h"
 
 #endif // header guard

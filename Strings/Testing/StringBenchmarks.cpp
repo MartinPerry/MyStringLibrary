@@ -11,12 +11,11 @@
 #include "./StringTests.h"
 #include "../MyStringLib.h"
 
-#ifndef NOMINMAX
-#	define NOMINMAX
-#endif
-
 #ifdef _WIN32
-#include <windows.h>   // WinApi header
+#	ifndef NOMINMAX
+#		define NOMINMAX
+#	endif
+#	include <windows.h>   // WinApi header
 #endif
 
 using namespace mystrlib;
@@ -130,7 +129,7 @@ void StringBenchmarks::TestShortStrAllocation()
 		rnd.push_back(std::to_string(uniform_dist(e)).c_str());
 	}
 
-	this->Start("MyStringAnsi (literal)");
+	this->Start("MyString (literal)");
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyString x = "xxxxxxx";
@@ -155,7 +154,7 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Finish();
 
 
-	this->Start("MyStringAnsi");
+	this->Start("MyString");
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyString x = rnd[i].c_str();
@@ -304,6 +303,34 @@ void StringBenchmarks::TestAppendIntNumber()
 	
 }
 
+void StringBenchmarks::TestAppendWithDigitsCount()
+{
+	LogTestStart(__func__);
+
+	this->Start("AppendWithDigitsCount");
+
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyString x = "";
+		x.AppendWithDigitsCount(-123, 5);
+		res[i] += x.length();
+	}
+	
+	this->Finish();
+
+	this->Start("AppendFormat");
+
+	for (int i = 0; i < COUNT; i++)
+	{
+		MyString x = "";
+		x.AppendFormat("%05d", -123);
+		res[i] += x.length();
+	}
+
+	this->Finish();
+	
+}
+
 void StringBenchmarks::TestAppendNumberAll()
 {
 	//this->TestAppendNumber<int8_t>();
@@ -337,7 +364,7 @@ void StringBenchmarks::TestAppendSmallString()
 	rnd.push_back(" ");
 		
 
-	this->Start("MyStringAnsi +=");
+	this->Start("MyString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		MyString tmp = "";
@@ -391,7 +418,7 @@ void StringBenchmarks::TestAppendString()
 	std::string tmp2 = "";
 
 
-	this->Start("MyStringAnsi +=");
+	this->Start("MyString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		tmp += rnd[i];
@@ -451,7 +478,7 @@ void StringBenchmarks::TestHashing()
 
 
 
-	this->Start("Hash MyStringAnsi");
+	this->Start("Hash MyString");
 	for (int i = 0; i < COUNT; i++)
 	{		
 		res[i] = dataString[keys[i]];
@@ -459,7 +486,7 @@ void StringBenchmarks::TestHashing()
 	this->Finish();
 
 
-	this->Start("Hash MyStringID");
+	this->Start("Hash MyStringId");
 	for (int i = 0; i < COUNT; i++)
 	{
 		res[i] = dataId[keysId[i]];

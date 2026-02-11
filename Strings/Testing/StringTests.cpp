@@ -542,6 +542,21 @@ void StringTests<T>::TestMethods()
 	printf("OK\n");
 
 	//========================================================================
+	//AhoCorasick
+
+	MyString text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral_cuni.cz.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
+	size_t* lut = nullptr;
+	auto manual = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut) != MyStringUtils::npos;
+	delete[] lut;
+
+	AhoCorasick ah;
+	ah.AddPattern("cuni.cz");
+	ah.AddPattern("google.com");
+	auto corasick = ah.ContainsPatterns(text);
+
+	if (manual != corasick) StringTests<T>::error("AhoCorasick not working");
+
+	//========================================================================
 	//MD5
 #ifdef _WIN32
 	printf("==== MD5 (%s) ==== ", __func__);

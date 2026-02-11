@@ -12,15 +12,12 @@
 #	endif
 #endif
 
-#ifndef NOMINMAX
-#   define NOMINMAX
-#endif
 
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
 #include <algorithm>
-
+#include <filesystem>
 
 #include "./cJSON_JS.h"
 
@@ -28,14 +25,6 @@
 #   define GENERATE_CODE
 #endif
 
-#ifdef GENERATE_CODE
-#	ifdef _WIN32
-#		include "./win_dirent.h"
-#	else 
-#		include <sys/stat.h>
-#	   include <dirent.h>
-#	endif
-#endif
 
 
 #ifdef USE_VFS
@@ -102,15 +91,6 @@ void Localization::GenerateSupportedLanguagesList()
 
 	std::map<String, String> langList;
 
-	DIR *dir;
-	struct dirent * ent;
-
-	dir = opendir(DEFAULT_PATH.c_str());
-	if (dir == NULL)
-	{
-		return;
-	}
-
 
 	Localization::String newDirName;
 	Localization::String fullPath;
@@ -121,45 +101,25 @@ void Localization::GenerateSupportedLanguagesList()
 	Localization::String label;
 	
 
-	/* print all the files and directories within directory */
-	while ((ent = readdir(dir)) != nullptr)
+	for (const auto& dirEntry : std::filesystem::directory_iterator(DEFAULT_PATH))
 	{
-		if ((strcmp(ent->d_name, ".") == 0) || (strcmp(ent->d_name, "..") == 0))
+		if (dirEntry.is_regular_file() == false)
 		{
 			continue;
 		}
 
-		switch (ent->d_type)
+		data = LoadFile(dirEntry.path().string());
+		LoadLangInfo(data, code, label);
+		if (code != "")
 		{
-		case DT_REG:
-
-			//file
-			fullPath = dir->patt;
-			fullPath = fullPath.substr(0, fullPath.length() - 1);
-			fullPath += ent->d_name;
-
-			data = LoadFile(fullPath);
-			LoadLangInfo(data, code, label);
-			if (code != "")
+			if (label == "")
 			{
-				if (label == "")
-				{
-					label = code;
-				}
-				langList[code] = label;
+				label = code;
 			}
-			break;
-
-		case DT_DIR:
-
-			break;
-
-		default:
-			//printf ("%s:\n", ent->d_name);
-			break;
+			langList[code] = label;
 		}
 	}
-
+	
 
 	Localization::String generatedCodeCpp = "#ifndef GENERATED_LANG_LIST_H\n";
 	generatedCodeCpp += "#define GENERATED_LANG_LIST_H\n\n";
@@ -187,9 +147,7 @@ void Localization::GenerateSupportedLanguagesList()
 		fwrite(generatedCodeCpp.c_str(), sizeof(char), generatedCodeCpp.length(), f);
 		fclose(f);
 	}
-
-
-	closedir(dir);
+	
 #endif
 }
 
@@ -371,7 +329,7 @@ Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
 	const String EMPTY = String();
 
 	LocalString str;
-	str.str = rawData;
+	str.str = AsStringUtf8(rawData);
 
 	size_t startIndexRaw = 0;
 	size_t endIndexRaw = 0;
@@ -461,7 +419,7 @@ Localization::Utf8StringWrapper Localization::Localize(const Localization::Strin
 	if (found == false)
 	{
 		if (exist != nullptr) *exist = false;
-		return key.c_str();
+		return AsStringUtf8(key);
 	}
 
 	if (exist != nullptr) *exist = true;
@@ -530,7 +488,7 @@ Localization::Utf8StringWrapper Localization::Localize(const Localization::Strin
 	if (found == false)
 	{
 		if (exist != nullptr) *exist = false;
-		return key.c_str();
+		return AsStringUtf8(key);
 	}
 
 	std::vector<Localization::Utf8StringWrapper> t;
@@ -583,7 +541,7 @@ Localization::Utf8StringWrapper Localization::Localize(const String& key, const 
 	if (found == false)
 	{
 		if (exist != nullptr) *exist = false;
-		return key.c_str();
+		return AsStringUtf8(key);
 	}
 
 	std::vector<Localization::Utf8StringWrapper> t;
@@ -659,7 +617,7 @@ const Localization::LocalString& Localization::GetLocalStringInfo(const Localiza
 Localization::Utf8StringWrapper Localization::LocalizeWithReplace(const LocalString & input,
 	const std::vector<Localization::Utf8StringWrapper> & params)
 {
-	size_t count = std::min(params.size(), input.replaceOffsetsRawStart.size());
+	size_t count = std::min<size_t>(params.size(), input.replaceOffsetsRawStart.size());
 
 	Localization::Utf8StringWrapper tmp = input.str;
 

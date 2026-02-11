@@ -8,15 +8,8 @@
 #include <list>
 #include <initializer_list>
 
-#if __has_include("../Unicode/TinyUtf8Wrapper.h")
-#	include "../Unicode/TinyUtf8Wrapper.h"
-#endif
-
-#if __has_include("../Unicode/IcuUnicodeStringWrapper.h")
-#	include "../Unicode/IcuUnicodeStringWrapper.h"
-#endif
-
 #include "../MyStringLib.h"
+#include "../Unicode/UnicodeUtils.h"
 
 namespace mystrlib
 {
@@ -27,7 +20,7 @@ namespace mystrlib
 
 		using String = MyString;
 		using StringView = MyStringView;
-		using Utf8StringWrapper = std::u8string;// TinyUtf8Wrapper;
+		using Utf8StringWrapper = StringUtf8;
 
 		class ILocalizationObserver
 		{
@@ -107,7 +100,7 @@ namespace mystrlib
 	T Localization::LocalizeAs(const String& key, bool* exist)
 	{
 		auto tmp = this->Localize(key, exist);
-		return tmp.getAs<T>();
+		return T(tmp);
 	}
 
 }

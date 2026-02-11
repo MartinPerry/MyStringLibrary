@@ -1,25 +1,14 @@
 #ifndef UNICODE_UTILS_H
 #define UNICODE_UTILS_H
 
-#if (defined(ENABLE_ICU) && (__has_include(<unicode/unistr.h>)))
-#	include "./IcuUnicodeStringWrapper.h"
-
-#	define HAS_UNICODE
-
-using UnicodeStringWrapper = IcuUnicodeStringWrapper;
-
-#elif __has_include("./tinyutf8.h")
-#	include "./TinyUtf8Wrapper.h"
-
-#	define HAS_UNICODE
-
-using UnicodeStringWrapper = TinyUtf8Wrapper;
-
-#endif
-
+#include <string>
+#include "../MyString.h"
 
 #ifdef _WIN32
 
+#ifndef NOMINMAX
+#   define NOMINMAX
+#endif
 #include <Windows.h>
 
 //https://stackoverflow.com/questions/45575863/how-to-print-utf-8-strings-to-stdcout-on-windows
@@ -33,5 +22,23 @@ inline void EnableWinConsoleUtf8()
 };
 
 #endif
+
+
+using StringUtf8 = std::u8string;
+
+static inline StringUtf8 AsStringUtf8(const char* str)
+{    
+    return StringUtf8(reinterpret_cast<const char8_t*>(str));
+}
+
+static inline StringUtf8 AsStringUtf8(const std::string& str)
+{
+    return StringUtf8(reinterpret_cast<const char8_t*>(str.c_str()), str.length());
+}
+
+static inline StringUtf8 AsStringUtf8(const mystrlib::MyString& str)
+{
+    return StringUtf8(reinterpret_cast<const char8_t*>(str.c_str()), str.length());
+}
 
 #endif

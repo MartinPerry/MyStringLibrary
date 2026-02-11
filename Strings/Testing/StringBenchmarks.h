@@ -22,6 +22,8 @@ namespace mystrlib
 		void TestAppendIntNumber();
 		void TestAppendNumberAll();
 
+		void TestAppendWithDigitsCount();
+
 		void TestAppendSmallString();
 		void TestAppendString();
 

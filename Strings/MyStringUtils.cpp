@@ -14,6 +14,24 @@
 
 using namespace mystrlib;
 
+
+MyString MyStringUtils::php_bin2hex(const MyString& str)
+{
+	static const char hexconvtab[] = "0123456789abcdef";
+
+	MyString result;
+	result.resize(str.length() * 2 + 1);
+	size_t i, j;
+
+	for (i = j = 0; i < str.length(); i++) {
+		result[j++] = hexconvtab[str[i] >> 4];
+		result[j++] = hexconvtab[str[i] & 15];
+	}
+	result[j] = '\0';
+	return result;
+}
+
+
 /// <summary>
 /// Simple conversion of double value to string
 /// with given number of fractional places
