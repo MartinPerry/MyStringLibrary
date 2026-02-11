@@ -341,7 +341,7 @@ public:
     size_t len = 0;
     uint8_t buffer[1024] ;
 	
-	my_fopen(&file, filename, "rb");
+	file = fopen(filename, "rb");
 
     if( file == NULL )
       printf( "%s can't be opened\n", filename ) ;

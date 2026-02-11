@@ -1,4 +1,4 @@
-#include "./IStringAnsi.h"
+#include "./IString.h"
 
 
 #include <cstdio>
@@ -11,11 +11,13 @@
 #include <cmath>
 
 
-#include "./MurmurHash3.h"
+#include "./hashing/MurmurHash3.h"
 
-#include "./MyStringAnsi.h"
-#include "./MySmallStringAnsi.h"
+#include "./MyString.h"
+#include "./MySmallString.h"
 #include "./MyStringView.h"
+
+using namespace mystrlib;
 
 //====================================================================
 // ctors / dtors
@@ -23,7 +25,7 @@
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi() : 
+IString<Type>::IString() : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	//static_cast<Type *>(this)->CtorInternal(nullptr);
@@ -32,21 +34,21 @@ IStringAnsi<Type>::IStringAnsi() :
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(char letter) :
+IString<Type>::IString(char letter) :
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type*>(this)->CtorInternal(&letter, 1);
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(char* str) : 
+IString<Type>::IString(char* str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str, 0);
 }
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const char* str) : 
+IString<Type>::IString(const char* str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str, 0);
@@ -55,7 +57,7 @@ IStringAnsi<Type>::IStringAnsi(const char* str) :
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const std::string& str) : 
+IString<Type>::IString(const std::string& str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str.c_str(), str.length());
@@ -63,7 +65,7 @@ IStringAnsi<Type>::IStringAnsi(const std::string& str) :
 
 
 template <typename Type>
-IStringAnsi<Type>::IStringAnsi(const std::string_view& str) :
+IString<Type>::IString(const std::string_view& str) :
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type*>(this)->CtorInternal(str.data(), str.length());
@@ -71,7 +73,7 @@ IStringAnsi<Type>::IStringAnsi(const std::string_view& str) :
 
 
 template <typename Type>
-IStringAnsi<Type>::~IStringAnsi()
+IString<Type>::~IString()
 {
 	static_cast<Type *>(this)->ReleaseInternal();
 }
@@ -81,7 +83,7 @@ IStringAnsi<Type>::~IStringAnsi()
 /// and allocate back to "empty" string
 /// </summary>
 template <typename Type>
-void IStringAnsi<Type>::Release()
+void IString<Type>::Release()
 {
 	static_cast<Type *>(this)->ReleaseInternal();
 	static_cast<Type *>(this)->CtorInternal(nullptr, 0);
@@ -97,7 +99,7 @@ void IStringAnsi<Type>::Release()
 /// <param name="str"></param>
 /// <param name="length"></param> 
 template <typename Type>
-void IStringAnsi<Type>::CreateNew(const char * newStr, size_t length)
+void IString<Type>::CreateNew(const char * newStr, size_t length)
 {
 	char * str = static_cast<Type *>(this)->str();
 	if (newStr == nullptr)
@@ -151,7 +153,7 @@ void IStringAnsi<Type>::CreateNew(const char * newStr, size_t length)
 /// </summary>
 /// <param name="newBufferSize"></param>
 template <typename Type>
-void IStringAnsi<Type>::ResizeBuffer(size_t newBufferSize)
+void IString<Type>::ResizeBuffer(size_t newBufferSize)
 {
 	size_t curBufSize = static_cast<const Type *>(this)->capacity();
 
@@ -194,7 +196,7 @@ void IStringAnsi<Type>::ResizeBuffer(size_t newBufferSize)
 //====================== Methods ===============================
 
 template <typename Type>
-uint32_t IStringAnsi<Type>::GetHashCode() const noexcept
+uint32_t IString<Type>::GetHashCode() const noexcept
 {
 	if (this->hashCode != std::numeric_limits<uint32_t>::max())
 	{
@@ -216,7 +218,7 @@ uint32_t IStringAnsi<Type>::GetHashCode() const noexcept
 // Helper methods
 //====================================================================
 template <typename Type>
-bool IStringAnsi<Type>::SaveToFile(MyStringView fileName) const
+bool IString<Type>::SaveToFile(MyStringView fileName) const
 {	
 	FILE *f = nullptr;  //pointer to file we will read in
 	my_fopen(&f, fileName.c_str(), "wb");
@@ -239,7 +241,7 @@ bool IStringAnsi<Type>::SaveToFile(MyStringView fileName) const
 //====================================================================
 
 template <typename Type>
-void IStringAnsi<Type>::ToLower()
+void IString<Type>::ToLower()
 {
 	this->Transform([](unsigned char c) -> char {
 		return std::tolower(c);
@@ -247,7 +249,7 @@ void IStringAnsi<Type>::ToLower()
 }
 
 template <typename Type>
-void IStringAnsi<Type>::ToUpper()
+void IString<Type>::ToUpper()
 {
 	this->Transform([](unsigned char c) -> char {
 		return std::toupper(c);
@@ -255,7 +257,7 @@ void IStringAnsi<Type>::ToUpper()
 }
 
 template <typename Type>
-void IStringAnsi<Type>::ToUpperFirst()
+void IString<Type>::ToUpperFirst()
 {
 	this->Transform([](unsigned char c) -> char {		
 		return std::tolower(c);		
@@ -280,7 +282,7 @@ void IStringAnsi<Type>::ToUpperFirst()
 /// </summary>
 /// <param name="t"></param>
 template <typename Type>
-void IStringAnsi<Type>::Transform(std::function<char(char)> t)
+void IString<Type>::Transform(std::function<char(char)> t)
 {
 	//size_t count = 0;
 
@@ -298,7 +300,7 @@ void IStringAnsi<Type>::Transform(std::function<char(char)> t)
 
 
 template <typename Type>
-void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
+void IString<Type>::Append(const char * appendStr, size_t len)
 {
 	if (appendStr == nullptr)
 	{
@@ -337,7 +339,7 @@ void IStringAnsi<Type>::Append(const char * appendStr, size_t len)
 /// <param name="t"></param>
 /// <param name="offset"></param>
 template <typename Type>
-void IStringAnsi<Type>::AppendMultiple(char t, size_t count)
+void IString<Type>::AppendMultiple(char t, size_t count)
 {
 	size_t curSize = static_cast<const Type*>(this)->capacity();
 	size_t strLength = static_cast<const Type*>(this)->length();
@@ -365,7 +367,7 @@ void IStringAnsi<Type>::AppendMultiple(char t, size_t count)
 /// Just set [0] = 0
 /// </summary>
 template <typename Type>
-void IStringAnsi<Type>::Clear()
+void IString<Type>::Clear()
 {
 	char * start = static_cast<Type *>(this)->str();
 	start[0] = 0;
@@ -378,7 +380,7 @@ void IStringAnsi<Type>::Clear()
 /// Trim string from left and right
 /// </summary>
 template <typename Type>
-void IStringAnsi<Type>::Trim()
+void IString<Type>::Trim()
 {
 	size_t newLength = static_cast<const Type *>(this)->length();
 	char * start = static_cast<Type *>(this)->str();
@@ -413,7 +415,7 @@ void IStringAnsi<Type>::Trim()
 /// Reverse string
 /// </summary>
 template <typename Type>
-void IStringAnsi<Type>::Reverse()
+void IString<Type>::Reverse()
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t length = static_cast<const Type *>(this)->length();
@@ -428,7 +430,7 @@ void IStringAnsi<Type>::Reverse()
 
 
 template <typename Type>
-void IStringAnsi<Type>::RemoveChar(char t)
+void IString<Type>::RemoveChar(char t)
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t j = 0;	
@@ -459,7 +461,7 @@ void IStringAnsi<Type>::RemoveChar(char t)
 /// </summary>
 /// <param name="t"></param>
 template <typename Type>
-void IStringAnsi<Type>::RemoveMultipleChars(char t)
+void IString<Type>::RemoveMultipleChars(char t)
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t j = 1;
@@ -492,7 +494,7 @@ void IStringAnsi<Type>::RemoveMultipleChars(char t)
 /// (but do not remove 0 as it is string end)
 /// </summary>
 template <typename Type>
-void IStringAnsi<Type>::RemoveNonPrintableChars()
+void IString<Type>::RemoveNonPrintableChars()
 {
 	char* str = static_cast<Type*>(this)->str();
 	size_t j = 0;
@@ -523,7 +525,7 @@ void IStringAnsi<Type>::RemoveNonPrintableChars()
 /// <typeparam name="Type"></typeparam>
 /// <returns></returns>
 template <typename Type>
-char IStringAnsi<Type>::PopBack()
+char IString<Type>::PopBack()
 {
 	char * str = static_cast<Type *>(this)->str();
 	size_t length = static_cast<const Type *>(this)->length();
@@ -544,7 +546,7 @@ char IStringAnsi<Type>::PopBack()
 /// <typeparam name="Type"></typeparam>
 /// <param name="index"></param>
 template <typename Type>
-void IStringAnsi<Type>::CutFromBack(size_t index)
+void IString<Type>::CutFromBack(size_t index)
 {
 	char* str = static_cast<Type*>(this)->str();
 	
@@ -561,7 +563,7 @@ void IStringAnsi<Type>::CutFromBack(size_t index)
 /// <param name="oldValue"></param>
 /// <param name="newValue"></param>
 template <typename Type>
-void IStringAnsi<Type>::Replace(char oldValue, char newValue)
+void IString<Type>::Replace(char oldValue, char newValue)
 {
 	size_t length = static_cast<const Type*>(this)->length();
 	if (length == 0)
@@ -581,7 +583,7 @@ void IStringAnsi<Type>::Replace(char oldValue, char newValue)
 }
 
 template <typename Type>
-void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue)
+void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue)
 {
 	this->Replace(oldValue, newValue, StringConstants::REPLACE_ALL);
 }
@@ -593,7 +595,7 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue)
 /// <param name="newValue"></param>
 /// <param name="replaceOffset">if multiple occurence of "oldValue", which one to replace (size_t max = all)</param>
 template <typename Type>
-void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset)
+void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset)
 {
 	size_t oldValueLen = oldValue.length();
 	size_t * last = nullptr;
@@ -610,7 +612,7 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, si
 	{
 		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, oldValue, last, pos); //better use this, because BM skipping
 													   //is calculated from haystack, not needle
-		if (pos == IStringAnsi<Type>::npos)
+		if (pos == IString<Type>::npos)
 		{ 
 			break;  //not found
 		}     
@@ -642,7 +644,7 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, si
 }
 
 template <typename Type>
-void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos)
+void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos)
 {
 	if (searchStartPos.size() == 0)
 	{
@@ -749,7 +751,7 @@ void IStringAnsi<Type>::Replace(MyStringView oldValue, MyStringView newValue, co
 }
 
 template <typename Type>
-Type IStringAnsi<Type>::CreateReplaced(MyStringView src, MyStringView dest) const
+Type IString<Type>::CreateReplaced(MyStringView src, MyStringView dest) const
 {
 	Type newStr = Type(static_cast<const Type *>(this)->c_str(),
 		static_cast<const Type *>(this)->length());
@@ -762,7 +764,7 @@ Type IStringAnsi<Type>::CreateReplaced(MyStringView src, MyStringView dest) cons
 //====================================================================
 
 template <typename Type>
-std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
+std::vector<double> IString<Type>::GetAllNumbers() const
 {
 	std::vector<double> s;
 	s.reserve(100);
@@ -798,13 +800,13 @@ std::vector<double> IStringAnsi<Type>::GetAllNumbers() const
 /// <typeparam name="Type"></typeparam>
 /// <returns></returns>
 template <typename Type>
-bool IStringAnsi<Type>::IsNumber() const
+bool IString<Type>::IsNumber() const
 {
 	return this->IsFloatNumber();
 }
 
 template <typename Type>
-bool IStringAnsi<Type>::IsIntNumber() const
+bool IString<Type>::IsIntNumber() const
 {
 	size_t length = static_cast<const Type *>(this)->length();
 	if (length == 0)
@@ -832,7 +834,7 @@ bool IStringAnsi<Type>::IsIntNumber() const
 }
 
 template <typename Type>
-bool IStringAnsi<Type>::IsFloatNumber() const
+bool IString<Type>::IsFloatNumber() const
 {
 	size_t length = static_cast<const Type *>(this)->length();
 	if (length == 0)
@@ -878,7 +880,7 @@ bool IStringAnsi<Type>::IsFloatNumber() const
 /// <param name="needle"></param>
 /// <returns></returns>
 template <typename Type>
-bool IStringAnsi<Type>::StartWith(MyStringView needle) const noexcept
+bool IString<Type>::StartWith(MyStringView needle) const noexcept
 {
 	size_t strLen = static_cast<const Type*>(this)->length();
 	const char* str = static_cast<const Type*>(this)->c_str();
@@ -912,7 +914,7 @@ bool IStringAnsi<Type>::StartWith(MyStringView needle) const noexcept
 /// <param name="needle"></param>
 /// <returns></returns>
 template <typename Type>
-bool IStringAnsi<Type>::EndWith(MyStringView needle) const noexcept
+bool IString<Type>::EndWith(MyStringView needle) const noexcept
 {
 	size_t strLen = static_cast<const Type*>(this)->length();
 	const char* str = static_cast<const Type*>(this)->c_str();
@@ -951,7 +953,7 @@ bool IStringAnsi<Type>::EndWith(MyStringView needle) const noexcept
 /// <param name="offset">start offset</param> 
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const char c, size_t offset) const noexcept
+size_t IString<Type>::Find(const char c, size_t offset) const noexcept
 {
 	size_t strLen = static_cast<const Type *>(this)->length();	
 	const char* str = static_cast<const Type*>(this)->c_str();
@@ -964,7 +966,7 @@ size_t IStringAnsi<Type>::Find(const char c, size_t offset) const noexcept
 		}
 	}
 
-	return IStringAnsi<Type>::npos;
+	return IString<Type>::npos;
 }
 
 /// <summary>
@@ -974,14 +976,14 @@ size_t IStringAnsi<Type>::Find(const char c, size_t offset) const noexcept
 /// <param name="str">char to find</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::FindLast(const char c) const noexcept
+size_t IString<Type>::FindLast(const char c) const noexcept
 {
 	size_t strLen = static_cast<const Type *>(this)->length();
 	const char * str = static_cast<const Type *>(this)->c_str();
 
 	if (strLen == 0)
 	{
-		return IStringAnsi<Type>::npos;
+		return IString<Type>::npos;
 	}
 
 	// < strLen - not a bug
@@ -995,7 +997,7 @@ size_t IStringAnsi<Type>::FindLast(const char c) const noexcept
 		}
 	}
 
-	return IStringAnsi<Type>::npos;
+	return IString<Type>::npos;
 }
 
 
@@ -1007,11 +1009,11 @@ size_t IStringAnsi<Type>::FindLast(const char c) const noexcept
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const Type& needle, SearchAlgorithm algo) const
+size_t IString<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 {
 	if (needle.c_str() == nullptr)
 	{
-		return IStringAnsi<Type>::npos;
+		return IString<Type>::npos;
 	}
 
 	if (algo == SearchAlgorithm::DEFAULT)
@@ -1031,11 +1033,11 @@ size_t IStringAnsi<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: CLib)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(const char* needle, SearchAlgorithm algo) const
+size_t IString<Type>::Find(const char* needle, SearchAlgorithm algo) const
 {
 	if (needle == nullptr)
 	{
-		return IStringAnsi<Type>::npos;
+		return IString<Type>::npos;
 	}
 
 	if (algo == SearchAlgorithm::DEFAULT)
@@ -1058,7 +1060,7 @@ size_t IStringAnsi<Type>::Find(const char* needle, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: BF)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
+size_t IString<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 {
 	size_t pos = MyStringUtils::npos;
 
@@ -1101,7 +1103,7 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 }
 
 template <typename Type>
-size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm algo) const
+size_t IString<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm algo) const
 {
 	size_t pos = MyStringUtils::npos;
 
@@ -1163,7 +1165,7 @@ size_t IStringAnsi<Type>::Find(MyStringView needle, size_t offset, SearchAlgorit
 /// <param name="offset"></param>
 /// <returns></returns>
 template <typename Type>
-size_t IStringAnsi<Type>::FindWithSkip(MyStringView needle, size_t skipOccurences) const
+size_t IString<Type>::FindWithSkip(MyStringView needle, size_t skipOccurences) const
 {
 	size_t count = 0;
 	size_t searchLength = needle.length();
@@ -1197,7 +1199,7 @@ size_t IStringAnsi<Type>::FindWithSkip(MyStringView needle, size_t skipOccurence
 }
 
 template <typename Type>
-std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView needle) const
+std::vector<size_t> IString<Type>::FindAll(MyStringView needle) const
 {
 	size_t searchLength = needle.length();
 	size_t * last = nullptr;
@@ -1241,7 +1243,7 @@ std::vector<size_t> IStringAnsi<Type>::FindAll(MyStringView needle) const
 /// <param name="start">start position</param>
 /// <returns>substring from string</returns>
 template <typename Type>
-Type IStringAnsi<Type>::SubString(int start) const
+Type IString<Type>::SubString(int start) const
 {
 	size_t length = static_cast<const Type *>(this)->length() - start;
 
@@ -1256,7 +1258,7 @@ Type IStringAnsi<Type>::SubString(int start) const
 /// <param name="length">length of substring</param>
 /// <returns>substring from string</returns>
 template <typename Type>
-Type IStringAnsi<Type>::SubString(int start, size_t length) const
+Type IString<Type>::SubString(int start, size_t length) const
 {	
 	if (start + length > static_cast<const Type *>(this)->length())
 	{
@@ -1284,7 +1286,7 @@ Type IStringAnsi<Type>::SubString(int start, size_t length) const
 /// <param name="start">start position</param>
 /// <param name="destination">destination, where substring is copied. Must be cleared with delete[]</param>
 template <typename Type>
-void IStringAnsi<Type>::CopySubstring(int start, char ** destination) const
+void IString<Type>::CopySubstring(int start, char ** destination) const
 {
 	size_t length = static_cast<const Type *>(this)->length() - start;
 
@@ -1299,7 +1301,7 @@ void IStringAnsi<Type>::CopySubstring(int start, char ** destination) const
 /// <param name="start">start position</param>
 /// <param name="destination">destination, where substring is copied. Must be cleared with delete[]</param>
 template <typename Type>
-void IStringAnsi<Type>::CopySubstring(int start, size_t length, char ** destination) const
+void IString<Type>::CopySubstring(int start, size_t length, char ** destination) const
 {
 	/*
 	if (start + length > this->strLength)
@@ -1320,7 +1322,7 @@ void IStringAnsi<Type>::CopySubstring(int start, size_t length, char ** destinat
 /// <param name="start">start position</param>
 /// <param name="destination">destination, where substring is copied</param>
 template <typename Type>
-void IStringAnsi<Type>::CopySubstring(int start, char * destination) const
+void IString<Type>::CopySubstring(int start, char * destination) const
 {	
 	size_t length = static_cast<const Type *>(this)->length() - start;
 
@@ -1334,7 +1336,7 @@ void IStringAnsi<Type>::CopySubstring(int start, char * destination) const
 /// <param name="start">start position</param>
 /// <param name="destination">destination, where substring is copied</param>
 template <typename Type>
-void IStringAnsi<Type>::CopySubstring(int start, size_t length, char * destination) const
+void IString<Type>::CopySubstring(int start, size_t length, char * destination) const
 {
 	/*
 	if (start + length > this->strLength)
@@ -1354,7 +1356,7 @@ void IStringAnsi<Type>::CopySubstring(int start, size_t length, char * destinati
 /// <param name="f"></param>
 /// <returns></returns>
 template <typename Type>
-size_t IStringAnsi<Type>::Count(const char f) const noexcept
+size_t IString<Type>::Count(const char f) const noexcept
 {
 	size_t count = 0;
 
@@ -1387,19 +1389,19 @@ size_t IStringAnsi<Type>::Count(const char f) const noexcept
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IStringAnsi<Type>::CLib(const char * needle, size_t start) const
+size_t IString<Type>::CLib(const char * needle, size_t start) const
 {
 	const char * str = static_cast<const Type *>(this)->c_str();
 	const char * found = strstr(str + start, needle);
 	if (found == nullptr)
 	{
-		return IStringAnsi<Type>::npos;
+		return IString<Type>::npos;
 	}
 	return static_cast<size_t>(found - str);
 }
 
 
 
-template class IStringAnsi<MyStringAnsi>;
-template class IStringAnsi<MySmallStringAnsi>;
-//template std::vector<MyStringAnsi> IStringAnsi<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;
+template class IString<MyString>;
+template class IString<MySmallString>;
+//template std::vector<MyStringAnsi> IString<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;

@@ -17,12 +17,13 @@
 #include <map>
 
 #include "MyString.h"
-#include "StringTests.h"
-#include "StringBenchmarks.h"
+#include "./Testing/StringTests.h"
+#include "./Testing/StringBenchmarks.h"
 
 #include "./SimpleLocalization/Localization.h"
 
 using namespace std;
+using namespace mystrlib;
 
 #ifndef _WIN32
 
@@ -242,9 +243,9 @@ private:
 
 };
 
-MyStringAnsi tmpFunc()
+MyString tmpFunc()
 {
-	MyStringAnsi o = "ahoj xxxxxxxxxxxxxxxx";
+	MyString o = "ahoj xxxxxxxxxxxxxxxx";
 
 	return o;
 }
@@ -343,11 +344,11 @@ constexpr double foo(double x, bool b) {
 	else return bar(x);
 }
 
-MyStringAnsi php_bin2hex(const MyStringAnsi& str)
+MyString php_bin2hex(const MyString& str)
 {
 	static const char hexconvtab[] = "0123456789abcdef";
 
-	MyStringAnsi result;
+	MyString result;
 	result.resize(str.length() * 2 + 1);
 	size_t i, j;
 
@@ -379,13 +380,13 @@ int main(int argc, char ** argv)
 
 		fractional = modf(x, &integer);
 
-		MyStringAnsi xstr = "";
+		MyString xstr = "";
 		//xstr.AppendWithDigitsCount(r, 3);
 		xstr.AppendWithDecimalsCount(x, 2);
 		printf("x");
 	}
 	
-	MyStringAnsi text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
+	MyString text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
 	size_t* lut = nullptr;
 	auto tt = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut);
 	
@@ -394,15 +395,15 @@ int main(int argc, char ** argv)
 	ah.AddPattern("google.com");
 	auto v7 = ah.ContainsPatterns(text);
 
-	MyStringAnsi xxxx = 'a';
+	MyString xxxx = 'a';
 
 	size_t bufSize = 77;
-	MyStringAnsi nnn7 = MyStringAnsi::CreateWithBufferSize(bufSize);
-	MyStringAnsi nnn77 = MyStringAnsi(8);
-	MyStringAnsi nnn = static_cast<MyStringAnsi>(77.7);
+	MyString nnn7 = MyString::CreateWithBufferSize(bufSize);
+	MyString nnn77 = MyString(8);
+	MyString nnn = static_cast<MyString>(77.7);
 
-	const MyStringAnsi oo7 = "xxx";
-	const MyStringAnsi& oor = oo7;
+	const MyString oo7 = "xxx";
+	const MyString& oor = oo7;
 	const char* t = &oor[0];
 	char x7 = oo7[0];
 
@@ -436,7 +437,7 @@ int main(int argc, char ** argv)
 	ress.resize(4, 'o');
 	ress += "oo";
 
-	MyStringAnsi resi = "akxxxx";
+	MyString resi = "akxxxx";
 	resi.resize(4, 'o');
 	resi += "oo";
 	resi.AppendMultiple('x', 1);
@@ -448,7 +449,7 @@ int main(int argc, char ** argv)
 
 	auto rehhs = xxasas.Find("ok");
 	
-	MyStringAnsi sadasd = "wahojky";
+	MyString sadasd = "wahojky";
 	bool ede = sadasd.EndWith("ahojky");
 	
 	if (xxasas != "ahoj")
@@ -456,7 +457,7 @@ int main(int argc, char ** argv)
 		printf("x");
 	}
 
-	MyStringAnsi ere = "xxx   ";
+	MyString ere = "xxx   ";
 	ere.Trim();
 
 	StringLiteral sl = "-789.0099917"_L;;
@@ -473,11 +474,11 @@ int main(int argc, char ** argv)
 
 	v = xster;
 
-	auto xxgf = MyStringAnsi::CreateFormated("xxx %d", 45);
+	auto xxgf = MyString::CreateFormated("xxx %d", 45);
 	xxgf.AppendFormat("%d %d", 45, 45);
 
 	
-	MyStringAnsi xxs = "ahoj";
+	MyString xxs = "ahoj";
 	xxs[0] = 'x';
 	double d = 3.0;// +xxs.length();
 
@@ -497,7 +498,7 @@ int main(int argc, char ** argv)
 	ss7[0] = 'x';	
 	ss7[0] = '-';
 
-	MyStringAnsi w789 = ss7;
+	MyString w789 = ss7;
 	MyStringView viewx2 = w789;
 	w789[0] = '-';
 	
@@ -528,14 +529,14 @@ int main(int argc, char ** argv)
 	double rrd = MyStringUtils::ToNumber<double>("45.45");
 	char * xMove = nullptr;
 	{
-		MyStringAnsi moveS = "xxxxx";
+		MyString moveS = "xxxxx";
 
 		xMove = (char *)(std::move(moveS));
 
 		delete[] xMove;
 	}
 
-	MyStringAnsi tmpFind = "";
+	MyString tmpFind = "";
 	tmpFind.AppendWithDigitsCount(-123, 5);
 
 
@@ -543,7 +544,7 @@ int main(int argc, char ** argv)
 	sb11.RunExternalTest([&](int count, double * r) -> void{
 		for (int i = 0; i < count; i++)
 		{
-			MyStringAnsi x = "";
+			MyString x = "";
 			x.AppendWithDigitsCount(-123, 5);
 			r[i] += x.length();
 		}
@@ -552,7 +553,7 @@ int main(int argc, char ** argv)
 	sb11.RunExternalTest([&](int count, double * r) -> void {
 		for (int i = 0; i < count; i++)
 		{
-			MyStringAnsi x = "";
+			MyString x = "";
 			x.AppendFormat("%05d", -123);
 			r[i] += x.length();
 		}
@@ -569,24 +570,24 @@ int main(int argc, char ** argv)
 
 	
 
-	MyStringAnsi ex;
+	MyString ex;
 
-	MyStringAnsi ee;
+	MyString ee;
 
 	ee = ex;
 
 	unsigned long iip = -0;
-	MyStringAnsi ioi = "x";
+	MyString ioi = "x";
 	ioi += iip;
 
-	MyStringAnsi cislo = "45.789uuu";
+	MyString cislo = "45.789uuu";
 	double c = static_cast<int>(cislo.SubString(0));
 
 	cislo.Clear();
 	cislo += 456;
 
 	//MyStringAnsi ooxxx = MyStringAnsi::CreateFormated("xx %i km", 40);
-	MyStringAnsi ooxxx = "1saxxxda-sd-1sadasd0xxxx";
+	MyString ooxxx = "1saxxxda-sd-1sadasd0xxxx";
 	
 	char data[5];
 	ooxxx.CopySubstring(0, 2, data);
@@ -613,10 +614,10 @@ int main(int argc, char ** argv)
 	
 	ooxxx += 5.1;
 
-	std::map<MyStringAnsi, int> ooo;
+	std::map<MyString, int> ooo;
 
-	ooo.insert(std::make_pair(MyStringAnsi("xxx"), 0));
-	ooo[MyStringAnsi("xxxxx")] = 1;
+	ooo.insert(std::make_pair(MyString("xxx"), 0));
+	ooo[MyString("xxxxx")] = 1;
 
 	IBar bar0 = "bar";
 
@@ -674,12 +675,12 @@ int main(int argc, char ** argv)
 	}
 	*/
 
-	const MyStringAnsi kuk = "kuk";
-	MyStringAnsi baf = "baf kuk x haf";
+	const MyString kuk = "kuk";
+	MyString baf = "baf kuk x haf";
 	
-	auto rr = baf.Split<MyStringAnsi>(' ');
+	auto rr = baf.Split<MyString>(' ');
 
-	MyStringAnsi kukbaf = kuk + baf;	
+	MyString kukbaf = kuk + baf;	
 	//kukbaf = kuk + "ahoj";
 
 	if (kuk == "ahh")
@@ -691,15 +692,15 @@ int main(int argc, char ** argv)
 	});
 
 	kukbaf.AppendFormat("%s %s", kuk.c_str(), baf.c_str());
-	MyStringAnsi::CreateFormated("%s %s", kuk.c_str(), baf.c_str());
+	MyString::CreateFormated("%s %s", kuk.c_str(), baf.c_str());
 
 	std::string hh = "xxx";
 	
-	MyStringAnsi oxoxo = hh;
-	MySmallStringAnsi oxoxos = hh;
+	MyString oxoxo = hh;
+	MySmallString oxoxos = hh;
 	
 	//std::vector<MyStringAnsi> xxx789 = oxoxo.Split('*');
-	MyStringAnsi oosx = tmpFunc();
+	MyString oosx = tmpFunc();
 	//oosx = std::move(oxoxo);
 	oosx = hh;
 	oosx = oxoxo;
@@ -707,16 +708,16 @@ int main(int argc, char ** argv)
 	oosx += oxoxo;
 	oosx += oxoxos;
 
-	MyStringAnsi iin = "123 456.4";
+	MyString iin = "123 456.4";
 	auto numbr = iin.GetAllNumbers();
 
-	MySmallStringAnsi tmpSmall = "ahoj vojle";
+	MySmallString tmpSmall = "ahoj vojle";
 	tmpSmall.Replace("oj", "voj");
 
 	tmpSmall.PopBack();
 	char last = tmpSmall.GetLastChar();
 
-	MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf ahoj";	
+	MyString tmpReplace = "ahoj babi ahoh ahoj baf ahoj";	
 	tmpReplace.Replace("ahoj", "vole");
 
 	tmpReplace.PopBack();
@@ -724,21 +725,21 @@ int main(int argc, char ** argv)
 	//MyStringAnsi tmpReplace = "ahoj babi ahoh ahoj baf";	
 	//tmpReplace.Replace("ahoj", "volej");
 
-	MyStringAnsi oo1t = "1  1  axxxxxxxx xxaaxx";
+	MyString oo1t = "1  1  axxxxxxxx xxaaxx";
 
 	oo1t += 1567;
 	oo1t += 'a';
 	
 	//oo1t.RemoveMultipleChars('x');
 	auto ss1 = oo1t.Split<std::string>(' ');
-	auto ss = oo1t.Split<MyStringAnsi>(' ', true);
+	auto ss = oo1t.Split<MyString>(' ', true);
 
 	//return 0;
 
-	MyStringAnsi oo1 = "1";
-	MyStringAnsi oo14 = "abcdefghijklmo";
-	MyStringAnsi oo15 = "abcdefghijklmop";
-	MyStringAnsi oo16 = "abcdefghijklmopq";
+	MyString oo1 = "1";
+	MyString oo14 = "abcdefghijklmo";
+	MyString oo15 = "abcdefghijklmop";
+	MyString oo16 = "abcdefghijklmopq";
 
 	oo1 += "ahoj";
 	oo1 += "ahojahoj";
@@ -765,26 +766,26 @@ int main(int argc, char ** argv)
 
 	
 
-	MyStringAnsi str("xax");
+	MyString str("xax");
 
 	//double ix = MyStringUtils::ToNumber<double>("3.14159e+001");
 	
 	
-	StringTests<MySmallStringAnsi>::TestCtors();
-	StringTests<MySmallStringAnsi>::TestMethods();
-	StringTests<MySmallStringAnsi>::TestStringToIntNumber();
-	StringTests<MySmallStringAnsi>::TestStringToRealNumber();
-	StringTests<MySmallStringAnsi>::TestAppendNumberAll();
-	StringTests<MySmallStringAnsi>::TestAppendString();
-	StringTests<MySmallStringAnsi>::TestSubstring();
+	StringTests<MySmallString>::TestCtors();
+	StringTests<MySmallString>::TestMethods();
+	StringTests<MySmallString>::TestStringToIntNumber();
+	StringTests<MySmallString>::TestStringToRealNumber();
+	StringTests<MySmallString>::TestAppendNumberAll();
+	StringTests<MySmallString>::TestAppendString();
+	StringTests<MySmallString>::TestSubstring();
 	
-	StringTests<MyStringAnsi>::TestCtors();
-	StringTests<MyStringAnsi>::TestMethods();
-	StringTests<MyStringAnsi>::TestStringToIntNumber();
-	StringTests<MyStringAnsi>::TestStringToRealNumber();
-	StringTests<MyStringAnsi>::TestAppendNumberAll();
-	StringTests<MyStringAnsi>::TestAppendString();
-	StringTests<MyStringAnsi>::TestSubstring();
+	StringTests<MyString>::TestCtors();
+	StringTests<MyString>::TestMethods();
+	StringTests<MyString>::TestStringToIntNumber();
+	StringTests<MyString>::TestStringToRealNumber();
+	StringTests<MyString>::TestAppendNumberAll();
+	StringTests<MyString>::TestAppendString();
+	StringTests<MyString>::TestSubstring();
 	
 	
 

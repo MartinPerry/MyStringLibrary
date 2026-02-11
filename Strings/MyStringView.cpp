@@ -1,8 +1,10 @@
 #include "./MyStringView.h"
 
-#include "./MyStringAnsi.h"
-#include "./MySmallStringAnsi.h"
-#include "./MurmurHash3.h"
+#include "./MyString.h"
+#include "./MySmallString.h"
+#include "./hashing/MurmurHash3.h"
+
+using namespace mystrlib;
 
 MyStringView::MyStringView(const char* str, size_t len) noexcept :
 	str(str),
@@ -12,28 +14,28 @@ MyStringView::MyStringView(const char* str, size_t len) noexcept :
 }
 
 
-MyStringView::MyStringView(const MyStringAnsi & str) noexcept :
+MyStringView::MyStringView(const MyString & str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MyStringAnsi* str) noexcept :
+MyStringView::MyStringView(const MyString* str) noexcept :
 	str(str->c_str()),
 	len(str->length()),
 	hash(&str->hashCode)
 {
 }
 
-MyStringView::MyStringView(const MySmallStringAnsi & str) noexcept :
+MyStringView::MyStringView(const MySmallString& str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MySmallStringAnsi* str) noexcept :
+MyStringView::MyStringView(const MySmallString* str) noexcept :
 	str(str->c_str()),
 	len(str->length()),
 	hash(&str->hashCode)

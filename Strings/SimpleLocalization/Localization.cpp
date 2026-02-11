@@ -53,7 +53,7 @@
 //active_id = something
 //this will end in "Currently is active something"
 
-
+using namespace mystrlib;
 
 
 Localization::Localization(Localization::StringView lang,

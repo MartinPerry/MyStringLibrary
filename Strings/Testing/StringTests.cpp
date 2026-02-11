@@ -6,11 +6,13 @@
 #include <vector>
 #include <time.h>
 
+#include "../hashing/md5.h"
 
-#include "./MyStringAnsi.h"
-#include "./MySmallStringAnsi.h"
-#include "./md5.h"
-#include "./MyStringUtils.h"
+#include "../MyString.h"
+#include "../MySmallString.h"
+#include "../MyStringUtils.h"
+
+using namespace mystrlib;
 
 template <typename T>
 std::string StringTests<T>::CreateRandomString(int len)
@@ -563,5 +565,5 @@ void StringTests<T>::TestMethods()
 }
 
 
-template struct StringTests<MyStringAnsi>;
-template struct StringTests<MySmallStringAnsi>;
+template struct StringTests<MyString>;
+template struct StringTests<MySmallString>;

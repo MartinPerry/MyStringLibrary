@@ -9,7 +9,6 @@
 #	define MURMUR_HASH_DEF_SEED 0
 #endif
 
-#include "./MyStringMacros.h"
 
 #ifdef CONSTEXPR_DISABLE
 #	define CALC_HASH(x) MurmurHash3_x86_32(x)

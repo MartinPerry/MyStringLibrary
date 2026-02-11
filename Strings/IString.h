@@ -1,9 +1,12 @@
 #ifndef INTERFACE_STRING_ANSI_H
 #define INTERFACE_STRING_ANSI_H
 
-class MyStringAnsi;
-class MySmallStringAnsi;
-//class MyStringView;
+namespace mystrlib
+{
+	class MyString;
+	class MySmallString;
+	//class MyStringView;
+}
 
 #include <limits>
 #include <vector>
@@ -25,6 +28,8 @@ class MySmallStringAnsi;
 #include "./MyStringUtils.h"
 #include "./MyStringMacros.h"
 
+namespace mystrlib 
+{
 
 static const char* const conversions[] = 
 {
@@ -47,7 +52,7 @@ enum StringConstants {
 };
 
 template <typename Type>
-class IStringAnsi 
+class IString 
 #ifdef STD_STRING_COMPATIBILITY
 	: public StdStringCompatibility<Type>
 #endif
@@ -60,19 +65,19 @@ public:
 	// ctors
 	//======================================================================
 
-	IStringAnsi();
-	IStringAnsi(char letter);
-	IStringAnsi(char* str);
-	IStringAnsi(const char* str);
-	IStringAnsi(const std::string& str);
-	IStringAnsi(const std::string_view& str);
+	IString();
+	IString(char letter);
+	IString(char* str);
+	IString(const char* str);
+	IString(const std::string& str);
+	IString(const std::string_view& str);
 			
 	template <typename T,
 		typename = typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type
 	>
-	explicit IStringAnsi(T val);
+	explicit IString(T val);
 
-	virtual ~IStringAnsi();
+	virtual ~IString();
 
 	//======================================================================
 	// Factory init
@@ -234,8 +239,8 @@ public:
 	RET_VAL_STR(void, (std::is_floating_point<T>::value)) operator += (T number);
 
 	template <typename T>
-	RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || 
-		std::is_same<T, MySmallStringAnsi>::value ||
+	RET_VAL_STR(void, (std::is_same<T, MyString>::value || 
+		std::is_same<T, MySmallString>::value ||
 		std::is_same<T, MyStringView>::value))
     operator += (const T & str);
 	void operator += (const std::string & str);
@@ -243,8 +248,8 @@ public:
 	void operator += (const char letter);
 
 	template <typename T>
-	RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || 
-		std::is_same<T, MySmallStringAnsi>::value ||
+	RET_VAL_STR(T, (std::is_same<T, MyString>::value || 
+		std::is_same<T, MySmallString>::value ||
 		std::is_same<T, MyStringView>::value))
     operator + (const T & str) const;
 	Type operator + (const char * str) const;
@@ -254,8 +259,8 @@ public:
 	//==============================================================
 
 	template <typename T>
-	RET_VAL_STR(Type &, (std::is_same<T, MyStringAnsi>::value || 
-		std::is_same<T, MySmallStringAnsi>::value ||
+	RET_VAL_STR(Type &, (std::is_same<T, MyString>::value || 
+		std::is_same<T, MySmallString>::value ||
 		std::is_same<T, MyStringView>::value ||
 		std::is_same<T, std::string>::value))
     operator = (const T & str);	
@@ -327,7 +332,7 @@ protected:
 
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateWithBufferSize(size_t bufferSize)
+RetVal IString<Type>::CreateWithBufferSize(size_t bufferSize)
 {	
 	if (bufferSize < Type::BUFFER_SIZE)
 	{		
@@ -354,7 +359,7 @@ RetVal IStringAnsi<Type>::CreateWithBufferSize(size_t bufferSize)
 /// <returns></returns>
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::LoadFromFile(MyStringView fileName)
+RetVal IString<Type>::LoadFromFile(MyStringView fileName)
 {
 	FILE* f = nullptr;  //pointer to file we will read in
 	my_fopen(&f, fileName.c_str(), "rb");
@@ -369,7 +374,7 @@ RetVal IStringAnsi<Type>::LoadFromFile(MyStringView fileName)
 
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::LoadFromFile(FILE* f)
+RetVal IString<Type>::LoadFromFile(FILE* f)
 {	
 	if (f == nullptr)
 	{
@@ -387,7 +392,7 @@ RetVal IStringAnsi<Type>::LoadFromFile(FILE* f)
 
 	data[size] = 0;
 
-	if constexpr (std::is_same<RetVal, MyStringAnsi>::value)
+	if constexpr (std::is_same<RetVal, MyString>::value)
 	{
 		return RetVal::CreateFromMoveMemory(data, size + 1, size);
 	}
@@ -410,7 +415,7 @@ RetVal IStringAnsi<Type>::LoadFromFile(FILE* f)
 /// <returns></returns>
 template <typename Type>
 template <typename ...Args, typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, Args ...args)
+RetVal IString<Type>::CreateFormated(const char* newStrFormat, Args ...args)
 {
 	if (newStrFormat == nullptr)
 	{
@@ -453,7 +458,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, Args ...args)
 	va_list myargs;
 	va_start(myargs, newStrFormat);
 
-	RetVal str = IStringAnsi<Type>::CreateFormated(newStrFormat, myargs);
+	RetVal str = IString<Type>::CreateFormated(newStrFormat, myargs);
 
 	va_end(myargs);
 
@@ -464,7 +469,7 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, Args ...args)
 
 template <typename Type>
 template <typename RetVal>
-RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, va_list args)
+RetVal IString<Type>::CreateFormated(const char* newStrFormat, va_list args)
 {
 	if (newStrFormat == nullptr)
 	{
@@ -509,8 +514,8 @@ RetVal IStringAnsi<Type>::CreateFormated(const char* newStrFormat, va_list args)
 
 template <typename Type>
 template <typename T, typename>
-IStringAnsi<Type>::IStringAnsi(T val) : 
-	IStringAnsi<Type>()
+IString<Type>::IString(T val) : 
+	IString<Type>()
 {
 	this->operator+=(val);
 }
@@ -524,9 +529,9 @@ IStringAnsi<Type>::IStringAnsi(T val) :
 /// <param name="...args"></param>
 template <typename Type>
 template<typename ...Args>
-void IStringAnsi<Type>::AppendFormat(const char* appendStr, Args ...args)
+void IString<Type>::AppendFormat(const char* appendStr, Args ...args)
 {
-	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, std::forward<Args>(args)...);
+	Type tmp = IString<Type>::CreateFormated(appendStr, std::forward<Args>(args)...);
 	this->Append(tmp.c_str());
 }
 
@@ -538,9 +543,9 @@ void IStringAnsi<Type>::AppendFormat(const char* appendStr, Args ...args)
 /// <param name="appendStr"></param>
 /// <param name="...args"></param>
 template <typename Type>
-void IStringAnsi<Type>::AppendFormat(const char* appendStr, va_list args)
+void IString<Type>::AppendFormat(const char* appendStr, va_list args)
 {
-	Type tmp = IStringAnsi<Type>::CreateFormated(appendStr, args);
+	Type tmp = IString<Type>::CreateFormated(appendStr, args);
 	this->Append(tmp.c_str());
 }
 
@@ -552,7 +557,7 @@ void IStringAnsi<Type>::AppendFormat(const char* appendStr, va_list args)
 /// <param name="digitsCount"></param>
 template <typename Type>
 template<typename T>
-RET_VAL_STR(void, (std::is_integral<T>::value)) IStringAnsi<Type>::AppendWithDigitsCount(T number, size_t digitsCount)
+RET_VAL_STR(void, (std::is_integral<T>::value)) IString<Type>::AppendWithDigitsCount(T number, size_t digitsCount)
 {	
 	if (number < 0)
 	{
@@ -587,7 +592,7 @@ RET_VAL_STR(void, (std::is_integral<T>::value)) IStringAnsi<Type>::AppendWithDig
 /// <param name="removeTrailingZeroes"></param>
 template <typename Type>
 template<typename T>
-RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::AppendWithDecimalsCount(T number, size_t decimalsCount, bool removeTrailingZeroes)
+RET_VAL_STR(void, (std::is_floating_point<T>::value)) IString<Type>::AppendWithDecimalsCount(T number, size_t decimalsCount, bool removeTrailingZeroes)
 {
 	T fractional, intPart;
 
@@ -632,7 +637,7 @@ RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::AppendW
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IString<Type>::operator += (T number)
 {
 	//uint64_t input = number;
 	typename std::make_unsigned<T>::type input = number;
@@ -701,7 +706,7 @@ RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStr
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_unsigned<T>::value)) IString<Type>::operator += (T number)
 {
 	size_t len = MyStringUtils::GetNumDigits(number);
 	//sizeof(T) = 1 => 4 (3 + sign)
@@ -757,7 +762,7 @@ RET_VAL_STR(void, (std::is_unsigned<T>::value)) IStringAnsi<Type>::operator += (
 /// </summary>
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::operator += (T number)
+RET_VAL_STR(void, (std::is_floating_point<T>::value)) IString<Type>::operator += (T number)
 {
 	//to do - create manuall solution that correspond to MyStringUtils::ToNumber instead of this
 	std::string tmp = std::to_string(number);
@@ -768,9 +773,9 @@ RET_VAL_STR(void, (std::is_floating_point<T>::value)) IStringAnsi<Type>::operato
 /*
 template <typename Type>
 template <typename T>
-IStringAnsi<Type> IStringAnsi<Type>::operator + (T number) const
+IString<Type> IString<Type>::operator + (T number) const
 {
-IStringAnsi newStr = *this;
+IString newStr = *this;
 newStr += number;
 return newStr;
 }
@@ -778,10 +783,10 @@ return newStr;
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_same<T, MyStringAnsi>::value || 
-	std::is_same<T, MySmallStringAnsi>::value ||
+RET_VAL_STR(void, (std::is_same<T, MyString>::value || 
+	std::is_same<T, MySmallString>::value ||
 	std::is_same<T, MyStringView>::value))
-IStringAnsi<Type>::operator += (const T & str)
+IString<Type>::operator += (const T & str)
 {
 	if (str.length() == 0)
 	{
@@ -791,7 +796,7 @@ IStringAnsi<Type>::operator += (const T & str)
 };
 
 template <typename Type>
-inline void IStringAnsi<Type>::operator += (const std::string & str)
+inline void IString<Type>::operator += (const std::string & str)
 {
 	if (str.length() == 0)
 	{
@@ -801,7 +806,7 @@ inline void IStringAnsi<Type>::operator += (const std::string & str)
 };
 
 template <typename Type>
-inline void IStringAnsi<Type>::operator+= (const char * str)
+inline void IString<Type>::operator+= (const char * str)
 {
 	if (str == nullptr)
 	{
@@ -816,7 +821,7 @@ inline void IStringAnsi<Type>::operator+= (const char * str)
 /// </summary>
 /// <param name="singleChar"></param>
 template <typename Type>
-inline void IStringAnsi<Type>::operator+= (const char singleChar)
+inline void IString<Type>::operator+= (const char singleChar)
 {
 	size_t curSize = static_cast<Type *>(this)->capacity();
 	size_t strLength = static_cast<Type *>(this)->length();
@@ -839,10 +844,10 @@ inline void IStringAnsi<Type>::operator+= (const char singleChar)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(T, (std::is_same<T, MyStringAnsi>::value || 
-	std::is_same<T, MySmallStringAnsi>::value ||
+RET_VAL_STR(T, (std::is_same<T, MyString>::value || 
+	std::is_same<T, MySmallString>::value ||
 	std::is_same<T, MyStringView>::value))
-IStringAnsi<Type>::operator + (const T & str) const
+IString<Type>::operator + (const T & str) const
 {
 	T newStr = T(static_cast<const Type *>(this)->c_str(), 
 		static_cast<const Type *>(this)->length());
@@ -857,7 +862,7 @@ IStringAnsi<Type>::operator + (const T & str) const
 
 
 template <typename Type>
-inline Type IStringAnsi<Type>::operator + (const char * str) const
+inline Type IString<Type>::operator + (const char * str) const
 {
 	Type newStr = Type(static_cast<const Type *>(this)->c_str(), 
 		static_cast<const Type *>(this)->length());
@@ -869,7 +874,7 @@ inline Type IStringAnsi<Type>::operator + (const char * str) const
 template <typename Type>
 template <typename T>
 RET_VAL_STR(const char&, (std::is_integral<T>::value))
-IStringAnsi<Type>::operator [](const T index) const
+IString<Type>::operator [](const T index) const
 {
 	return static_cast<const Type *>(this)->c_str()[index];
 }
@@ -877,7 +882,7 @@ IStringAnsi<Type>::operator [](const T index) const
 template <typename Type>
 template <typename T>
 RET_VAL_STR(char&, (std::is_integral<T>::value))
-IStringAnsi<Type>::operator [](const T index)
+IString<Type>::operator [](const T index)
 {
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 	return static_cast<Type *>(this)->str()[index];
@@ -885,11 +890,11 @@ IStringAnsi<Type>::operator [](const T index)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(Type&, (std::is_same<T, MyStringAnsi>::value || 
-	std::is_same<T, MySmallStringAnsi>::value ||
+RET_VAL_STR(Type&, (std::is_same<T, MyString>::value || 
+	std::is_same<T, MySmallString>::value ||
 	std::is_same<T, MyStringView>::value ||
 	std::is_same<T, std::string>::value))
-IStringAnsi<Type>::operator = (const T & str)
+IString<Type>::operator = (const T & str)
 {
 	/*
 	if (this == &str) //they are same
@@ -915,14 +920,14 @@ IStringAnsi<Type>::operator = (const T & str)
 };
 
 template <typename Type>
-inline Type& IStringAnsi<Type>::operator = (const char* str)
+inline Type& IString<Type>::operator = (const char* str)
 {
 	this->CreateNew(str);
 	return *static_cast<Type*>(this);
 }
 
 template <typename Type>
-inline Type & IStringAnsi<Type>::operator = (Type && other)
+inline Type & IString<Type>::operator = (Type && other)
 {
 	static_cast<Type *>(this)->ReleaseInternal();
 	
@@ -945,19 +950,19 @@ template <typename Type>
 template <typename T,
 	typename
 >
-inline IStringAnsi<Type>::operator T() const
+inline IString<Type>::operator T() const
 {
 	return MyStringUtils::ToNumber<T>(static_cast<const Type *>(this)->c_str());
 }
 
 template <typename Type>
-inline IStringAnsi<Type>::operator std::string() const
+inline IString<Type>::operator std::string() const
 {
 	return std::string(static_cast<const Type*>(this)->c_str(), static_cast<const Type*>(this)->length());
 }
 
 template <typename Type>
-inline IStringAnsi<Type>::operator std::filesystem::path() const
+inline IString<Type>::operator std::filesystem::path() const
 {
 	return std::filesystem::path(static_cast<const Type*>(this)->c_str());
 }
@@ -978,7 +983,7 @@ inline IStringAnsi<Type>::operator std::filesystem::path() const
 /// <returns></returns>
 template <typename Type>
 template <typename RetVal>
-std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValues) const
+std::vector<RetVal> IString<Type>::Split(char delimeter, bool keepEmptyValues) const
 {
 	return this->Split<RetVal>(std::vector<char>({ delimeter }), keepEmptyValues);
 }
@@ -994,7 +999,7 @@ std::vector<RetVal> IStringAnsi<Type>::Split(char delimeter, bool keepEmptyValue
 /// <returns></returns>
 template <typename Type>
 template <typename RetVal>
-std::vector<RetVal> IStringAnsi<Type>::Split(const std::vector<char> & delimeters, bool keepEmptyValues) const
+std::vector<RetVal> IString<Type>::Split(const std::vector<char> & delimeters, bool keepEmptyValues) const
 {
 	std::vector<RetVal> splited;
 
@@ -1046,7 +1051,7 @@ std::vector<RetVal> IStringAnsi<Type>::Split(const std::vector<char> & delimeter
 
 template <typename Type>
 template <typename RetVal>
-std::vector<RetVal> IStringAnsi<Type>::Split(MyStringView delimeter, bool keepEmptyValues) const
+std::vector<RetVal> IString<Type>::Split(MyStringView delimeter, bool keepEmptyValues) const
 {
 	size_t delimLen = delimeter.length();
 
@@ -1077,6 +1082,8 @@ std::vector<RetVal> IStringAnsi<Type>::Split(MyStringView delimeter, bool keepEm
 
 
 	return res;
+}
+
 }
 
 #endif

@@ -10,8 +10,9 @@
 #include <unordered_set>
 #include <deque>
 
-#include "./MyStringAnsi.h"
+#include "./MyString.h"
 
+using namespace mystrlib;
 
 /// <summary>
 /// Simple conversion of double value to string
@@ -21,14 +22,14 @@
 /// <param name="val"></param>
 /// <param name="fractPlaces"></param>
 /// <returns></returns>
-MyStringAnsi MyStringUtils::ToStringSimple(double val, int fractPlaces)
+MyString MyStringUtils::ToStringSimple(double val, int fractPlaces)
 {
 	bool negative = val < 0;
 
 	if (negative) val *= -1;
 	uint64_t intPart = static_cast<uint64_t>(val);
 
-	MyStringAnsi res = (negative) ? "-" : "";
+	MyString res = (negative) ? "-" : "";
 	res += intPart;
 
 	if (fractPlaces > 0)
@@ -164,11 +165,11 @@ uint64_t MyStringUtils::ReversDigits(uint64_t num) noexcept
 /// <param name="fileName"></param>
 /// <param name="delim"></param>
 /// <returns></returns>
-std::vector<std::vector<MyStringAnsi>> MyStringUtils::LoadCsv(const char* fileName, char delim)
+std::vector<std::vector<MyString>> MyStringUtils::LoadCsv(const char* fileName, char delim)
 {
-	std::vector<std::vector<MyStringAnsi>> res;
+	std::vector<std::vector<MyString>> res;
 
-	MyStringAnsi tmp = MyStringAnsi::LoadFromFile(fileName);
+	MyString tmp = MyString::LoadFromFile(fileName);
 
 	auto lines = tmp.Split({ '\n', '\r' });
 

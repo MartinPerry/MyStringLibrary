@@ -8,8 +8,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "StringTests.h"
-#include "MyString.h"
+#include "./StringTests.h"
+#include "../MyStringLib.h"
 
 #ifndef NOMINMAX
 #	define NOMINMAX
@@ -18,6 +18,8 @@
 #ifdef _WIN32
 #include <windows.h>   // WinApi header
 #endif
+
+using namespace mystrlib;
 
 static const int COLOR_RED = 12;
 static const int COLOR_GREEN = 10;
@@ -131,15 +133,15 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MyStringAnsi (literal)");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyStringAnsi x = "xxxxxxx";
+		MyString x = "xxxxxxx";
 		res[i] += x.length();
 	}
 	this->Finish();
 
-	this->Start("MySmallStringAnsi (literal)");
+	this->Start("MySmallString (literal)");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallStringAnsi x = "xxxxxxx";
+		MySmallString x = "xxxxxxx";
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -156,15 +158,15 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MyStringAnsi");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyStringAnsi x = rnd[i].c_str();
+		MyString x = rnd[i].c_str();
 		res[i] += x.length();
 	}
 	this->Finish();
 
-	this->Start("MySmallStringAnsi");
+	this->Start("MySmallString");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallStringAnsi x = rnd[i].c_str();
+		MySmallString x = rnd[i].c_str();
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -185,7 +187,7 @@ void StringBenchmarks::TestStringToInt()
 	std::uniform_int_distribution<long long> uniform_dist(std::numeric_limits<long long>::min(), 
 		std::numeric_limits<long long>::max());
 
-	std::vector<MyStringAnsi> rnd;
+	std::vector<MyString> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
 		rnd.push_back(std::to_string(uniform_dist(e)).c_str());
@@ -213,7 +215,7 @@ void StringBenchmarks::TestStringToDouble()
 
 	std::uniform_real_distribution<double> uniform_dist2(-1.0, 1.0);
 
-	std::vector<MyStringAnsi> rnd;
+	std::vector<MyString> rnd;
 	for (int i = 0; i < COUNT / 2; i++)
 	{
 		rnd.push_back(std::to_string(uniform_dist2(e)).c_str());
@@ -261,8 +263,8 @@ void StringBenchmarks::TestAppendIntNumber()
 	//std::string tmp2;
 	//tmp2.reserve(COUNT * 20);
 	
-	MyStringAnsi tmp = "";
-	MySmallStringAnsi tmp1 = "";
+	MyString tmp = "";
+	MySmallString tmp1 = "";
 	std::string tmp2 = "";
 	
 	
@@ -274,7 +276,7 @@ void StringBenchmarks::TestAppendIntNumber()
 	this->End();
 	this->PrintTime();
 
-	this->Start("MySmallStringAnsi +=");
+	this->Start("MySmallString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		tmp1 += rnd[i];
@@ -328,7 +330,7 @@ void StringBenchmarks::TestAppendSmallString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests<MyStringAnsi>::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<MyString>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");
@@ -338,16 +340,16 @@ void StringBenchmarks::TestAppendSmallString()
 	this->Start("MyStringAnsi +=");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyStringAnsi tmp = "";
+		MyString tmp = "";
 		tmp += rnd[i];
 		res[i] = static_cast<double>(tmp.length());
 	}
 	this->Finish();
 
-	this->Start("MySmallStringAnsi +=");
+	this->Start("MySmallString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallStringAnsi tmp1 = "";
+		MySmallString tmp1 = "";
 		tmp1 += rnd[i];
 		res[i] = static_cast<double>(tmp1.length());
 	}
@@ -378,14 +380,14 @@ void StringBenchmarks::TestAppendString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests<MyStringAnsi>::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<MyString>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");
 	rnd.push_back(" ");
 
-	MyStringAnsi tmp = "";
-	MySmallStringAnsi tmp1 = "";
+	MyString tmp = "";
+	MySmallString tmp1 = "";
 	std::string tmp2 = "";
 
 
@@ -397,7 +399,7 @@ void StringBenchmarks::TestAppendString()
 	this->End();
 	this->PrintTime();
 
-	this->Start("MySmallStringAnsi +=");
+	this->Start("MySmallString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
 		tmp1 += rnd[i];
@@ -431,13 +433,13 @@ void StringBenchmarks::TestHashing()
 	LogTestStart(__func__);
 
 	std::unordered_map<MyStringId, int> dataId;
-	std::unordered_map<MyStringAnsi, int> dataString;
+	std::unordered_map<MyString, int> dataString;
 
-	std::vector<MyStringAnsi> keys;
+	std::vector<MyString> keys;
 	std::vector<MyStringId> keysId;
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyStringAnsi key = StringTests<MyStringAnsi>::CreateRandomString(10);
+		MyString key = StringTests<MyString>::CreateRandomString(10);
 		MyStringId keyId = key;
 
 		keys.push_back(key);

@@ -471,13 +471,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="IStringAnsi.h" />
-    <ClInclude Include="md5.h" />
-    <ClInclude Include="MurmurHash3.h" />
-    <ClInclude Include="MySmallStringAnsi.h" />
+    <ClInclude Include="hashing\md5.h" />
+    <ClInclude Include="hashing\MurmurHash3.h" />
+    <ClInclude Include="hashing\std_hash_support.h" />
+    <ClInclude Include="IString.h" />
+    <ClInclude Include="MySmallString.h" />
     <ClInclude Include="MyString.h" />
-    <ClInclude Include="MyStringAnsi.h" />
+    <ClInclude Include="MyStringId.h" />
     <ClInclude Include="MyStringKeys.h" />
+    <ClInclude Include="MyStringLib.h" />
+    <ClInclude Include="MyStringLiteral.h" />
     <ClInclude Include="MyStringMacros.h" />
     <ClInclude Include="MyStringUtils.h" />
     <ClInclude Include="MyStringView.h" />
@@ -486,18 +489,17 @@
     <ClInclude Include="SimpleLocalization\Localization.h" />
     <ClInclude Include="SimpleLocalization\win_dirent.h" />
     <ClInclude Include="StdStringCompatibility.h" />
-    <ClInclude Include="StringBenchmarks.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
+    <ClInclude Include="Testing\StringBenchmarks.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="MyStringID.h" />
-    <ClInclude Include="StringTests.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
+    <ClInclude Include="Testing\StringTests.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Unicode\IcuUnicodeStringWrapper.h" />
     <ClInclude Include="Unicode\tinyutf8.h" />
@@ -506,33 +508,33 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl" />
+    <None Include="hashing\MurmurHash3_constexpr.inl" />
     <None Include="makefile" />
-    <None Include="MurmurHash3_constexpr.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hashing\MurmurHash3.cpp" />
+    <ClCompile Include="IString.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MurmurHash3.cpp" />
-    <ClCompile Include="IStringAnsi.cpp" />
     <ClCompile Include="MyStringUtils.cpp" />
     <ClCompile Include="MyStringView.cpp" />
     <ClCompile Include="SimpleLocalization\cJSON_JS.c" />
     <ClCompile Include="SimpleLocalization\Localization.cpp" />
-    <ClCompile Include="StringBenchmarks.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="Testing\StringBenchmarks.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="StringTests.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|Win32'">true</ExcludedFromBuild>
+    <ClCompile Include="Testing\StringTests.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_mt|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_md|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_lib_mt|x64'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

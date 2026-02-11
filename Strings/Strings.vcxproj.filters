@@ -25,39 +25,27 @@
     <Filter Include="Header Files\Unicode">
       <UniqueIdentifier>{ddf4c80d-e871-424b-a261-b27d5a85548b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\hashing">
+      <UniqueIdentifier>{7c0f1e6d-a3a7-46bc-9051-f4ee62bf2ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\hashing">
+      <UniqueIdentifier>{7130d51a-52bc-4e0a-a1f0-d27eaf3df4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{30de9339-0702-44db-8fee-4a1ca324ebdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{54d23255-0d1d-4200-a4d5-a86d77f5c4b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="md5.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MurmurHash3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MyString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MyStringAnsi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyStringMacros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyStringUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StringTests.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StringBenchmarks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IStringAnsi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MySmallStringAnsi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MyStringID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyStringView.h">
@@ -93,35 +81,53 @@
     <ClInclude Include="Unicode\UnicodeUtils.h">
       <Filter>Header Files\Unicode</Filter>
     </ClInclude>
+    <ClInclude Include="hashing\md5.h">
+      <Filter>Header Files\hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="hashing\MurmurHash3.h">
+      <Filter>Header Files\hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="hashing\std_hash_support.h">
+      <Filter>Header Files\hashing</Filter>
+    </ClInclude>
+    <ClInclude Include="IString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySmallString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyStringLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyStringId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MyStringLiteral.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Testing\StringBenchmarks.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="Testing\StringTests.h">
+      <Filter>Header Files\Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="MurmurHash3_constexpr.inl">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="makefile">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="hashing\MurmurHash3_constexpr.inl">
+      <Filter>Header Files\hashing</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MurmurHash3.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MyStringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StringTests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StringBenchmarks.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IStringAnsi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MyStringView.cpp">
@@ -132,6 +138,18 @@
     </ClCompile>
     <ClCompile Include="SimpleLocalization\cJSON_JS.c">
       <Filter>Source Files\SimpleLocalization</Filter>
+    </ClCompile>
+    <ClCompile Include="hashing\MurmurHash3.cpp">
+      <Filter>Source Files\hashing</Filter>
+    </ClCompile>
+    <ClCompile Include="IString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Testing\StringBenchmarks.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="Testing\StringTests.cpp">
+      <Filter>Source Files\Testing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
