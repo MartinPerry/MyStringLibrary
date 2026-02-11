@@ -16,20 +16,20 @@
 namespace mystrlib
 {
 
-	class MySmallString : public IString<MySmallString>
+	class SmallString : public IString<SmallString>
 	{
 	public:
 		static const size_t BUFFER_SIZE = 19;
 
-		using IString<MySmallString>::IString;
-		using IString<MySmallString>::operator=;
+		using IString<SmallString>::IString;
+		using IString<SmallString>::operator=;
 
-		MySmallString()
+		SmallString()
 		{
 			this->CtorInternal(nullptr, 0);
 		}
 
-		MySmallString(const char* newStr, size_t length)
+		SmallString(const char* newStr, size_t length)
 		{
 			memset(local, 0, sizeof(local));
 			size_t bufferSize = length + 1;
@@ -48,12 +48,12 @@ namespace mystrlib
 			this->SetLengthInternal(length);
 		}
 
-		MySmallString(const MyStringView& str)
-			: MySmallString(str.c_str(), str.length())
+		SmallString(const StringView& str)
+			: SmallString(str.c_str(), str.length())
 		{
 		}
 
-		MySmallString(const MySmallString& other)
+		SmallString(const SmallString& other)
 		{
 			memcpy(local, other.local, sizeof(local));
 			if (this->IsLocal() == false)
@@ -63,7 +63,7 @@ namespace mystrlib
 			this->hashCode = other.hashCode;
 		};
 
-		MySmallString(MySmallString&& other)  noexcept
+		SmallString(SmallString&& other)  noexcept
 		{
 			//http://blog.smartbear.com/c-plus-plus/c11-tutorial-introducing-the-move-constructor-and-the-move-assignment-operator/
 			memcpy(local, other.local, sizeof(local));
@@ -73,7 +73,7 @@ namespace mystrlib
 			other.hashCode = std::numeric_limits<uint32_t>::max();
 		};
 
-		~MySmallString() = default;
+		~SmallString() = default;
 
 
 
@@ -107,13 +107,13 @@ namespace mystrlib
 		};
 
 
-		MySmallString& operator = (const MySmallString& str)
+		SmallString& operator = (const SmallString& str)
 		{
-			return IString<MySmallString>::operator=(str);
+			return IString<SmallString>::operator=(str);
 		};
 
-		friend class IString<MySmallString>;
-		friend class MyStringView;
+		friend class IString<SmallString>;
+		friend class StringView;
 
 	protected:
 

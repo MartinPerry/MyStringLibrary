@@ -25,6 +25,8 @@ namespace mystrlib
 
 		static void TestMethods();
 
+		static void TestLocalization();
+
 	protected:
 		inline static void error(const std::string& s)
 		{
@@ -32,7 +34,7 @@ namespace mystrlib
 			throw std::runtime_error(s);
 		};
 	};
-
+	
 }
 
 #endif

@@ -12,18 +12,18 @@
 namespace std
 {
 	template <>
-	struct hash <mystrlib::MyStringId>
+	struct hash <mystrlib::StringId>
 	{
-		size_t operator()(const mystrlib::MyStringId& k) const
+		size_t operator()(const mystrlib::StringId& k) const
 		{
 			return k.GetHashId();
 		};
 	};
 
 	template <>
-	struct hash<mystrlib::MyString>
+	struct hash<mystrlib::String>
 	{
-		std::size_t operator()(const mystrlib::MyString& k) const
+		std::size_t operator()(const mystrlib::String& k) const
 		{
 			return static_cast<size_t>(k.GetHashCode());
 		};
@@ -31,18 +31,18 @@ namespace std
 
 
 	template <>
-	struct hash<mystrlib::MySmallString>
+	struct hash<mystrlib::SmallString>
 	{
-		std::size_t operator()(const mystrlib::MySmallString& k) const
+		std::size_t operator()(const mystrlib::SmallString& k) const
 		{
 			return k.GetHashCode();
 		};
 	};
 
 	template <>
-	struct hash<mystrlib::MyStringView>
+	struct hash<mystrlib::StringView>
 	{
-		std::size_t operator()(const mystrlib::MyStringView& k) const
+		std::size_t operator()(const mystrlib::StringView& k) const
 		{
 			return static_cast<size_t>(k.GetHashCode());
 		};

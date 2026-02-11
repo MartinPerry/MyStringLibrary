@@ -15,13 +15,13 @@
 namespace mystrlib
 {
 
-	class MyString : public IString<MyString>
+	class String : public IString<String>
 	{
 	public:
 		static const size_t BUFFER_SIZE = 0;
 
-		using IString<MyString>::IString;
-		using IString<MyString>::operator=;
+		using IString<String>::IString;
+		using IString<String>::operator=;
 
 		/// <summary>
 		/// Create new string from input memory by "move" memory ownership
@@ -36,9 +36,9 @@ namespace mystrlib
 		/// <param name="memSize"></param>
 		/// <param name="strLength"></param>
 		/// <returns></returns>
-		static MyString CreateFromMoveMemory(char* mem, size_t memSize, size_t strLength = 0)
+		static String CreateFromMoveMemory(char* mem, size_t memSize, size_t strLength = 0)
 		{
-			MyString str;
+			String str;
 			if (mem == nullptr)
 			{
 				return str;
@@ -64,7 +64,7 @@ namespace mystrlib
 		/// </summary>
 		/// <param name="str"></param>
 		/// <returns></returns>
-		static int GetPackSize(const MyString& str)
+		static int GetPackSize(const String& str)
 		{
 			return static_cast<int>(sizeof(int) + sizeof(uint8_t) * str.length());
 		}
@@ -75,7 +75,7 @@ namespace mystrlib
 		/// <param name="str"></param>
 		/// <param name="memory"></param>
 		/// <returns></returns>
-		static uint8_t* PackToMemory(const MyString& str, uint8_t* memory)
+		static uint8_t* PackToMemory(const String& str, uint8_t* memory)
 		{
 			//store unicode string raw length
 			int strBufferSize = static_cast<int>(sizeof(char) * str.length());
@@ -95,7 +95,7 @@ namespace mystrlib
 		/// <param name="memory"></param>
 		/// <param name="str"></param>
 		/// <returns></returns>
-		static const uint8_t* UnpackFromMemory(const uint8_t* memory, MyString& str)
+		static const uint8_t* UnpackFromMemory(const uint8_t* memory, String& str)
 		{
 			// restore string
 			int tmp = 0;
@@ -131,7 +131,7 @@ namespace mystrlib
 			return memory;
 		};
 
-		MyString() :
+		String() :
 			strPtr(nullptr),
 			bufferCapacity(0),
 			strLength(0)
@@ -139,7 +139,7 @@ namespace mystrlib
 			this->CtorInternal(nullptr, 0);
 		}
 
-		MyString(const char* newStr, size_t length) :
+		String(const char* newStr, size_t length) :
 			bufferCapacity(length + 1),
 			strLength(length)
 		{
@@ -149,12 +149,12 @@ namespace mystrlib
 			this->strPtr[length] = 0;
 		}
 
-		MyString(const MyStringView& str) :
-			MyString(str.c_str(), str.length())
+		String(const StringView& str) :
+			String(str.c_str(), str.length())
 		{
 		}
 
-		MyString(const MyString& other) :
+		String(const String& other) :
 			strPtr(nullptr),
 			bufferCapacity(0),
 			strLength(0)
@@ -163,7 +163,7 @@ namespace mystrlib
 			this->hashCode = other.hashCode;
 		};
 
-		MyString(MyString&& other) noexcept :
+		String(String&& other) noexcept :
 			strPtr(std::exchange(other.strPtr, nullptr)),
 			bufferCapacity(std::exchange(other.bufferCapacity, 0)),
 			strLength(std::exchange(other.strLength, 0))
@@ -171,7 +171,7 @@ namespace mystrlib
 			this->hashCode = std::exchange(other.hashCode, std::numeric_limits<uint32_t>::max());
 		};
 
-		~MyString() = default;
+		~String() = default;
 
 
 		/// <summary>
@@ -204,12 +204,12 @@ namespace mystrlib
 			return this->bufferCapacity;
 		};
 
-		MyString& operator = (const MyString& other)
+		String& operator = (const String& other)
 		{
-			return IString<MyString>::operator=(other);
+			return IString<String>::operator=(other);
 		};
 
-		MyString& operator = (MyString&& other) noexcept
+		String& operator = (String&& other) noexcept
 		{
 			std::swap(strPtr, other.strPtr);
 			std::swap(bufferCapacity, other.bufferCapacity);
@@ -232,8 +232,8 @@ namespace mystrlib
 			return m;
 		};
 
-		friend class IString<MyString>;
-		friend class MyStringView;
+		friend class IString<String>;
+		friend class StringView;
 
 	protected:
 

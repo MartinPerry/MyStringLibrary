@@ -8,6 +8,8 @@
 
 #include "../hashing/md5.h"
 
+#include "../SimpleLocalization/Localization.h"
+
 #include "../MyString.h"
 #include "../MySmallString.h"
 #include "../MyStringUtils.h"
@@ -81,7 +83,7 @@ void StringTests<T>::TestStringToIntNumber()
 	{
 		std::string tmp = std::to_string(uniform_dist(e1));
 
-		long long r1 = MyStringUtils::ToNumber<long long>(tmp.c_str());
+		long long r1 = StringUtils::ToNumber<long long>(tmp.c_str());
 		long long r2 = atoll(tmp.c_str());
 
 		if (r1 != r2)
@@ -95,7 +97,7 @@ void StringTests<T>::TestStringToIntNumber()
 	{
 		std::string tmp = std::to_string(i);
 
-		long long r1 = MyStringUtils::ToNumber<long long>(tmp.c_str());
+		long long r1 = StringUtils::ToNumber<long long>(tmp.c_str());
 		long long r2 = atoll(tmp.c_str());
 
 		if (r1 != r2)
@@ -124,7 +126,7 @@ void StringTests<T>::TestStringToRealNumber()
 	{
 		std::string tmp = std::to_string(uniform_dist(e1));
 
-		double r1 = MyStringUtils::ToNumber<double>(tmp.c_str());
+		double r1 = StringUtils::ToNumber<double>(tmp.c_str());
 		double r2 = std::strtod(tmp.c_str(), nullptr);
 
 		if (r1 != r2)
@@ -138,7 +140,7 @@ void StringTests<T>::TestStringToRealNumber()
 	{
 		std::string tmp = std::to_string(i);
 
-		double r1 = MyStringUtils::ToNumber<double>(tmp.c_str());
+		double r1 = StringUtils::ToNumber<double>(tmp.c_str());
 		double r2 = std::strtod(tmp.c_str(), nullptr);
 
 		if (r1 != r2)
@@ -154,7 +156,7 @@ void StringTests<T>::TestStringToRealNumber()
 	{
 		std::string tmp = std::to_string(uniform_dist_double(e1));
 
-		double r1 = MyStringUtils::ToNumber<double>(tmp.c_str());
+		double r1 = StringUtils::ToNumber<double>(tmp.c_str());
 		double r2 = std::strtod(tmp.c_str(), nullptr);
 
 		if (r1 != r2)
@@ -170,7 +172,7 @@ void StringTests<T>::TestStringToRealNumber()
 
 	for (auto tmp : manualNegative)
 	{
-		double r1 = MyStringUtils::ToNumber<double>(tmp.c_str());
+		double r1 = StringUtils::ToNumber<double>(tmp.c_str());
 		double r2 = std::strtod(tmp.c_str(), nullptr);
 
 		if (r1 != r2)
@@ -184,7 +186,7 @@ void StringTests<T>::TestStringToRealNumber()
 
 	for (auto tmp : manualPositive)
 	{
-		double r1 = MyStringUtils::ToNumber<double>(tmp.c_str());
+		double r1 = StringUtils::ToNumber<double>(tmp.c_str());
 		double r2 = std::strtod(tmp.c_str(), nullptr);
 		
 		if (r1 != r2)
@@ -230,7 +232,7 @@ void StringTests<T>::TestAppendIntNumber()
 	std::vector<N> x;
 	for (size_t i = 0; i < rnd.size(); i++)
 	{
-		int j = MyStringUtils::GetNumDigits(rnd[i]);
+		int j = StringUtils::GetNumDigits(rnd[i]);
 		for (int k = 0; k < j; k++)
 		{
 			x.push_back(rnd[i]);
@@ -544,9 +546,9 @@ void StringTests<T>::TestMethods()
 	//========================================================================
 	//AhoCorasick
 
-	MyString text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral_cuni.cz.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
+	String text = "https://cse.google.com.af/url?sa=i&url=https://pensiuneacoral_cuni.cz.ro/fr.php?cid=30%26kys=basket+nike+montant+homme%26g=9";
 	size_t* lut = nullptr;
-	auto manual = MyStringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut) != MyStringUtils::npos;
+	auto manual = StringUtils::SearchKnuthMorisPrat(text, "cuni.cz", lut) != StringUtils::npos;
 	delete[] lut;
 
 	AhoCorasick ah;
@@ -579,6 +581,49 @@ void StringTests<T>::TestMethods()
 #endif
 }
 
+template <typename T>
+void StringTests<T>::TestLocalization()
+{
+	Localization l("cs", "cs", "../test_data/");
+	auto tmp0 = l.Localize("timeFormatWheel");
 
-template struct StringTests<MyString>;
-template struct StringTests<MySmallString>;
+	l.ReplaceKeysByLang("en-us", { "timeFormatWheel", "timeFormatLine" });
+	auto tmp1 = l.Localize("timeFormatWheel");
+
+	std::unordered_map<Localization::String, Localization::Utf8StringWrapper> items;
+	items["menuHelp"] = u8"xxx";
+	items["lat"] = u8"yyy";
+
+	auto r0 = l.Localize("searchCoords", "", items);
+	auto r1 = l.Localize("searchCoords");
+	auto r2 = l.Localize("temperature", "layers");
+	auto r3 = l.Localize("searchCoords", { u8"kccc", u8"x", u8"xxcxc7" });
+
+	auto ok0 = u8"\u0160\u00ED\u0159ka: yyy / D\u00E9lka: {lon} / {place}";
+	auto ok1 = u8"\u0160\u00ED\u0159ka: lat / D\u00E9lka: lon / place";
+	auto ok2 = u8"Teplota";
+	auto ok3 = u8"\u0160\u00ED\u0159ka: kccc / D\u00E9lka: x / xxcxc7";
+
+	if (r0 != ok0)
+	{
+		StringTests<T>::error("Localization not working");
+	}
+	if (r1 != ok1)
+	{
+		StringTests<T>::error("Localization not working");
+	}
+	if (r2 != ok2)
+	{
+		StringTests<T>::error("Localization not working");
+	}
+	if (r3 != ok3)
+	{
+		StringTests<T>::error("Localization not working");
+	}
+}
+
+
+template struct StringTests<String>;
+template struct StringTests<SmallString>;
+
+

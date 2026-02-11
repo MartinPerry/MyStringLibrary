@@ -3,7 +3,7 @@
 
 namespace mystrlib
 {
-	class MyString;
+	class String;
 }
 
 #include <cstddef>
@@ -20,7 +20,7 @@ namespace mystrlib
 namespace mystrlib
 {
 
-	struct MyStringUtils
+	struct StringUtils
 	{
 		static const size_t npos = static_cast<size_t>(-1);
 
@@ -211,26 +211,26 @@ namespace mystrlib
 			return digits;
 		}
 
-		static MyString php_bin2hex(const MyString& str);
+		static String php_bin2hex(const String& str);
 
-		static MyString ToStringSimple(double val, int fractPlaces);
+		static String ToStringSimple(double val, int fractPlaces);
 		static uint64_t GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept;
 		static uint64_t GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept;
 		static uint64_t ReversDigits(uint64_t num) noexcept;
 
-		static std::vector<std::vector<MyString>> LoadCsv(const char* fileName, char delim);
+		static std::vector<std::vector<String>> LoadCsv(const char* fileName, char delim);
 
 
-		static size_t SearchBruteForce(MyStringView haystack, MyStringView needle, size_t start = 0);
-		static size_t SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
-		static size_t SearchBoyerMooreHorspool(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
-		static size_t SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start = 0);
+		static size_t SearchBruteForce(StringView haystack, StringView needle, size_t start = 0);
+		static size_t SearchBoyerMoore(StringView haystack, StringView needle, size_t*& lookUp, size_t start = 0);
+		static size_t SearchBoyerMooreHorspool(StringView haystack, StringView needle, size_t*& lookUp, size_t start = 0);
+		static size_t SearchKnuthMorisPrat(StringView haystack, StringView needle, size_t*& lookUp, size_t start = 0);
 
 		friend class AhoCorsick;
 
 	protected:
-		static size_t* BuildBoyerMooreHorspoolLookup(MyStringView needle);
-		static size_t* BuildKnuthMorisPratBuildFailLookup(MyStringView needle);
+		static size_t* BuildBoyerMooreHorspoolLookup(StringView needle);
+		static size_t* BuildKnuthMorisPratBuildFailLookup(StringView needle);
 		static bool IsSame(const char* str1, const char* str2, size_t len);
 	};
 
@@ -329,7 +329,7 @@ namespace mystrlib
 	/// <param name="number"></param>
 	/// <returns></returns>
 	template <>
-	inline int MyStringUtils::GetNumDigits(uint8_t x) noexcept
+	inline int StringUtils::GetNumDigits(uint8_t x) noexcept
 	{
 		if (x >= 10U)
 		{
@@ -345,7 +345,7 @@ namespace mystrlib
 	/// <param name="number"></param>
 	/// <returns></returns>
 	template <>
-	inline int MyStringUtils::GetNumDigits(uint16_t x) noexcept
+	inline int StringUtils::GetNumDigits(uint16_t x) noexcept
 	{
 		if (x >= 1000U)
 		{
@@ -368,7 +368,7 @@ namespace mystrlib
 	/// <param name="number"></param>
 	/// <returns></returns>
 	template <>
-	inline int MyStringUtils::GetNumDigits(uint32_t x) noexcept
+	inline int StringUtils::GetNumDigits(uint32_t x) noexcept
 	{
 		if (x >= 10000U) {
 			if (x >= 10000000U) {
@@ -398,7 +398,7 @@ namespace mystrlib
 	/// <param name="number"></param>
 	/// <returns></returns>
 	template <>
-	inline int MyStringUtils::GetNumDigits(uint64_t x) noexcept
+	inline int StringUtils::GetNumDigits(uint64_t x) noexcept
 	{
 		if (x >= 10000000000ULL) { //11
 			if (x >= 100000000000000ULL) { //15

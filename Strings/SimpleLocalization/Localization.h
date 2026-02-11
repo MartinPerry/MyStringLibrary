@@ -18,8 +18,8 @@ namespace mystrlib
 	{
 	public:
 
-		using String = MyString;
-		using StringView = MyStringView;
+		using String = String;
+		using StringView = StringView;
 		using Utf8StringWrapper = StringUtf8;
 
 		class ILocalizationObserver
@@ -41,7 +41,7 @@ namespace mystrlib
 		void SetLang(StringView lang, bool forceReload);
 		const String& GetLang() const;
 
-		void ReplaceKeysByLang(Localization::StringView lang, std::initializer_list< Localization::String> keys);
+		void ReplaceKeysByLang(Localization::StringView lang, std::initializer_list<Localization::String> keys);
 
 		template <typename T>
 		T LocalizeAs(const String& key, bool* exist = nullptr);

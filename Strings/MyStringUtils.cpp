@@ -15,11 +15,11 @@
 using namespace mystrlib;
 
 
-MyString MyStringUtils::php_bin2hex(const MyString& str)
+String StringUtils::php_bin2hex(const String& str)
 {
 	static const char hexconvtab[] = "0123456789abcdef";
 
-	MyString result;
+	String result;
 	result.resize(str.length() * 2 + 1);
 	size_t i, j;
 
@@ -40,21 +40,21 @@ MyString MyStringUtils::php_bin2hex(const MyString& str)
 /// <param name="val"></param>
 /// <param name="fractPlaces"></param>
 /// <returns></returns>
-MyString MyStringUtils::ToStringSimple(double val, int fractPlaces)
+String StringUtils::ToStringSimple(double val, int fractPlaces)
 {
 	bool negative = val < 0;
 
 	if (negative) val *= -1;
 	uint64_t intPart = static_cast<uint64_t>(val);
 
-	MyString res = (negative) ? "-" : "";
+	String res = (negative) ? "-" : "";
 	res += intPart;
 
 	if (fractPlaces > 0)
 	{
 		if (fractPlaces <= 7)
 		{
-			uint64_t fractPartReverse = MyStringUtils::GetFractPartAsBuffer(val, intPart, fractPlaces);
+			uint64_t fractPartReverse = StringUtils::GetFractPartAsBuffer(val, intPart, fractPlaces);
 			if (fractPartReverse)
 			{
 				res += '.';
@@ -64,7 +64,7 @@ MyString MyStringUtils::ToStringSimple(double val, int fractPlaces)
 		}
 		else
 		{
-			uint64_t fractPartReverse = MyStringUtils::GetFractPartReversed(val, intPart, fractPlaces);
+			uint64_t fractPartReverse = StringUtils::GetFractPartReversed(val, intPart, fractPlaces);
 			if (fractPartReverse)
 			{
 				res += '.';
@@ -90,7 +90,7 @@ MyString MyStringUtils::ToStringSimple(double val, int fractPlaces)
 /// <param name="intPart">integer part of number</param>
 /// <param name="fractPlaces">how many places we want</param>
 /// <returns></returns>
-uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept
+uint64_t StringUtils::GetFractPartReversed(double val, uint64_t intPart, int fractPlaces) noexcept
 {
 	double decimalMult = std::pow(10, fractPlaces);
 
@@ -99,7 +99,7 @@ uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int f
 	//reversed number is without leading zeroes
 	//eg: 0.0157 => will reverse to 751
 	//but we need one leading zero
-	uint64_t fractPartReverse = MyStringUtils::ReversDigits((uint64_t)(fractPart * decimalMult));
+	uint64_t fractPartReverse = StringUtils::ReversDigits((uint64_t)(fractPart * decimalMult));
 	if (fractPartReverse == 0)
 	{
 		return fractPartReverse;
@@ -133,7 +133,7 @@ uint64_t MyStringUtils::GetFractPartReversed(double val, uint64_t intPart, int f
 /// <param name="intPart"></param>
 /// <param name="fractPlaces"></param>
 /// <returns></returns>
-uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept
+uint64_t StringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int fractPlaces) noexcept
 {
 	double decimalMult = std::pow(10, fractPlaces);
 
@@ -162,7 +162,7 @@ uint64_t MyStringUtils::GetFractPartAsBuffer(double val, uint64_t intPart, int f
 /// </summary>
 /// <param name="num"></param>
 /// <returns></returns>
-uint64_t MyStringUtils::ReversDigits(uint64_t num) noexcept
+uint64_t StringUtils::ReversDigits(uint64_t num) noexcept
 {
 	if (num < 10) return num;
 
@@ -183,11 +183,11 @@ uint64_t MyStringUtils::ReversDigits(uint64_t num) noexcept
 /// <param name="fileName"></param>
 /// <param name="delim"></param>
 /// <returns></returns>
-std::vector<std::vector<MyString>> MyStringUtils::LoadCsv(const char* fileName, char delim)
+std::vector<std::vector<String>> StringUtils::LoadCsv(const char* fileName, char delim)
 {
-	std::vector<std::vector<MyString>> res;
+	std::vector<std::vector<String>> res;
 
-	MyString tmp = MyString::LoadFromFile(fileName);
+	String tmp = String::LoadFromFile(fileName);
 
 	auto lines = tmp.Split({ '\n', '\r' });
 
@@ -215,7 +215,7 @@ std::vector<std::vector<MyString>> MyStringUtils::LoadCsv(const char* fileName, 
 /// <param name="last">pointer to array of last function (in / out)</param>
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
-size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needle, size_t*& last, size_t start)
+size_t StringUtils::SearchBoyerMoore(StringView haystack, StringView needle, size_t*& last, size_t start)
 {
 	const char* str = haystack.c_str();
 	size_t needleLen = needle.length();
@@ -223,7 +223,7 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 
 	if (needleLen == 0)
 	{
-		return MyStringUtils::npos;
+		return StringUtils::npos;
 	}
 
 	size_t strLength = haystack.length();
@@ -231,7 +231,7 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 	if (last == nullptr)
 	{
 		last = new size_t[static_cast<int>(std::numeric_limits<uint8_t>::max()) + 1];
-		size_t val = MyStringUtils::npos;
+		size_t val = StringUtils::npos;
 		std::fill(last, last + std::numeric_limits<uint8_t>::max(), val);
 		for (size_t i = 0; i < strLength; i++)
 		{
@@ -263,11 +263,11 @@ size_t MyStringUtils::SearchBoyerMoore(MyStringView haystack, MyStringView needl
 	}
 
 
-	return MyStringUtils::npos;
+	return StringUtils::npos;
 
 }
 
-size_t* MyStringUtils::BuildBoyerMooreHorspoolLookup(MyStringView needle)
+size_t* StringUtils::BuildBoyerMooreHorspoolLookup(StringView needle)
 {
 	size_t needleLen = needle.length();
 
@@ -283,7 +283,7 @@ size_t* MyStringUtils::BuildBoyerMooreHorspoolLookup(MyStringView needle)
 }
 
 
-bool MyStringUtils::IsSame(const char* str1, const char* str2, size_t len)
+bool StringUtils::IsSame(const char* str1, const char* str2, size_t len)
 {
 	size_t i = len - 1;
 
@@ -309,20 +309,20 @@ bool MyStringUtils::IsSame(const char* str1, const char* str2, size_t len)
 /// <param name="last">pointer to array of lookUp function (in / out)</param>
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
-size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringView needle, size_t*& lookUp, size_t start)
+size_t StringUtils::SearchBoyerMooreHorspool(StringView haystack, StringView needle, size_t*& lookUp, size_t start)
 {
 	size_t haystackLen = haystack.length();
 	size_t needleLen = needle.length();
 
 	if (needleLen == 0)
 	{
-		return MyStringUtils::npos;
+		return StringUtils::npos;
 	}
 
 
 	if (lookUp == nullptr)
 	{
-		lookUp = MyStringUtils::BuildBoyerMooreHorspoolLookup(needle);
+		lookUp = StringUtils::BuildBoyerMooreHorspoolLookup(needle);
 	}
 	
 	size_t skip = start;
@@ -338,7 +338,7 @@ size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringVi
 		skip += lookUp[c];
 	}
 
-	return MyStringUtils::npos;
+	return StringUtils::npos;
 }
 
 
@@ -351,7 +351,7 @@ size_t MyStringUtils::SearchBoyerMooreHorspool(MyStringView haystack, MyStringVi
 /// </summary>
 /// <param name="needle"></param>
 /// <param name="failFce"></param>
-size_t* MyStringUtils::BuildKnuthMorisPratBuildFailLookup(MyStringView needle)
+size_t* StringUtils::BuildKnuthMorisPratBuildFailLookup(StringView needle)
 {
 	size_t needleLen = needle.length();
 
@@ -395,13 +395,13 @@ size_t* MyStringUtils::BuildKnuthMorisPratBuildFailLookup(MyStringView needle)
 /// <param name="last">pointer to array of last function (in / out)</param>
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
-size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView needle, size_t*& last, size_t start)
+size_t StringUtils::SearchKnuthMorisPrat(StringView haystack, StringView needle, size_t*& last, size_t start)
 {
 	size_t needleLen = needle.length();
 
 	if (needleLen == 0)
 	{
-		return MyStringUtils::npos;
+		return StringUtils::npos;
 	}
 
 	size_t index = 1;
@@ -411,7 +411,7 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 
 	if (last == nullptr)
 	{
-		last = MyStringUtils::BuildKnuthMorisPratBuildFailLookup(needle);
+		last = StringUtils::BuildKnuthMorisPratBuildFailLookup(needle);
 	}
 
 	index = start;
@@ -442,7 +442,7 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 	}
 
 
-	return MyStringUtils::npos;
+	return StringUtils::npos;
 }
 
 /// <summary>
@@ -452,12 +452,12 @@ size_t MyStringUtils::SearchKnuthMorisPrat(MyStringView haystack, MyStringView n
 /// <param name="needle">text to find</param>
 /// <param name="start">start position of searching (default: 0)</param>
 /// <returns>position of occurence needle in haystack</returns>
-size_t MyStringUtils::SearchBruteForce(MyStringView haystack, MyStringView needle, size_t start)
+size_t StringUtils::SearchBruteForce(StringView haystack, StringView needle, size_t start)
 {
 	size_t needleLen = needle.length();
 	size_t i = start;
 	size_t j = 0;
-	size_t lastPos = MyStringUtils::npos;
+	size_t lastPos = StringUtils::npos;
 	size_t strLen = haystack.length();
 	const char* str = haystack.c_str();
 
@@ -475,18 +475,18 @@ size_t MyStringUtils::SearchBruteForce(MyStringView haystack, MyStringView needl
 			else
 			{
 				i++;
-				lastPos = MyStringUtils::npos;
+				lastPos = StringUtils::npos;
 				break;
 			}
 		}
 
-		if (lastPos != MyStringUtils::npos)
+		if (lastPos != StringUtils::npos)
 		{
 			return (lastPos - needleLen);
 		}
 	}
 
-	return MyStringUtils::npos;
+	return StringUtils::npos;
 }
 
 //===========================================================================================

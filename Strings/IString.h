@@ -3,8 +3,8 @@
 
 namespace mystrlib
 {
-	class MyString;
-	class MySmallString;
+	class String;
+	class SmallString;
 	//class MyStringView;
 }
 
@@ -89,7 +89,7 @@ public:
 	static RetVal CreateWithBufferSize(size_t bufferSize);
 
 	template <typename RetVal = Type>
-	static RetVal LoadFromFile(MyStringView fileName);
+	static RetVal LoadFromFile(StringView fileName);
 
 	template <typename RetVal = Type>
 	static RetVal LoadFromFile(FILE * f);
@@ -103,7 +103,7 @@ public:
 	//======================================================================
 	
 	void Release();
-	bool SaveToFile(MyStringView fileName) const;
+	bool SaveToFile(StringView fileName) const;
 
 
 	uint32_t GetHashCode() const noexcept;
@@ -153,7 +153,7 @@ public:
 	std::vector<RetVal> Split(const std::vector<char> & delimeters, bool keepEmptyValues = false) const;
 
 	template <typename RetVal = Type>
-	std::vector<RetVal> Split(MyStringView delimeter, bool keepEmptyValues = false) const;
+	std::vector<RetVal> Split(StringView delimeter, bool keepEmptyValues = false) const;
 
 	size_t Count(const char str) const noexcept;
 
@@ -166,17 +166,17 @@ public:
 	// Finding
 	//==============================================================
 
-	bool StartWith(MyStringView needle) const noexcept;
-	bool EndWith(MyStringView needle) const noexcept;
+	bool StartWith(StringView needle) const noexcept;
+	bool EndWith(StringView needle) const noexcept;
 
 	size_t Find(const char c, size_t offset = 0) const noexcept;
 	size_t FindLast(const char c) const noexcept;
 	size_t Find(const Type& needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
-	size_t Find(MyStringView needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t Find(StringView needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
 	size_t Find(const char * needle, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
-	size_t Find(MyStringView needle, size_t offset, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
-	size_t FindWithSkip(MyStringView needle, size_t skipOccurences) const;
-	std::vector<size_t> FindAll(MyStringView needle) const;
+	size_t Find(StringView needle, size_t offset, SearchAlgorithm algo = SearchAlgorithm::DEFAULT) const;
+	size_t FindWithSkip(StringView needle, size_t skipOccurences) const;
+	std::vector<size_t> FindAll(StringView needle) const;
 
 	//==============================================================
 	// Appending
@@ -201,10 +201,10 @@ public:
 	//==============================================================
 
 	void Replace(char oldValue, char newValue);
-	void Replace(MyStringView oldValue, MyStringView newValue);	
-	void Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset);
-	void Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos);
-	Type CreateReplaced(MyStringView src, MyStringView dest) const;
+	void Replace(StringView oldValue, StringView newValue);	
+	void Replace(StringView oldValue, StringView newValue, size_t replaceOffset);
+	void Replace(StringView oldValue, StringView newValue, const std::vector<size_t> & searchStartPos);
+	Type CreateReplaced(StringView src, StringView dest) const;
 
 	//==============================================================
 	// Substrings
@@ -241,18 +241,18 @@ public:
 	RET_VAL_STR(void, (std::is_floating_point<T>::value)) operator += (T number);
 
 	template <typename T>
-	RET_VAL_STR(void, (std::is_same<T, MyString>::value || 
-		std::is_same<T, MySmallString>::value ||
-		std::is_same<T, MyStringView>::value))
+	RET_VAL_STR(void, (std::is_same<T, String>::value || 
+		std::is_same<T, SmallString>::value ||
+		std::is_same<T, StringView>::value))
     operator += (const T & str);
 	void operator += (const std::string & str);
 	void operator += (const char * str);
 	void operator += (const char letter);
 
 	template <typename T>
-	RET_VAL_STR(T, (std::is_same<T, MyString>::value || 
-		std::is_same<T, MySmallString>::value ||
-		std::is_same<T, MyStringView>::value))
+	RET_VAL_STR(T, (std::is_same<T, String>::value || 
+		std::is_same<T, SmallString>::value ||
+		std::is_same<T, StringView>::value))
     operator + (const T & str) const;
 	Type operator + (const char * str) const;
 
@@ -261,9 +261,9 @@ public:
 	//==============================================================
 
 	template <typename T>
-	RET_VAL_STR(Type &, (std::is_same<T, MyString>::value || 
-		std::is_same<T, MySmallString>::value ||
-		std::is_same<T, MyStringView>::value ||
+	RET_VAL_STR(Type &, (std::is_same<T, String>::value || 
+		std::is_same<T, SmallString>::value ||
+		std::is_same<T, StringView>::value ||
 		std::is_same<T, std::string>::value))
     operator = (const T & str);	
 	Type& operator = (const char * str);
@@ -361,7 +361,7 @@ RetVal IString<Type>::CreateWithBufferSize(size_t bufferSize)
 /// <returns></returns>
 template <typename Type>
 template <typename RetVal>
-RetVal IString<Type>::LoadFromFile(MyStringView fileName)
+RetVal IString<Type>::LoadFromFile(StringView fileName)
 {
 	FILE* f = nullptr;  //pointer to file we will read in
 	my_fopen(&f, fileName.c_str(), "rb");
@@ -394,7 +394,7 @@ RetVal IString<Type>::LoadFromFile(FILE* f)
 
 	data[size] = 0;
 
-	if constexpr (std::is_same<RetVal, MyString>::value)
+	if constexpr (std::is_same<RetVal, String>::value)
 	{
 		return RetVal::CreateFromMoveMemory(data, size + 1, size);
 	}
@@ -568,7 +568,7 @@ RET_VAL_STR(void, (std::is_integral<T>::value)) IString<Type>::AppendWithDigitsC
 		digitsCount--;
 	}
 
-	size_t len = MyStringUtils::GetNumDigits(number);
+	size_t len = StringUtils::GetNumDigits(number);
 	if (len >= digitsCount)
 	{
 		this->operator+=(number);
@@ -651,7 +651,7 @@ RET_VAL_STR(void, (std::is_integral<T>::value && std::is_signed<T>::value)) IStr
 		input = -number;
 	}
 
-	size_t len = MyStringUtils::GetNumDigits(input) + sign;
+	size_t len = StringUtils::GetNumDigits(input) + sign;
 	//sizeof(T) = 1 => 4 (3 + sign)
 	//sizeof(T) = 2 => 6 (5 + sign)
 	//sizeof(T) = 4 => 11 (10 + sign)
@@ -710,7 +710,7 @@ template <typename Type>
 template <typename T>
 RET_VAL_STR(void, (std::is_unsigned<T>::value)) IString<Type>::operator += (T number)
 {
-	size_t len = MyStringUtils::GetNumDigits(number);
+	size_t len = StringUtils::GetNumDigits(number);
 	//sizeof(T) = 1 => 4 (3 + sign)
 	//sizeof(T) = 2 => 6 (5 + sign)
 	//sizeof(T) = 4 => 11 (10 + sign)
@@ -785,9 +785,9 @@ return newStr;
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(void, (std::is_same<T, MyString>::value || 
-	std::is_same<T, MySmallString>::value ||
-	std::is_same<T, MyStringView>::value))
+RET_VAL_STR(void, (std::is_same<T, String>::value || 
+	std::is_same<T, SmallString>::value ||
+	std::is_same<T, StringView>::value))
 IString<Type>::operator += (const T & str)
 {
 	if (str.length() == 0)
@@ -846,9 +846,9 @@ inline void IString<Type>::operator+= (const char singleChar)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(T, (std::is_same<T, MyString>::value || 
-	std::is_same<T, MySmallString>::value ||
-	std::is_same<T, MyStringView>::value))
+RET_VAL_STR(T, (std::is_same<T, String>::value || 
+	std::is_same<T, SmallString>::value ||
+	std::is_same<T, StringView>::value))
 IString<Type>::operator + (const T & str) const
 {
 	T newStr = T(static_cast<const Type *>(this)->c_str(), 
@@ -892,9 +892,9 @@ IString<Type>::operator [](const T index)
 
 template <typename Type>
 template <typename T>
-RET_VAL_STR(Type&, (std::is_same<T, MyString>::value || 
-	std::is_same<T, MySmallString>::value ||
-	std::is_same<T, MyStringView>::value ||
+RET_VAL_STR(Type&, (std::is_same<T, String>::value || 
+	std::is_same<T, SmallString>::value ||
+	std::is_same<T, StringView>::value ||
 	std::is_same<T, std::string>::value))
 IString<Type>::operator = (const T & str)
 {
@@ -954,7 +954,7 @@ template <typename T,
 >
 inline IString<Type>::operator T() const
 {
-	return MyStringUtils::ToNumber<T>(static_cast<const Type *>(this)->c_str());
+	return StringUtils::ToNumber<T>(static_cast<const Type *>(this)->c_str());
 }
 
 template <typename Type>
@@ -1053,7 +1053,7 @@ std::vector<RetVal> IString<Type>::Split(const std::vector<char> & delimeters, b
 
 template <typename Type>
 template <typename RetVal>
-std::vector<RetVal> IString<Type>::Split(MyStringView delimeter, bool keepEmptyValues) const
+std::vector<RetVal> IString<Type>::Split(StringView delimeter, bool keepEmptyValues) const
 {
 	size_t delimLen = delimeter.length();
 

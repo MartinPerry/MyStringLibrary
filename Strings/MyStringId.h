@@ -30,22 +30,22 @@
 namespace mystrlib
 {
 
-	class MyStringId
+	class StringId
 	{
 	public:
 #if defined(ID_DEBUG) || defined(CONSTEXPR_DISABLE)
 		MyStringId(const char* key);
 #else
-		constexpr MyStringId(const char* key);
+		constexpr StringId(const char* key);
 #endif
-		MyStringId() noexcept;
-		MyStringId(const MyString& key) noexcept;
-		MyStringId(const MySmallString& key) noexcept;
-		MyStringId(const MyStringView& key) noexcept;
-		MyStringId(const MyStringId& key) noexcept;
-		MyStringId(const uint32_t& key) noexcept;
+		StringId() noexcept;
+		StringId(const String& key) noexcept;
+		StringId(const SmallString& key) noexcept;
+		StringId(const StringView& key) noexcept;
+		StringId(const StringId& key) noexcept;
+		StringId(const uint32_t& key) noexcept;
 
-		MyStringId& operator=(const MyStringId& other) noexcept
+		StringId& operator=(const StringId& other) noexcept
 		{
 			// check for self-assignment
 			if (&other == this)
@@ -89,7 +89,7 @@ namespace mystrlib
 #endif
 	}
 #else
-	constexpr inline MyStringId::MyStringId(const char* key)
+	constexpr inline StringId::StringId(const char* key)
 		: hashId(CALC_HASH(key))
 	{
 
@@ -99,12 +99,12 @@ namespace mystrlib
 	//other ctors
 	//those are not constexpr
 
-	inline MyStringId::MyStringId() noexcept
+	inline StringId::StringId() noexcept
 		: hashId(0)
 	{
 	}
 
-	inline MyStringId::MyStringId(const MyString& key) noexcept
+	inline StringId::StringId(const String& key) noexcept
 		: hashId(key.GetHashCode())
 	{
 #ifdef ID_DEBUG
@@ -113,7 +113,7 @@ namespace mystrlib
 #endif	
 	}
 
-	inline MyStringId::MyStringId(const MySmallString& key) noexcept
+	inline StringId::StringId(const SmallString& key) noexcept
 		: hashId(key.GetHashCode())
 	{
 #ifdef ID_DEBUG
@@ -122,7 +122,7 @@ namespace mystrlib
 #endif	
 	}
 
-	inline MyStringId::MyStringId(const MyStringView& key) noexcept
+	inline StringId::StringId(const StringView& key) noexcept
 		: hashId(key.GetHashCode())
 	{
 #ifdef ID_DEBUG
@@ -132,7 +132,7 @@ namespace mystrlib
 	}
 
 
-	inline MyStringId::MyStringId(const MyStringId& key)  noexcept
+	inline StringId::StringId(const StringId& key)  noexcept
 		: hashId(key.GetHashId())
 	{
 #ifdef ID_DEBUG
@@ -141,7 +141,7 @@ namespace mystrlib
 #endif	
 	}
 
-	inline MyStringId::MyStringId(const uint32_t& key)  noexcept
+	inline StringId::StringId(const uint32_t& key)  noexcept
 		: hashId(key)
 	{
 #ifdef ID_DEBUG
@@ -213,40 +213,40 @@ namespace mystrlib
 //declare friend operators to compare our ID with different
 //classes and structures directly
 
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringId);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyString);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MySmallString);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, MyStringView);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringId, uint32_t);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyString, MyStringId);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MySmallString, MyStringId);
-	GENERATE_ID_FORWARD_OPERATORS_REF(MyStringView, MyStringId);
-	GENERATE_ID_FORWARD_OPERATORS_REF(uint32_t, MyStringId);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringId, StringId);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringId, String);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringId, SmallString);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringId, StringView);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringId, uint32_t);
+	GENERATE_ID_FORWARD_OPERATORS_REF(String, StringId);
+	GENERATE_ID_FORWARD_OPERATORS_REF(SmallString, StringId);
+	GENERATE_ID_FORWARD_OPERATORS_REF(StringView, StringId);
+	GENERATE_ID_FORWARD_OPERATORS_REF(uint32_t, StringId);
 
 	//================================
 
-	GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringId);
-	GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyString);
-	GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MySmallString);
-	GENERATE_ID_BODY_OPERATORS_REF(MyStringId, MyStringView);
-	GENERATE_ID_BODY_OPERATORS_REF(MyString, MyStringId);
-	GENERATE_ID_BODY_OPERATORS_REF(MySmallString, MyStringId);
-	GENERATE_ID_BODY_OPERATORS_REF(MyStringView, MyStringId);
+	GENERATE_ID_BODY_OPERATORS_REF(StringId, StringId);
+	GENERATE_ID_BODY_OPERATORS_REF(StringId, String);
+	GENERATE_ID_BODY_OPERATORS_REF(StringId, SmallString);
+	GENERATE_ID_BODY_OPERATORS_REF(StringId, StringView);
+	GENERATE_ID_BODY_OPERATORS_REF(String, StringId);
+	GENERATE_ID_BODY_OPERATORS_REF(SmallString, StringId);
+	GENERATE_ID_BODY_OPERATORS_REF(StringView, StringId);
 
 
-	GENERATE_BODY2(uint32_t, MyStringId, == );
-	GENERATE_BODY3(MyStringId, uint32_t, == );
+	GENERATE_BODY2(uint32_t, StringId, == );
+	GENERATE_BODY3(StringId, uint32_t, == );
 
 
-	GENERATE_BODY2(uint32_t, MyStringId, != );
-	GENERATE_BODY3(MyStringId, uint32_t, != );
+	GENERATE_BODY2(uint32_t, StringId, != );
+	GENERATE_BODY3(StringId, uint32_t, != );
 
 
-	GENERATE_BODY2(uint32_t, MyStringId, < );
-	GENERATE_BODY3(MyStringId, uint32_t, < );
+	GENERATE_BODY2(uint32_t, StringId, < );
+	GENERATE_BODY3(StringId, uint32_t, < );
 
-	GENERATE_BODY2(uint32_t, MyStringId, > );
-	GENERATE_BODY3(MyStringId, uint32_t, > );
+	GENERATE_BODY2(uint32_t, StringId, > );
+	GENERATE_BODY3(StringId, uint32_t, > );
 
 }
 

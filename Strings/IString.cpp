@@ -231,7 +231,7 @@ uint32_t IString<Type>::GetHashCode() const noexcept
 // Helper methods
 //====================================================================
 template <typename Type>
-bool IString<Type>::SaveToFile(MyStringView fileName) const
+bool IString<Type>::SaveToFile(StringView fileName) const
 {	
 	FILE *f = nullptr;  //pointer to file we will read in
 	my_fopen(&f, fileName.c_str(), "wb");
@@ -596,7 +596,7 @@ void IString<Type>::Replace(char oldValue, char newValue)
 }
 
 template <typename Type>
-void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue)
+void IString<Type>::Replace(StringView oldValue, StringView newValue)
 {
 	this->Replace(oldValue, newValue, StringConstants::REPLACE_ALL);
 }
@@ -608,7 +608,7 @@ void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue)
 /// <param name="newValue"></param>
 /// <param name="replaceOffset">if multiple occurence of "oldValue", which one to replace (size_t max = all)</param>
 template <typename Type>
-void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, size_t replaceOffset)
+void IString<Type>::Replace(StringView oldValue, StringView newValue, size_t replaceOffset)
 {
 	size_t oldValueLen = oldValue.length();
 	size_t * last = nullptr;
@@ -618,12 +618,12 @@ void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, size_t
 	std::vector<size_t> startPos;
 	size_t foundOffset = 0;
 
-	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+	StringView thisView = StringView(static_cast<const Type*>(this));
 
 
 	while (1)
 	{
-		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, oldValue, last, pos); //better use this, because BM skipping
+		pos = StringUtils::SearchKnuthMorisPrat(thisView, oldValue, last, pos); //better use this, because BM skipping
 													   //is calculated from haystack, not needle
 		if (pos == IString<Type>::npos)
 		{ 
@@ -657,7 +657,7 @@ void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, size_t
 }
 
 template <typename Type>
-void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, const std::vector<size_t> & searchStartPos)
+void IString<Type>::Replace(StringView oldValue, StringView newValue, const std::vector<size_t> & searchStartPos)
 {
 	if (searchStartPos.size() == 0)
 	{
@@ -764,7 +764,7 @@ void IString<Type>::Replace(MyStringView oldValue, MyStringView newValue, const 
 }
 
 template <typename Type>
-Type IString<Type>::CreateReplaced(MyStringView src, MyStringView dest) const
+Type IString<Type>::CreateReplaced(StringView src, StringView dest) const
 {
 	Type newStr = Type(static_cast<const Type *>(this)->c_str(),
 		static_cast<const Type *>(this)->length());
@@ -800,7 +800,7 @@ std::vector<double> IString<Type>::GetAllNumbers() const
 			str--;
 		}
 
-		double n = MyStringUtils::ToNumber<double>(str, &str);
+		double n = StringUtils::ToNumber<double>(str, &str);
 		s.push_back(n);		
 	}
 
@@ -893,7 +893,7 @@ bool IString<Type>::IsFloatNumber() const
 /// <param name="needle"></param>
 /// <returns></returns>
 template <typename Type>
-bool IString<Type>::StartWith(MyStringView needle) const noexcept
+bool IString<Type>::StartWith(StringView needle) const noexcept
 {
 	size_t strLen = static_cast<const Type*>(this)->length();
 	const char* str = static_cast<const Type*>(this)->c_str();
@@ -927,7 +927,7 @@ bool IString<Type>::StartWith(MyStringView needle) const noexcept
 /// <param name="needle"></param>
 /// <returns></returns>
 template <typename Type>
-bool IString<Type>::EndWith(MyStringView needle) const noexcept
+bool IString<Type>::EndWith(StringView needle) const noexcept
 {
 	size_t strLen = static_cast<const Type*>(this)->length();
 	const char* str = static_cast<const Type*>(this)->c_str();
@@ -1034,7 +1034,7 @@ size_t IString<Type>::Find(const Type& needle, SearchAlgorithm algo) const
 		return this->CLib(needle.c_str());
 	}
 
-	return this->Find(MyStringView(needle), algo);
+	return this->Find(StringView(needle), algo);
 }
 
 
@@ -1058,7 +1058,7 @@ size_t IString<Type>::Find(const char* needle, SearchAlgorithm algo) const
 		return this->CLib(needle);
 	}
 
-	return this->Find(MyStringView(needle), algo);
+	return this->Find(StringView(needle), algo);
 }
 
 
@@ -1073,9 +1073,9 @@ size_t IString<Type>::Find(const char* needle, SearchAlgorithm algo) const
 /// <param name="algo">specify searching algorithm (default: BF)</param>
 /// <returns>position of occurence needle in haystack</returns>
 template <typename Type>
-size_t IString<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
+size_t IString<Type>::Find(StringView needle, SearchAlgorithm algo) const
 {
-	size_t pos = MyStringUtils::npos;
+	size_t pos = StringUtils::npos;
 
 	if (needle.c_str() == nullptr)
 	{
@@ -1086,25 +1086,25 @@ size_t IString<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 	
 	if (algo == SearchAlgorithm::BM)
 	{	
-		pos = MyStringUtils::SearchBoyerMoore(static_cast<const Type*>(this), needle, last);
+		pos = StringUtils::SearchBoyerMoore(static_cast<const Type*>(this), needle, last);
 	}
 	else if (algo == SearchAlgorithm::BMH)
 	{
-		pos = MyStringUtils::SearchBoyerMooreHorspool(static_cast<const Type*>(this), needle, last);
+		pos = StringUtils::SearchBoyerMooreHorspool(static_cast<const Type*>(this), needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
 	{	
-		pos = MyStringUtils::SearchKnuthMorisPrat(static_cast<const Type*>(this), needle, last);
+		pos = StringUtils::SearchKnuthMorisPrat(static_cast<const Type*>(this), needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{		
-		pos = MyStringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
+		pos = StringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
 	}
 	else if (algo == SearchAlgorithm::DEFAULT)
 	{				
 		//non-null terminated string are not supported with CLib
 		//and needle may not bet null terminated
-		pos = MyStringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
+		pos = StringUtils::SearchBruteForce(static_cast<const Type*>(this), needle);
 	}
 
 	if (last != nullptr)
@@ -1116,9 +1116,9 @@ size_t IString<Type>::Find(MyStringView needle, SearchAlgorithm algo) const
 }
 
 template <typename Type>
-size_t IString<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm algo) const
+size_t IString<Type>::Find(StringView needle, size_t offset, SearchAlgorithm algo) const
 {
-	size_t pos = MyStringUtils::npos;
+	size_t pos = StringUtils::npos;
 
 
 	size_t len = static_cast<const Type*>(this)->length();
@@ -1131,27 +1131,27 @@ size_t IString<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm a
 	str += offset;	
 	len -= offset;
 
-	MyStringView strView = MyStringView(str, len);
+	StringView strView = StringView(str, len);
 
 	size_t* last = nullptr;
 
 	if (algo == SearchAlgorithm::BM)
 	{
-		pos = MyStringUtils::SearchBoyerMoore(strView, needle, last);
+		pos = StringUtils::SearchBoyerMoore(strView, needle, last);
 	}
 	else if (algo == SearchAlgorithm::KMP)
 	{
-		pos = MyStringUtils::SearchKnuthMorisPrat(strView, needle, last);
+		pos = StringUtils::SearchKnuthMorisPrat(strView, needle, last);
 	}
 	else if (algo == SearchAlgorithm::BF)
 	{
-		pos = MyStringUtils::SearchBruteForce(strView, needle);
+		pos = StringUtils::SearchBruteForce(strView, needle);
 	}
 	else if (algo == SearchAlgorithm::DEFAULT)
 	{
 		//non-null terminated string are not supported with CLib
 		//and needle may not bet null terminated
-		pos = MyStringUtils::SearchBruteForce(strView, needle);
+		pos = StringUtils::SearchBruteForce(strView, needle);
 	}
 
 	if (last != nullptr)
@@ -1159,9 +1159,9 @@ size_t IString<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm a
 		delete[] last;
 	}
 	
-	if (pos == MyStringUtils::npos)
+	if (pos == StringUtils::npos)
 	{
-		return MyStringUtils::npos;
+		return StringUtils::npos;
 	}
 
 	return offset + pos;
@@ -1178,20 +1178,20 @@ size_t IString<Type>::Find(MyStringView needle, size_t offset, SearchAlgorithm a
 /// <param name="offset"></param>
 /// <returns></returns>
 template <typename Type>
-size_t IString<Type>::FindWithSkip(MyStringView needle, size_t skipOccurences) const
+size_t IString<Type>::FindWithSkip(StringView needle, size_t skipOccurences) const
 {
 	size_t count = 0;
 	size_t searchLength = needle.length();
 	size_t * last = nullptr;
 	size_t pos = 0;
 
-	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+	StringView thisView = StringView(static_cast<const Type*>(this));
 
 	while (1)
 	{
-		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
+		pos = StringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
-		if (pos == MyStringUtils::npos)
+		if (pos == StringUtils::npos)
 		{ 
 			//not found
 			break; 
@@ -1212,7 +1212,7 @@ size_t IString<Type>::FindWithSkip(MyStringView needle, size_t skipOccurences) c
 }
 
 template <typename Type>
-std::vector<size_t> IString<Type>::FindAll(MyStringView needle) const
+std::vector<size_t> IString<Type>::FindAll(StringView needle) const
 {
 	size_t searchLength = needle.length();
 	size_t * last = nullptr;
@@ -1221,13 +1221,13 @@ std::vector<size_t> IString<Type>::FindAll(MyStringView needle) const
 	std::vector<size_t> startPos;
 	int foundOffset = 0;
 	
-	MyStringView thisView = MyStringView(static_cast<const Type*>(this));
+	StringView thisView = StringView(static_cast<const Type*>(this));
 
 	while (1)
 	{
-		pos = MyStringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
+		pos = StringUtils::SearchKnuthMorisPrat(thisView, needle, last, pos); //better use this, because BM skipping
 													//is calculated from haystack, not needle
-		if (pos == MyStringUtils::npos)
+		if (pos == StringUtils::npos)
 		{ 
 			//not found
 			break; 
@@ -1415,6 +1415,6 @@ size_t IString<Type>::CLib(const char * needle, size_t start) const
 
 
 
-template class IString<MyString>;
-template class IString<MySmallString>;
+template class IString<String>;
+template class IString<SmallString>;
 //template std::vector<MyStringAnsi> IString<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;

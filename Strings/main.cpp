@@ -53,6 +53,30 @@ FORCE_INLINE std::array<uint8_t, sizeof(T)> FastUnpack(uint8_t * data, size_t of
 	return std::move(v);
 };
 
+//===========================================================
+
+void RunAllTest()
+{
+	StringTests<SmallString>::TestCtors();
+	StringTests<SmallString>::TestMethods();
+	StringTests<SmallString>::TestStringToIntNumber();
+	StringTests<SmallString>::TestStringToRealNumber();
+	StringTests<SmallString>::TestAppendNumberAll();
+	StringTests<SmallString>::TestAppendString();
+	StringTests<SmallString>::TestSubstring();
+
+	StringTests<String>::TestCtors();
+	StringTests<String>::TestMethods();
+	StringTests<String>::TestStringToIntNumber();
+	StringTests<String>::TestStringToRealNumber();
+	StringTests<String>::TestAppendNumberAll();
+	StringTests<String>::TestAppendString();
+	StringTests<String>::TestSubstring();
+
+	StringTests<String>::TestLocalization();
+}
+
+//===========================================================
 
 int main(int argc, char ** argv)
 {
@@ -60,47 +84,13 @@ int main(int argc, char ** argv)
 	VLDSetReportOptions(VLD_OPT_REPORT_TO_DEBUGGER | VLD_OPT_REPORT_TO_FILE, L"leaks.txt");
 	//VLDSetOptions(VLD_OPT_SAFE_STACK_WALK, 1024, 1024);	
 #endif	
-
-	
-	/*
-	Localization l("cs", "cs", "../test_data/");
-	auto tmp0 = l.Localize("timeFormatWheel");
-
-	l.ReplaceKeysByLang("en-us", { "timeFormatWheel", "timeFormatLine" });
-	auto tmp1 = l.Localize("timeFormatWheel");
-
-	std::unordered_map<Localization::String, Localization::Utf8StringWrapper> items;
-	items["menuHelp"] = u8"xxx";
-	items["lat"] = u8"yyy";
-
-	auto res = l.Localize("searchCoords", "", items);
-	auto res2 = res;
-
-
-	printf("%s\n", (const char *)l.Localize("searchCoords").c_str());
-	//printf("%s\n", (l.Localize("temperature", "layers").getAs<Localization::String>()).c_str());
-	//printf("%s\n", (l.Localize("searchCoords", { "kccc", "x", "xxcxc7" }).getAs<Localization::String>()).c_str());
-	*/
-	
-
+#ifdef _WIN32
+	EnableWinConsoleUtf8();
+#endif
 	
 	
-	StringTests<MySmallString>::TestCtors();
-	StringTests<MySmallString>::TestMethods();
-	StringTests<MySmallString>::TestStringToIntNumber();
-	StringTests<MySmallString>::TestStringToRealNumber();
-	StringTests<MySmallString>::TestAppendNumberAll();
-	StringTests<MySmallString>::TestAppendString();
-	StringTests<MySmallString>::TestSubstring();
 	
-	StringTests<MyString>::TestCtors();
-	StringTests<MyString>::TestMethods();
-	StringTests<MyString>::TestStringToIntNumber();
-	StringTests<MyString>::TestStringToRealNumber();
-	StringTests<MyString>::TestAppendNumberAll();
-	StringTests<MyString>::TestAppendString();
-	StringTests<MyString>::TestSubstring();
-	
+	RunAllTest();
 	
 
 	StringBenchmarks sb(1000000);

@@ -132,7 +132,7 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MyString (literal)");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString x = "xxxxxxx";
+		String x = "xxxxxxx";
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -140,7 +140,7 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MySmallString (literal)");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallString x = "xxxxxxx";
+		SmallString x = "xxxxxxx";
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -157,7 +157,7 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MyString");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString x = rnd[i].c_str();
+		String x = rnd[i].c_str();
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -165,7 +165,7 @@ void StringBenchmarks::TestShortStrAllocation()
 	this->Start("MySmallString");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallString x = rnd[i].c_str();
+		SmallString x = rnd[i].c_str();
 		res[i] += x.length();
 	}
 	this->Finish();
@@ -186,7 +186,7 @@ void StringBenchmarks::TestStringToInt()
 	std::uniform_int_distribution<long long> uniform_dist(std::numeric_limits<long long>::min(), 
 		std::numeric_limits<long long>::max());
 
-	std::vector<MyString> rnd;
+	std::vector<String> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
 		rnd.push_back(std::to_string(uniform_dist(e)).c_str());
@@ -195,7 +195,7 @@ void StringBenchmarks::TestStringToInt()
 	this->Start("MyStringUtils::ToNumber");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = (double)MyStringUtils::ToNumber<long long>(rnd[i].c_str());
+		res[i] = (double)StringUtils::ToNumber<long long>(rnd[i].c_str());
 	}
 	this->Finish();
 
@@ -214,7 +214,7 @@ void StringBenchmarks::TestStringToDouble()
 
 	std::uniform_real_distribution<double> uniform_dist2(-1.0, 1.0);
 
-	std::vector<MyString> rnd;
+	std::vector<String> rnd;
 	for (int i = 0; i < COUNT / 2; i++)
 	{
 		rnd.push_back(std::to_string(uniform_dist2(e)).c_str());
@@ -230,7 +230,7 @@ void StringBenchmarks::TestStringToDouble()
 	this->Start("MyStringUtils::ToNumber");
 	for (int i = 0; i < COUNT; i++)
 	{
-		res[i] = (double)MyStringUtils::ToNumber<long long>(rnd[i].c_str());
+		res[i] = (double)StringUtils::ToNumber<long long>(rnd[i].c_str());
 	}
 	this->Finish();
 
@@ -262,8 +262,8 @@ void StringBenchmarks::TestAppendIntNumber()
 	//std::string tmp2;
 	//tmp2.reserve(COUNT * 20);
 	
-	MyString tmp = "";
-	MySmallString tmp1 = "";
+	String tmp = "";
+	SmallString tmp1 = "";
 	std::string tmp2 = "";
 	
 	
@@ -311,7 +311,7 @@ void StringBenchmarks::TestAppendWithDigitsCount()
 
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString x = "";
+		String x = "";
 		x.AppendWithDigitsCount(-123, 5);
 		res[i] += x.length();
 	}
@@ -322,7 +322,7 @@ void StringBenchmarks::TestAppendWithDigitsCount()
 
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString x = "";
+		String x = "";
 		x.AppendFormat("%05d", -123);
 		res[i] += x.length();
 	}
@@ -357,7 +357,7 @@ void StringBenchmarks::TestAppendSmallString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests<MyString>::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<String>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");
@@ -367,7 +367,7 @@ void StringBenchmarks::TestAppendSmallString()
 	this->Start("MyString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString tmp = "";
+		String tmp = "";
 		tmp += rnd[i];
 		res[i] = static_cast<double>(tmp.length());
 	}
@@ -376,7 +376,7 @@ void StringBenchmarks::TestAppendSmallString()
 	this->Start("MySmallString +=");
 	for (int i = 0; i < COUNT; i++)
 	{
-		MySmallString tmp1 = "";
+		SmallString tmp1 = "";
 		tmp1 += rnd[i];
 		res[i] = static_cast<double>(tmp1.length());
 	}
@@ -407,14 +407,14 @@ void StringBenchmarks::TestAppendString()
 	std::vector<std::string> rnd;
 	for (int i = 0; i < COUNT; i++)
 	{
-		rnd.push_back(StringTests<MyString>::CreateRandomString(uniform_dist(e)));
+		rnd.push_back(StringTests<String>::CreateRandomString(uniform_dist(e)));
 	}
 
 	rnd.push_back("");
 	rnd.push_back(" ");
 
-	MyString tmp = "";
-	MySmallString tmp1 = "";
+	String tmp = "";
+	SmallString tmp1 = "";
 	std::string tmp2 = "";
 
 
@@ -459,15 +459,15 @@ void StringBenchmarks::TestHashing()
 {
 	LogTestStart(__func__);
 
-	std::unordered_map<MyStringId, int> dataId;
-	std::unordered_map<MyString, int> dataString;
+	std::unordered_map<StringId, int> dataId;
+	std::unordered_map<String, int> dataString;
 
-	std::vector<MyString> keys;
-	std::vector<MyStringId> keysId;
+	std::vector<String> keys;
+	std::vector<StringId> keysId;
 	for (int i = 0; i < COUNT; i++)
 	{
-		MyString key = StringTests<MyString>::CreateRandomString(10);
-		MyStringId keyId = key;
+		String key = StringTests<String>::CreateRandomString(10);
+		StringId keyId = key;
 
 		keys.push_back(key);
 		keysId.push_back(keyId);

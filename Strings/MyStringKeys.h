@@ -18,23 +18,23 @@ namespace mystrlib
 		//if str is set, view is created from str		
 		//otherwise only view is used
 
-		MyStringView view;
-		MyString str;
+		StringView view;
+		String str;
 
 		StringViewComparableKey() = default;
 
-		explicit StringViewComparableKey(const MyStringView& v) : view(v), str()
+		explicit StringViewComparableKey(const StringView& v) : view(v), str()
 		{
 		}
 
 		StringViewComparableKey(const char* s) : str(s)
 		{
-			view = MyStringView(str);
+			view = StringView(str);
 		}
 
-		StringViewComparableKey(const MyString& s) : str(s)
+		StringViewComparableKey(const String& s) : str(s)
 		{
-			view = MyStringView(str);
+			view = StringView(str);
 		}
 
 		bool operator() (StringViewComparableKey const& t1, StringViewComparableKey const& t2) const

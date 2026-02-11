@@ -6,7 +6,7 @@
 
 using namespace mystrlib;
 
-MyStringView::MyStringView(const char* str, size_t len) noexcept :
+StringView::StringView(const char* str, size_t len) noexcept :
 	str(str),
 	len((len == 0) ? strlen(str) : len),
 	hash(std::numeric_limits<uint32_t>::max())
@@ -14,35 +14,35 @@ MyStringView::MyStringView(const char* str, size_t len) noexcept :
 }
 
 
-MyStringView::MyStringView(const MyString & str) noexcept :
+StringView::StringView(const String & str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MyString* str) noexcept :
+StringView::StringView(const String* str) noexcept :
 	str(str->c_str()),
 	len(str->length()),
 	hash(&str->hashCode)
 {
 }
 
-MyStringView::MyStringView(const MySmallString& str) noexcept :
+StringView::StringView(const SmallString& str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(&str.hashCode)
 {
 }
 
-MyStringView::MyStringView(const MySmallString* str) noexcept :
+StringView::StringView(const SmallString* str) noexcept :
 	str(str->c_str()),
 	len(str->length()),
 	hash(&str->hashCode)
 {
 }
 
-MyStringView::MyStringView(const MyStringView & v) noexcept :
+StringView::StringView(const StringView & v) noexcept :
 	str(v.str),
 	len(v.len),
 	hash(v.hash)
@@ -50,14 +50,14 @@ MyStringView::MyStringView(const MyStringView & v) noexcept :
 }
 
 
-MyStringView::MyStringView(const std::string& str) noexcept :
+StringView::StringView(const std::string& str) noexcept :
 	str(str.c_str()),
 	len(str.length()),
 	hash(std::numeric_limits<uint32_t>::max())
 {
 }
 
-MyStringView::MyStringView(const std::string_view& str) noexcept :
+StringView::StringView(const std::string_view& str) noexcept :
 	str(str.data()),
 	len(str.length()),
 	hash(std::numeric_limits<uint32_t>::max())
@@ -65,14 +65,14 @@ MyStringView::MyStringView(const std::string_view& str) noexcept :
 }
 
 
-MyStringView::MyStringView(const std::vector<char>& v) noexcept :
+StringView::StringView(const std::vector<char>& v) noexcept :
 	str(v.data()),
 	len(v.size()),
 	hash(std::numeric_limits<uint32_t>::max())
 {
 }
 
-MyStringView & MyStringView::operator = (const char * str) noexcept
+StringView & StringView::operator = (const char * str) noexcept
 {
 	this->str = str;
 	this->len = strlen(str);
@@ -80,23 +80,23 @@ MyStringView & MyStringView::operator = (const char * str) noexcept
 	return *this;
 }
 
-const char * MyStringView::c_str() const noexcept
+const char * StringView::c_str() const noexcept
 {
 	return this->str;
 };
 
-size_t MyStringView::length() const noexcept
+size_t StringView::length() const noexcept
 {
 	return this->len;
 };
 
-bool MyStringView::empty() const noexcept
+bool StringView::empty() const noexcept
 {
 	return ((this->len == 0) || (this->str == nullptr));
 };
 
 
-uint32_t MyStringView::GetHashCode() const noexcept
+uint32_t StringView::GetHashCode() const noexcept
 {
 	if (this->hash.isPtr)
 	{
@@ -113,7 +113,7 @@ uint32_t MyStringView::GetHashCode() const noexcept
 	return this->hash.value;
 }
 
-char MyStringView::GetLastChar() const
+char StringView::GetLastChar() const
 {	
 	if (len == 0)
 	{
@@ -123,7 +123,7 @@ char MyStringView::GetLastChar() const
 	return this->str[len - 1];
 }
 
-char MyStringView::GetFirstChar() const
+char StringView::GetFirstChar() const
 {
 	if (len == 0)
 	{
@@ -134,7 +134,7 @@ char MyStringView::GetFirstChar() const
 }
 
 
-void MyStringView::Trim()
+void StringView::Trim()
 {
 	size_t oldLength = this->length();
 	
@@ -157,7 +157,7 @@ void MyStringView::Trim()
 	}
 }
 
-void MyStringView::RemoveFromStart(size_t count)
+void StringView::RemoveFromStart(size_t count)
 {
 	if (len < count)
 	{
@@ -169,7 +169,7 @@ void MyStringView::RemoveFromStart(size_t count)
 	this->hash = std::numeric_limits<uint32_t>::max();
 }
 
-void MyStringView::RemoveFromEnd(size_t count)
+void StringView::RemoveFromEnd(size_t count)
 {	
 	if (len < count)
 	{
@@ -180,15 +180,15 @@ void MyStringView::RemoveFromEnd(size_t count)
 	this->hash = std::numeric_limits<uint32_t>::max();
 }
 
-MyStringView MyStringView::SubString(int start) const
+StringView StringView::SubString(int start) const
 {
 	return this->SubString(start, std::numeric_limits<size_t>::max());
 }
 
 
-MyStringView MyStringView::SubString(int start, size_t length) const
+StringView StringView::SubString(int start, size_t length) const
 {	
-	MyStringView v = *this;
+	StringView v = *this;
 
 	for (int i = 0; i < start; i++)
 	{
@@ -203,7 +203,7 @@ MyStringView MyStringView::SubString(int start, size_t length) const
 	return v;
 }
 
-MyStringView MyStringView::substr(int start, size_t length) const
+StringView StringView::substr(int start, size_t length) const
 {
 	return this->SubString(start, length);
 }
@@ -213,7 +213,7 @@ MyStringView MyStringView::substr(int start, size_t length) const
 /// </summary>
 /// <param name="needle"></param>
 /// <returns></returns>
-bool MyStringView::StartWith(MyStringView needle) const noexcept
+bool StringView::StartWith(StringView needle) const noexcept
 {
 	size_t strLen = this->length();
 	const char* str = this->c_str();
@@ -246,7 +246,7 @@ bool MyStringView::StartWith(MyStringView needle) const noexcept
 /// </summary>
 /// <param name="needle"></param>
 /// <returns></returns>
-bool MyStringView::EndWith(MyStringView needle) const noexcept
+bool StringView::EndWith(StringView needle) const noexcept
 {
 	size_t strLen = this->length();
 	const char* str = this->c_str();
@@ -283,7 +283,7 @@ bool MyStringView::EndWith(MyStringView needle) const noexcept
 /// </summary>
 /// <param name="str">char to find</param>
 /// <returns>position of occurence needle in haystack</returns>
-size_t MyStringView::Find(const char c) const noexcept
+size_t StringView::Find(const char c) const noexcept
 {
 	size_t strLen = this->length();
 	const char* str = this->c_str();
@@ -296,24 +296,24 @@ size_t MyStringView::Find(const char c) const noexcept
 		}
 	}
 
-	return MyStringUtils::npos;
+	return StringUtils::npos;
 }
 
-size_t MyStringView::Find(MyStringView needle) const noexcept
+size_t StringView::Find(StringView needle) const noexcept
 {
-	size_t pos = MyStringUtils::npos;
+	size_t pos = StringUtils::npos;
 
 	if (needle.length() == 0)
 	{
 		return pos;
 	}
 
-	return MyStringUtils::SearchBruteForce(*this, needle);
+	return StringUtils::SearchBruteForce(*this, needle);
 }
 
-size_t MyStringView::Find(MyStringView needle, size_t offset) const noexcept
+size_t StringView::Find(StringView needle, size_t offset) const noexcept
 {
-	size_t pos = MyStringUtils::npos;
+	size_t pos = StringUtils::npos;
 
 	if (needle.length() == 0)
 	{
@@ -325,20 +325,20 @@ size_t MyStringView::Find(MyStringView needle, size_t offset) const noexcept
 	str += offset;
 	len -= offset;
 
-	MyStringView strViewOffset = MyStringView(str, len);
+	StringView strViewOffset = StringView(str, len);
 
-	pos = MyStringUtils::SearchBruteForce(strViewOffset, needle);
+	pos = StringUtils::SearchBruteForce(strViewOffset, needle);
 
-	if (pos == MyStringUtils::npos)
+	if (pos == StringUtils::npos)
 	{
-		return MyStringUtils::npos;
+		return StringUtils::npos;
 	}
 
 	return offset + pos;
 }
 
 
-std::vector<size_t> MyStringView::FindAll(MyStringView needle) const
+std::vector<size_t> StringView::FindAll(StringView needle) const
 {
 	size_t searchLength = needle.length();
 	size_t* last = nullptr;
@@ -349,9 +349,9 @@ std::vector<size_t> MyStringView::FindAll(MyStringView needle) const
 	
 	while (1)
 	{
-		pos = MyStringUtils::SearchKnuthMorisPrat(*this, needle, last, pos); //better use this, because BM skipping
+		pos = StringUtils::SearchKnuthMorisPrat(*this, needle, last, pos); //better use this, because BM skipping
 		//is calculated from haystack, not needle
-		if (pos == MyStringUtils::npos)
+		if (pos == StringUtils::npos)
 		{
 			//not found
 			break;
