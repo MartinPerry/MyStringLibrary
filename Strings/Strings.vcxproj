@@ -512,6 +512,7 @@
     <ClInclude Include="Unicode\StringIterators.h" />
     <ClInclude Include="Unicode\TinyUtf8Wrapper.h" />
     <ClInclude Include="Unicode\UnicodeUtils.h" />
+    <ClInclude Include="Unicode\Utf8Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl" />

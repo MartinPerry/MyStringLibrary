@@ -156,7 +156,7 @@ protected:
 	std::u8string_view v;
 	
 	const char8_t* it;
-	const char8_t const* itEnd;
+	const char8_t* itEnd;
 };
 
 #endif

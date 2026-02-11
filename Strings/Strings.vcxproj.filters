@@ -138,6 +138,9 @@
     <ClInclude Include="Unicode\StringIterators.h">
       <Filter>Header Files\Unicode</Filter>
     </ClInclude>
+    <ClInclude Include="Unicode\Utf8Utils.h">
+      <Filter>Header Files\Unicode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ComparisonOperators.inl">

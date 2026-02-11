@@ -9,7 +9,7 @@
 #include <initializer_list>
 
 #include "../MyStringLib.h"
-#include "../Unicode/UnicodeUtils.h"
+#include "../Unicode/Utf8Utils.h"
 
 namespace mystrlib
 {

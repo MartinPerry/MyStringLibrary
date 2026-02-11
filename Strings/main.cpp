@@ -20,6 +20,8 @@
 #include "./Testing/StringTests.h"
 #include "./Testing/StringBenchmarks.h"
 
+#include "./Unicode/UnicodeUtils.h"
+
 #include "./SimpleLocalization/Localization.h"
 
 using namespace std;

@@ -24,21 +24,5 @@ inline void EnableWinConsoleUtf8()
 #endif
 
 
-using StringUtf8 = std::u8string;
-
-static inline StringUtf8 AsStringUtf8(const char* str)
-{    
-    return StringUtf8(reinterpret_cast<const char8_t*>(str));
-}
-
-static inline StringUtf8 AsStringUtf8(const std::string& str)
-{
-    return StringUtf8(reinterpret_cast<const char8_t*>(str.c_str()), str.length());
-}
-
-static inline StringUtf8 AsStringUtf8(const mystrlib::String& str)
-{
-    return StringUtf8(reinterpret_cast<const char8_t*>(str.c_str()), str.length());
-}
 
 #endif
