@@ -87,9 +87,6 @@
     <ClInclude Include="hashing\MurmurHash3.h">
       <Filter>Header Files\hashing</Filter>
     </ClInclude>
-    <ClInclude Include="hashing\std_hash_support.h">
-      <Filter>Header Files\hashing</Filter>
-    </ClInclude>
     <ClInclude Include="IString.h">
       <Filter>Header Files</Filter>
     </ClInclude>

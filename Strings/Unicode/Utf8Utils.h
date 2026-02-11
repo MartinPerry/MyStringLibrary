@@ -3,8 +3,9 @@
 
 #include <string>
 
-#include "./StringIterators.h"
+#include "../MyString.h"
 
+#include "./StringIterators.h"
 
 
 using StringUtf8 = std::u8string;

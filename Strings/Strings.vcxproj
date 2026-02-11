@@ -473,7 +473,6 @@
   <ItemGroup>
     <ClInclude Include="hashing\md5.h" />
     <ClInclude Include="hashing\MurmurHash3.h" />
-    <ClInclude Include="hashing\std_hash_support.h" />
     <ClInclude Include="IString.h" />
     <ClInclude Include="MySmallString.h" />
     <ClInclude Include="MyString.h" />

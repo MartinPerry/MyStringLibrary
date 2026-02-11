@@ -151,5 +151,20 @@ namespace mystrlib
 
 }
 
+//For use in std::unordered_map
+//http://stackoverflow.com/questions/17016175/c-unordered-map-using-a-custom-class-type-as-the-key
+namespace std
+{
+	
+	template <>
+	struct hash<mystrlib::StringView>
+	{
+		std::size_t operator()(const mystrlib::StringView& k) const
+		{
+			return static_cast<size_t>(k.GetHashCode());
+		};
+	};
+};
+
 
 #endif
