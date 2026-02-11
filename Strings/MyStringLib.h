@@ -2,14 +2,11 @@
 #define MY_STRING_LIB_H
 
 
-
-
-
 #include "./MyStringMacros.h"
 #include "./MyString.h"
 #include "./MySmallString.h"
 #include "./MyStringView.h"
-#include "./MyStringID.h"
+#include "./MyStringId.h"
 #include "./MyStringUtils.h"
 
 #include "./hashing/md5.h"

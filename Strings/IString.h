@@ -71,6 +71,8 @@ public:
 	IString(const char* str);
 	IString(const std::string& str);
 	IString(const std::string_view& str);
+	IString(const std::u8string& str);
+	IString(const std::u8string_view& str);
 			
 	template <typename T,
 		typename = typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type

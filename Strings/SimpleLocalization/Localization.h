@@ -1,7 +1,7 @@
 #ifndef SIMPLE_LOCALIZATION_H
 #define SIMPLE_LOCALIZATION_H
 
-#include <string.h>
+#include <string>
 #include <unordered_map>
 #include <map>
 #include <vector>
@@ -27,7 +27,7 @@ namespace mystrlib
 
 		using String = MyString;
 		using StringView = MyStringView;
-		using UnicodeStringWrapper = TinyUtf8Wrapper;
+		using Utf8StringWrapper = std::u8string;// TinyUtf8Wrapper;
 
 		class ILocalizationObserver
 		{
@@ -53,11 +53,11 @@ namespace mystrlib
 		template <typename T>
 		T LocalizeAs(const String& key, bool* exist = nullptr);
 
-		UnicodeStringWrapper Localize(const String& key, bool* exist = nullptr);
-		UnicodeStringWrapper Localize(const String& key, const String& group, bool* exist = nullptr);
-		UnicodeStringWrapper Localize(const String& key, const std::vector<UnicodeStringWrapper>& params, bool* exist = nullptr);
-		UnicodeStringWrapper Localize(const String& key, const String& group, const std::vector<UnicodeStringWrapper>& params, bool* exist = nullptr);
-		UnicodeStringWrapper Localize(const String& key, const String& group, const std::unordered_map<String, UnicodeStringWrapper>& params, bool* exist = nullptr);
+		Utf8StringWrapper Localize(const String& key, bool* exist = nullptr);
+		Utf8StringWrapper Localize(const String& key, const String& group, bool* exist = nullptr);
+		Utf8StringWrapper Localize(const String& key, const std::vector<Utf8StringWrapper>& params, bool* exist = nullptr);
+		Utf8StringWrapper Localize(const String& key, const String& group, const std::vector<Utf8StringWrapper>& params, bool* exist = nullptr);
+		Utf8StringWrapper Localize(const String& key, const String& group, const std::unordered_map<String, Utf8StringWrapper>& params, bool* exist = nullptr);
 
 	protected:
 
@@ -66,15 +66,15 @@ namespace mystrlib
 		/// offsets to translation variables {xxx}
 		/// !!! Translation variables can be only in ASCII !!!
 		/// </summary>
-		typedef struct LocalString
+		struct LocalString
 		{
-			UnicodeStringWrapper str;
+			Utf8StringWrapper str;
 			std::vector<size_t> replaceOffsetsRawStart;
 			std::vector<size_t> replaceOffsetsRawEnd;
 			std::vector<String> replaceNames;
 			std::vector<String> replaceNameGroups;
 
-		} LocalString;
+		};
 
 		const String DEFAULT_LANGUAGE;
 		const String DEFAULT_PATH;
@@ -99,7 +99,7 @@ namespace mystrlib
 
 		const Localization::LocalString& GetLocalStringInfo(const Localization::String& key, const Localization::String& group, bool& found);
 
-		UnicodeStringWrapper LocalizeWithReplace(const LocalString& input, const std::vector<UnicodeStringWrapper>& params);
+		Utf8StringWrapper LocalizeWithReplace(const LocalString& input, const std::vector<Utf8StringWrapper>& params);
 	};
 
 

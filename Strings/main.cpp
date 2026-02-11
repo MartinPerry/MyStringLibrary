@@ -413,7 +413,7 @@ int main(int argc, char ** argv)
 	l.ReplaceKeysByLang("en-us", { "timeFormatWheel", "timeFormatLine" });
 	auto tmp1 = l.Localize("timeFormatWheel");
 
-	std::unordered_map<Localization::String, Localization::UnicodeStringWrapper> items;
+	std::unordered_map<Localization::String, Localization::Utf8StringWrapper> items;
 	items["menuHelp"] = "xxx";
 	items["lat"] = "yyy";
 

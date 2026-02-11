@@ -359,6 +359,13 @@ void Localization::LoadLocalization(const Localization::String & langID,
 	}
 }
 
+
+/// <summary>
+/// Process single input and find variables within it.
+/// Variables can only be from ascii letters !!!
+/// </summary>
+/// <param name="rawData"></param>
+/// <returns></returns>
 Localization::LocalString Localization::ProcessSingleInput(const char * rawData) const
 {
 	const String EMPTY = String();
@@ -370,11 +377,9 @@ Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
 	size_t endIndexRaw = 0;
 
 	size_t startIndex = str.str.find('{');
-	while (startIndex != Localization::UnicodeStringWrapper::npos)
+	while (startIndex != Localization::Utf8StringWrapper::npos)
 	{
-
-		//startIndexRaw = str.str.raw_find('{', startIndexRaw);
-		//endIndexRaw = str.str.raw_find('}', endIndexRaw);
+		
 		startIndexRaw = str.str.find('{', startIndexRaw);
 		endIndexRaw = str.str.find('}', endIndexRaw);
 
@@ -385,18 +390,18 @@ Localization::LocalString Localization::ProcessSingleInput(const char * rawData)
 		size_t endIndex = str.str.find('}', startIndex);
 		//str.replaceNames.push_back(str.str.substr(startIndex + 1, endIndex - startIndex - 1));
 
-		Localization::UnicodeStringWrapper name = str.str.substr(startIndex + 1, endIndex - startIndex - 1);
+		Localization::Utf8StringWrapper name = str.str.substr(startIndex + 1, endIndex - startIndex - 1);
 		
 		size_t groupIndex = name.find(':');
-		if (groupIndex != Localization::UnicodeStringWrapper::npos)
+		if (groupIndex != Localization::Utf8StringWrapper::npos)
 		{
-			str.replaceNameGroups.push_back(name.substr(0, groupIndex).getAs<Localization::String>());
-			str.replaceNames.push_back(name.substr(groupIndex + 1).getAs<Localization::String>());
+			str.replaceNameGroups.push_back(name.substr(0, groupIndex));
+			str.replaceNames.push_back(name.substr(groupIndex + 1));
 		}
 		else
 		{
 			str.replaceNameGroups.push_back(EMPTY);
-			str.replaceNames.push_back(name.getAs<Localization::String>());
+			str.replaceNames.push_back(std::move(name));
 		}
 			
 		startIndex = str.str.find('{', startIndex + 1);
@@ -443,12 +448,12 @@ Localization::String Localization::LoadFile(const Localization::String & path) c
 	return str.substr(foundPos);		
 }
 
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key, bool* exist)
+Localization::Utf8StringWrapper Localization::Localize(const Localization::String& key, bool* exist)
 {
 	return this->Localize(key, "", exist);
 }
 
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
+Localization::Utf8StringWrapper Localization::Localize(const Localization::String& key,
 	const Localization::String& group, bool* exist)
 {
 	bool found;
@@ -463,7 +468,9 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 
 	if (str.replaceNames.size() != 0)
 	{
-		std::vector<Localization::UnicodeStringWrapper> t;
+		std::vector<Localization::Utf8StringWrapper> t;
+		t.reserve(str.replaceNames.size());
+
 		for (size_t i = 0; i < str.replaceNames.size(); i++)
 		{
 			auto val = this->Localize(str.replaceNames[i], str.replaceNameGroups[i]);
@@ -493,8 +500,8 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// <param name="key"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
-	const std::vector<Localization::UnicodeStringWrapper>& params, bool* exist)
+Localization::Utf8StringWrapper Localization::Localize(const Localization::String& key,
+	const std::vector<Localization::Utf8StringWrapper>& params, bool* exist)
 {
 	return this->Localize(key, "", params, exist);
 }
@@ -514,9 +521,9 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// <param name="group"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const Localization::String& key,
+Localization::Utf8StringWrapper Localization::Localize(const Localization::String& key,
 	const Localization::String& group,
-	const std::vector<Localization::UnicodeStringWrapper>& params, bool* exist)
+	const std::vector<Localization::Utf8StringWrapper>& params, bool* exist)
 {
 	bool found;
 	const LocalString& str = GetLocalStringInfo(key, group, found);
@@ -526,13 +533,14 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 		return key.c_str();
 	}
 
-	std::vector<Localization::UnicodeStringWrapper> t;
+	std::vector<Localization::Utf8StringWrapper> t;
+	t.reserve(params.size() + str.replaceNames.size());
 
 	int index = 0;
 	for (const auto& elem : params)
 	{
 		bool found = false;
-		Localization::UnicodeStringWrapper s = this->Localize(str.replaceNames[index],
+		Localization::Utf8StringWrapper s = this->Localize(str.replaceNames[index],
 			str.replaceNameGroups[index], &found);
 		if (found)
 		{
@@ -568,7 +576,7 @@ Localization::UnicodeStringWrapper Localization::Localize(const Localization::St
 /// <param name="group"></param>
 /// <param name="params"></param>
 /// <param name="exist"></param>
-Localization::UnicodeStringWrapper Localization::Localize(const String& key, const String& group, const std::unordered_map<String, UnicodeStringWrapper>& params, bool* exist)
+Localization::Utf8StringWrapper Localization::Localize(const String& key, const String& group, const std::unordered_map<String, Utf8StringWrapper>& params, bool* exist)
 {
 	bool found;
 	const LocalString& str = GetLocalStringInfo(key, group, found);
@@ -578,7 +586,7 @@ Localization::UnicodeStringWrapper Localization::Localize(const String& key, con
 		return key.c_str();
 	}
 
-	std::vector<Localization::UnicodeStringWrapper> t;
+	std::vector<Localization::Utf8StringWrapper> t;
 
 	for (const auto& k : str.replaceNames)
 	{
@@ -648,12 +656,12 @@ const Localization::LocalString& Localization::GetLocalStringInfo(const Localiza
 /// </summary>
 /// <param name="input"></param>
 /// <param name="params"></param>
-Localization::UnicodeStringWrapper Localization::LocalizeWithReplace(const LocalString & input, 
-	const std::vector<Localization::UnicodeStringWrapper> & params)
+Localization::Utf8StringWrapper Localization::LocalizeWithReplace(const LocalString & input,
+	const std::vector<Localization::Utf8StringWrapper> & params)
 {
 	size_t count = std::min(params.size(), input.replaceOffsetsRawStart.size());
 
-	Localization::UnicodeStringWrapper tmp = input.str;
+	Localization::Utf8StringWrapper tmp = input.str;
 
 	size_t i = 0;
 	size_t offset = 0;

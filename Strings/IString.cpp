@@ -54,13 +54,26 @@ IString<Type>::IString(const char* str) :
 	static_cast<Type *>(this)->CtorInternal(str, 0);
 }
 
-
-
 template <typename Type>
 IString<Type>::IString(const std::string& str) : 
 	hashCode(std::numeric_limits<uint32_t>::max())
 {
 	static_cast<Type *>(this)->CtorInternal(str.c_str(), str.length());
+}
+
+
+template <typename Type>
+IString<Type>::IString(const std::u8string_view& str) :
+	hashCode(std::numeric_limits<uint32_t>::max())
+{
+	static_cast<Type*>(this)->CtorInternal(reinterpret_cast<const char *>(str.data()), str.length());
+}
+
+template <typename Type>
+IString<Type>::IString(const std::u8string& str) :
+	hashCode(std::numeric_limits<uint32_t>::max())
+{
+	static_cast<Type*>(this)->CtorInternal(reinterpret_cast<const char*>(str.c_str()), str.length());
 }
 
 
