@@ -91,8 +91,7 @@ int main(int argc, char ** argv)
 #endif
 	
 	
-	
-	RunAllTest();
+	//RunAllTest();
 	
 
 	StringBenchmarks sb(1000000);
@@ -122,15 +121,8 @@ int main(int argc, char ** argv)
 	});
 	*/
 
-	
-	sb.TestShortStrAllocation();
-	sb.TestStringToInt();
-	sb.TestStringToDouble();
-	sb.TestAppendNumberAll();
-	sb.TestAppendSmallString();
-	sb.TestAppendString();	
-	sb.TestHashing();
-	
+	sb.RunAll();
+
 
 	
 	return 0;
