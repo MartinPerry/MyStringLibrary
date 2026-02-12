@@ -634,7 +634,7 @@ void StringBenchmarks::TestTrim()
 	Start("MyString::Trim");
 	for (int i = 0; i < COUNT; i++)
 	{
-		String x = rnd[i].c_str();
+		String x = rnd[i];
 		x.Trim();
 		res[i] = static_cast<double>(x.length());
 	}
@@ -665,7 +665,7 @@ void StringBenchmarks::TestReverse()
 	Start("MyString::Reverse");
 	for (int i = 0; i < COUNT; i++)
 	{
-		String x = rnd[i].c_str();
+		String x = rnd[i];
 		x.Reverse();
 		res[i] = static_cast<double>(x.length());
 	}
@@ -686,8 +686,10 @@ void StringBenchmarks::TestRemoveMultipleChars()
 	LogTestStart(__func__);
 
 	std::uniform_int_distribution<int> uniform_dist(1, 128);
-	std::vector<std::string> rnd;
-	rnd.reserve(COUNT);
+	std::vector<String> rndString;
+	std::vector<std::string> rndStd;
+	rndString.reserve(COUNT);
+	rndStd.reserve(COUNT);
 
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -695,13 +697,14 @@ void StringBenchmarks::TestRemoveMultipleChars()
 		base += "xxxxxx";
 		base += StringTests<String>::CreateRandomString(5);
 		base += "xxx";
-		rnd.push_back(base);
+		rndString.push_back(base);
+		rndStd.push_back(base);
 	}
 
 	Start("MyString::RemoveMultipleChars");
 	for (int i = 0; i < COUNT; i++)
 	{
-		String x = rnd[i].c_str();
+		String x = rndString[i];
 		x.RemoveMultipleChars('x');
 		res[i] = static_cast<double>(x.length());
 	}
@@ -710,7 +713,7 @@ void StringBenchmarks::TestRemoveMultipleChars()
 	Start("std::string equivalent");
 	for (int i = 0; i < COUNT; i++)
 	{
-		std::string x = RemoveMultipleCharsStd(rnd[i], 'x');
+		std::string x = RemoveMultipleCharsStd(rndStd[i], 'x');
 		res[i] = static_cast<double>(x.length());
 	}
 	FinishReferenceRun();
@@ -721,8 +724,10 @@ void StringBenchmarks::TestReplace()
 	LogTestStart(__func__);
 
 	std::uniform_int_distribution<int> uniform_dist(8, 64);
-	std::vector<std::string> rnd;
-	rnd.reserve(COUNT);
+	std::vector<String> rndString;
+	std::vector<std::string> rndStd;	
+	rndStd.reserve(COUNT);
+	rndString.reserve(COUNT);
 
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -730,13 +735,14 @@ void StringBenchmarks::TestReplace()
 		base += " ahoj ";
 		base += StringTests<String>::CreateRandomString(uniform_dist(e));
 		base += " ahoj";
-		rnd.push_back(base);
+		rndString.push_back(base);
+		rndStd.push_back(base);
 	}
 
 	Start("MyString::Replace");
 	for (int i = 0; i < COUNT; i++)
-	{
-		String x = rnd[i].c_str();
+	{		
+		String x = rndString[i];
 		x.Replace("ahoj", "vole");
 		res[i] = static_cast<double>(x.length());
 	}
@@ -745,7 +751,7 @@ void StringBenchmarks::TestReplace()
 	Start("std::string replace-all equivalent");
 	for (int i = 0; i < COUNT; i++)
 	{
-		std::string x = ReplaceAllStd(rnd[i], "ahoj", "vole");
+		std::string x = ReplaceAllStd(rndStd[i], "ahoj", "vole");
 		res[i] = static_cast<double>(x.length());
 	}
 	FinishReferenceRun();
@@ -756,8 +762,10 @@ void StringBenchmarks::TestFind()
 	LogTestStart(__func__);
 
 	std::uniform_int_distribution<int> uniform_dist(24, 96);
-	std::vector<std::string> rnd;
-	rnd.reserve(COUNT);
+	std::vector<String> rndString;
+	std::vector<std::string> rndStd;
+	rndString.reserve(COUNT);
+	rndStd.reserve(COUNT);
 
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -765,13 +773,15 @@ void StringBenchmarks::TestFind()
 		base += " target ";
 		base += StringTests<String>::CreateRandomString(uniform_dist(e));
 		base += " target";
-		rnd.push_back(base);
+
+		rndString.push_back(base);
+		rndStd.push_back(base);
 	}
 
 	Start("MyString::Find + FindAll");
 	for (int i = 0; i < COUNT; i++)
 	{
-		String x = rnd[i].c_str();
+		const String& x = rndString[i];
 		const size_t first = x.Find("target", SearchAlgorithm::DEFAULT);
 		const auto all = x.FindAll("target");
 		res[i] = static_cast<double>(first + all.size());
@@ -781,7 +791,7 @@ void StringBenchmarks::TestFind()
 	Start("std::string::find loop");
 	for (int i = 0; i < COUNT; i++)
 	{
-		const std::string& x = rnd[i];
+		const std::string& x = rndStd[i];
 		size_t first = x.find("target");
 		size_t count = 0;
 		size_t pos = first;
@@ -805,8 +815,10 @@ void StringBenchmarks::TestSplit()
 	LogTestStart(__func__);
 
 	std::uniform_int_distribution<int> uniform_dist(8, 24);
-	std::vector<std::string> rnd;
-	rnd.reserve(COUNT);
+	std::vector<String> rndString;
+	std::vector<std::string> rndStd;
+	rndString.reserve(COUNT);
+	rndStd.reserve(COUNT);
 
 	for (int i = 0; i < COUNT; i++)
 	{
@@ -815,14 +827,15 @@ void StringBenchmarks::TestSplit()
 		base += StringTests<String>::CreateRandomString(uniform_dist(e));
 		base += "  ";
 		base += StringTests<String>::CreateRandomString(uniform_dist(e));
-		rnd.push_back(base);
+		
+		rndString.push_back(base);
+		rndStd.push_back(base);
 	}
 
 	Start("MyString::Split keepEmpty=false");
 	for (int i = 0; i < COUNT; i++)
-	{
-		String x = rnd[i].c_str();
-		const auto parts = x.Split<String>(' ');
+	{		
+		const auto parts = rndString[i].Split<String>(' ');
 		res[i] = static_cast<double>(parts.size());
 	}
 	Finish();
@@ -830,16 +843,15 @@ void StringBenchmarks::TestSplit()
 	Start("std::string split keepEmpty=false");
 	for (int i = 0; i < COUNT; i++)
 	{
-		const auto parts = SplitStd(rnd[i], ' ', false);
+		const auto parts = SplitStd(rndStd[i], ' ', false);
 		res[i] = static_cast<double>(parts.size());
 	}
 	FinishReferenceRun();
 
 	Start("MyString::Split keepEmpty=true");
 	for (int i = 0; i < COUNT; i++)
-	{
-		String x = rnd[i].c_str();
-		const auto parts = x.Split<String>(' ', true);
+	{		
+		const auto parts = rndString[i].Split<String>(' ', true);
 		res[i] = static_cast<double>(parts.size());
 	}
 	Finish();
@@ -847,7 +859,7 @@ void StringBenchmarks::TestSplit()
 	Start("std::string split keepEmpty=true");
 	for (int i = 0; i < COUNT; i++)
 	{
-		const auto parts = SplitStd(rnd[i], ' ', true);
+		const auto parts = SplitStd(rndStd[i], ' ', true);
 		res[i] = static_cast<double>(parts.size());
 	}
 	FinishReferenceRun();
@@ -858,17 +870,22 @@ void StringBenchmarks::TestSubstring()
 	LogTestStart(__func__);
 
 	std::uniform_int_distribution<int> uniform_len(20, 120);
-	std::vector<std::string> rnd;
+	std::vector<String> rndString;
+	std::vector<std::string> rndStd;
 	std::vector<int> starts;
 	std::vector<size_t> lens;
-	rnd.reserve(COUNT);
+	rndString.reserve(COUNT);
+	rndStd.reserve(COUNT);
 	starts.reserve(COUNT);
 	lens.reserve(COUNT);
 
 	for (int i = 0; i < COUNT; i++)
 	{
 		const int len = uniform_len(e);
-		rnd.push_back(StringTests<String>::CreateRandomString(len));
+		auto rnd = StringTests<String>::CreateRandomString(len);
+		
+		rndString.push_back(rnd);
+		rndStd.push_back(rnd);
 
 		std::uniform_int_distribution<int> uniform_start(0, len - 1);
 		const int start = uniform_start(e);
@@ -880,9 +897,8 @@ void StringBenchmarks::TestSubstring()
 
 	Start("MyString::SubString");
 	for (int i = 0; i < COUNT; i++)
-	{
-		String x = rnd[i].c_str();
-		String sub = x.SubString(starts[i], lens[i]);
+	{		
+		String sub = rndString[i].SubString(starts[i], lens[i]);
 		res[i] = static_cast<double>(sub.length());
 	}
 	Finish();
@@ -890,7 +906,7 @@ void StringBenchmarks::TestSubstring()
 	Start("std::string::substr");
 	for (int i = 0; i < COUNT; i++)
 	{
-		std::string sub = rnd[i].substr(static_cast<size_t>(starts[i]), lens[i]);
+		std::string sub = rndStd[i].substr(static_cast<size_t>(starts[i]), lens[i]);
 		res[i] = static_cast<double>(sub.length());
 	}
 	FinishReferenceRun();
