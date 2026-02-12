@@ -16,12 +16,14 @@ BIN = libstrings.a
 
 #=================================================================================
 
+HASHING_FILES = $(wildcard ./hashing/*.cpp)
 LOCALIZATION_FILES = $(wildcard ./SimpleLocalization/*.cpp)
 UNICODE_FILES = $(wildcard ./Unicode/*.cpp)
 ROOT_FILES = $(wildcard ./*.cpp)
 
 
 OBJ = $(addprefix ,$(notdir $(LOCALIZATION_FILES:.cpp=.obj))) \
+	  $(addprefix ,$(notdir $(HASHING_FILES:.cpp=.obj))) \
 	  $(addprefix ,$(notdir $(UNICODE_FILES:.cpp=.obj))) \
 	  $(addprefix ,$(notdir $(ROOT_FILES:.cpp=.obj)))
 
@@ -57,6 +59,9 @@ $(BIN): $(OBJ)
 
 
 #----------- Strings
+
+%.obj: ./hashing/%.cpp
+	$(CC) $(CFLAGS) -c -o $@ $< 
 
 %.obj: ./SimpleLocalization/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< 
