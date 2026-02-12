@@ -90,6 +90,9 @@ int main(int argc, char ** argv)
 	EnableWinConsoleUtf8();
 #endif
 	
+	String xx = "Ahoj svete";
+
+	String sub = xx.SubString(4, 4);
 	
 	//RunAllTest();
 	
