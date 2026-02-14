@@ -341,8 +341,14 @@ RetVal IString<Type>::CreateWithBufferSize(size_t bufferSize)
 		return RetVal();
 	}
 	
-	char* str = new char[bufferSize];
-	str[0] = 0;
+    char* str = new char[bufferSize];
+    str[0] = 0;
+    
+    if constexpr (std::is_same<Type, String>::value)
+    {
+        auto res = Type::CreateFromMoveMemory(str, bufferSize, 0);
+        return res;
+    }
 
 	RetVal res = RetVal();
 	res.ReleaseInternal();
@@ -616,7 +622,7 @@ RET_VAL_STR(void, (std::is_floating_point<T>::value)) IString<Type>::AppendWithD
 	fractional *= mul;
 
 	int fractInt = static_cast<int>(fractional + 0.5);  //+0.5 - round to correct int
-	if (removeTrailingZeroes)
+	if ((removeTrailingZeroes) && (fractInt != 0))
 	{
 		while (fractInt % 10 == 0)
 		{
@@ -1003,15 +1009,21 @@ template <typename Type>
 template <typename RetVal>
 std::vector<RetVal> IString<Type>::Split(const std::vector<char> & delimeters, bool keepEmptyValues) const
 {
+    std::array<char, 256> delimLut = {0};
+    for (auto c : delimeters)
+    {
+        delimLut[c] = 1;
+    }
+    
 	std::vector<RetVal> splited;
+    splited.reserve(4);
 
 	const char * end = static_cast<const Type *>(this)->c_str();
 	const char * start = end;
 	char c = 0;
 	while ((c = *end) != 0)
 	{
-		//if (c == delimeter)
-		if (std::find(delimeters.begin(), delimeters.end(), c) != delimeters.end())
+		if (delimLut[c] == 1)
 		{
 			//splitting
 			size_t len = end - start;
@@ -1019,12 +1031,12 @@ std::vector<RetVal> IString<Type>::Split(const std::vector<char> & delimeters, b
 			{
 				if (keepEmptyValues)
 				{					
-					splited.push_back("");
+					splited.emplace_back("");
 				}
 			}
 			else
 			{				
-				splited.push_back(RetVal(start, len));
+				splited.emplace_back(start, len);
 			}
 
 			start = end + 1;
@@ -1039,12 +1051,12 @@ std::vector<RetVal> IString<Type>::Split(const std::vector<char> & delimeters, b
 	{
 		if (keepEmptyValues)
 		{			
-			splited.push_back("");
+			splited.emplace_back("");
 		}
 	}
 	else
 	{		
-		splited.push_back(RetVal(start, len));
+		splited.emplace_back(start, len);
 	}
 
 	return splited;
@@ -1058,7 +1070,7 @@ std::vector<RetVal> IString<Type>::Split(StringView delimeter, bool keepEmptyVal
 	size_t delimLen = delimeter.length();
 
 	auto pos = this->FindAll(delimeter);
-	pos.push_back(static_cast<const Type*>(this)->length());
+	pos.emplace_back(static_cast<const Type*>(this)->length());
 	
 	const char* str = static_cast<const Type*>(this)->c_str();
 
@@ -1076,8 +1088,8 @@ std::vector<RetVal> IString<Type>::Split(StringView delimeter, bool keepEmptyVal
 		}
 
 		//RetVal r = this->SubString(startPos, len);
-		RetVal r = RetVal(str + startPos, len);
-		res.push_back(r);
+		//RetVal r = RetVal(str + startPos, len);
+		res.emplace_back(str + startPos, len);
 
 		startPos = (pos[i] + delimLen);
 	}

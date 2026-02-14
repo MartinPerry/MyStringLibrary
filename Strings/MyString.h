@@ -36,25 +36,19 @@ namespace mystrlib
 		/// <param name="memSize"></param>
 		/// <param name="strLength"></param>
 		/// <returns></returns>
-		static String CreateFromMoveMemory(char* mem, size_t memSize, size_t strLength = 0)
+		static String CreateFromMoveMemory(char* mem, size_t memSize, size_t strLength = std::numeric_limits<size_t>::max())
 		{
-			String str;
 			if (mem == nullptr)
 			{
-				return str;
+                return String();
 			}
 
-			delete[] str.strPtr;
-
+            String str(true);
+            
 			str.strPtr = mem;
 			str.bufferCapacity = memSize;
-
-			if (strLength == 0)
-			{
-				strLength = strlen(mem);
-			}
-			str.strLength = strLength;
-
+            str.strLength = (strLength == std::numeric_limits<size_t>::max()) ? strlen(mem) : strLength;
+			
 			return str;
 		}
 
@@ -187,6 +181,7 @@ namespace mystrlib
 		/// Get raw inner memory pointer
 		/// data can be modified
 		/// NOTE: Beware of removing terminating NULL !!!
+        /// also mofidication invalidates hash !!!!
 		/// </summary>
 		/// <returns></returns>
 		char* data() const noexcept
@@ -241,7 +236,16 @@ namespace mystrlib
 		size_t bufferCapacity;
 		size_t strLength;
 
-
+        String(bool noInit) :
+            strPtr(nullptr),
+            bufferCapacity(0),
+            strLength(0)
+        {
+            if (noInit == false)
+            {
+                this->CtorInternal(nullptr, 0);
+            }
+        }
 
 		void ReleaseInternal()
 		{
@@ -285,7 +289,8 @@ namespace mystrlib
 
 			this->strPtr = new char[this->bufferCapacity];
 
-			memcpy(this->strPtr, newStr, this->bufferCapacity);	//copy with "null-termination"				
+			memcpy(this->strPtr, newStr, this->strLength);
+            this->strPtr[this->strLength] = 0;
 		};
 
 

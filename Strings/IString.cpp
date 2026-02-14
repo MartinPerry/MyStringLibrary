@@ -405,6 +405,15 @@ void IString<Type>::Trim()
 		newLength--;
 	}
 
+    if (newLength == 0)
+    {
+        start[newLength] = 0;
+        
+        static_cast<Type *>(this)->SetLengthInternal(newLength);
+        this->hashCode = std::numeric_limits<uint32_t>::max();
+        return;
+    }
+    
 	char * end = tmp + newLength - 1;
 	while ((end > tmp) && (*end > 0) && isspace(*end))
 	{
@@ -476,6 +485,12 @@ void IString<Type>::RemoveChar(char t)
 template <typename Type>
 void IString<Type>::RemoveMultipleChars(char t)
 {
+    size_t length = static_cast<const Type *>(this)->length();
+    if (length == 0)
+    {
+        return;
+    }
+    
 	char * str = static_cast<Type *>(this)->str();
 	size_t j = 1;
 	char lastC = str[0];
@@ -509,6 +524,12 @@ void IString<Type>::RemoveMultipleChars(char t)
 template <typename Type>
 void IString<Type>::RemoveNonPrintableChars()
 {
+    size_t length = static_cast<const Type *>(this)->length();
+    if (length == 0)
+    {
+        return;
+    }
+    
 	char* str = static_cast<Type*>(this)->str();
 	size_t j = 0;
 	char* start = str;
@@ -593,6 +614,8 @@ void IString<Type>::Replace(char oldValue, char newValue)
 			str[i] = newValue;
 		}
 	}
+    
+    this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
 template <typename Type>
@@ -833,6 +856,11 @@ bool IString<Type>::IsIntNumber() const
 	if (str[0] == '-')
 	{
 		startPos = 1;
+        
+        if (length == 1)
+        {
+            return false;
+        }
 	}
 
 	for (size_t i = startPos; i < length; i++)
@@ -861,6 +889,11 @@ bool IString<Type>::IsFloatNumber() const
 	if (str[0] == '-')
 	{
 		startPos = 1;
+        
+        if (length == 1)
+        {
+            return false;
+        }
 	}
 
 	int decCount = 0;
@@ -1280,6 +1313,7 @@ Type IString<Type>::SubString(int start, size_t length) const
 
 	const char * str = static_cast<const Type *>(this)->c_str();
 
+    
 	Type s = Type::CreateWithBufferSize(length + 1);
 
 	char * newStr = s.str();
@@ -1415,6 +1449,9 @@ size_t IString<Type>::CLib(const char * needle, size_t start) const
 
 
 
+namespace mystrlib
+{
 template class IString<String>;
 template class IString<SmallString>;
+}
 //template std::vector<MyStringAnsi> IString<MyStringAnsi>::Split(char delimeter, bool keepEmptyValues) const;
