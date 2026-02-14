@@ -43,13 +43,9 @@ namespace mystrlib
                 return String();
 			}
 
-            String str(true);
-            
-			str.strPtr = mem;
-			str.bufferCapacity = memSize;
-            str.strLength = (strLength == std::numeric_limits<size_t>::max()) ? strlen(mem) : strLength;
-			
-			return str;
+            return String(mem,
+				memSize, 
+				(strLength == std::numeric_limits<size_t>::max()) ? strlen(mem) : strLength);            
 		}
 
 		/// <summary>
@@ -236,16 +232,11 @@ namespace mystrlib
 		size_t bufferCapacity;
 		size_t strLength;
 
-        String(bool noInit) :
-            strPtr(nullptr),
-            bufferCapacity(0),
-            strLength(0)
-        {
-            if (noInit == false)
-            {
-                this->CtorInternal(nullptr, 0);
-            }
-        }
+        String(char* mem, size_t memSize, size_t strLength) :
+            strPtr(mem),
+            bufferCapacity(memSize),
+            strLength(strLength)
+        {}
 
 		void ReleaseInternal()
 		{

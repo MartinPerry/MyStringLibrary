@@ -439,13 +439,19 @@ void IString<Type>::Trim()
 template <typename Type>
 void IString<Type>::Reverse()
 {
-	char * str = static_cast<Type *>(this)->str();
-	size_t length = static_cast<const Type *>(this)->length();
-	size_t halfLen = length >> 1;
-	for (size_t i = 0; i < halfLen; i++)
+	char* str = static_cast<Type*>(this)->str();
+	size_t length = static_cast<const Type*>(this)->length();
+
+	char* l = str;
+	char* r = str + (length - 1);
+
+	while (l < r)
 	{
-		SWAP(str[i], str[length - i - 1]);
+		char t = *l;
+		*l++ = *r;
+		*r-- = t;
 	}
+
 	this->hashCode = std::numeric_limits<uint32_t>::max();
 }
 
@@ -1314,15 +1320,26 @@ Type IString<Type>::SubString(int start, size_t length) const
 	const char * str = static_cast<const Type *>(this)->c_str();
 
     
-	Type s = Type::CreateWithBufferSize(length + 1);
+	if constexpr (std::is_same<Type, String>::value)
+	{
+		char* newStr = new char[length + 1];
+		memcpy(newStr, str + start, length);
+		newStr[length] = 0;
 
-	char * newStr = s.str();
-	memcpy(newStr, str + start, length);
-	newStr[length] = 0;
+		return Type(newStr, length + 1, length);
+	}
+	else
+	{
+		Type s = Type::CreateWithBufferSize(length + 1);
 
-	s.SetLengthInternal(length);
+		char* newStr = s.str();
+		memcpy(newStr, str + start, length);
+		newStr[length] = 0;
 
-	return s;
+		s.SetLengthInternal(length);
+
+		return s;
+	}
 }
 
 /// <summary>
