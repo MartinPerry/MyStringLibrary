@@ -515,7 +515,7 @@ void StringTests<T>::TestMethods()
 
 	printf("==== Find (%s) ==== ", __func__);
 
-	T tmpFind = "ahoj vojle ahoj kluku";
+	T tmpFind = "ahoj vojle ahoj kluku pitomej";
 	auto all = tmpFind.FindAll("ahoj");
 
 	
@@ -528,11 +528,11 @@ void StringTests<T>::TestMethods()
 		StringTests<T>::error("Find not working");
 	}
 
-	auto ik1 = tmpFind.Find("kluk", SearchAlgorithm::KMP);
-	auto ik2 = tmpFind.Find("kluk", SearchAlgorithm::DEFAULT);
-	auto ik3 = tmpFind.Find("kluk", SearchAlgorithm::BM);
-	auto ik4 = tmpFind.Find("kluk", SearchAlgorithm::BMH);
-	auto ik5 = tmpFind.Find("kluk", SearchAlgorithm::BF);	
+	auto ik1 = tmpFind.Find("kluku pitomej", SearchAlgorithm::KMP);
+	auto ik2 = tmpFind.Find("kluku pitomej", SearchAlgorithm::DEFAULT);
+	auto ik3 = tmpFind.Find("kluku pitomej", SearchAlgorithm::BM);
+	auto ik4 = tmpFind.Find("kluku pitomej", SearchAlgorithm::BMH);
+	auto ik5 = tmpFind.Find("kluku pitomej", SearchAlgorithm::BF);	
 
 	if (ik1 != 16) StringTests<T>::error("Find not working");
 	if (ik1 != ik2) StringTests<T>::error("Find not working");

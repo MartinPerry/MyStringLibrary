@@ -285,6 +285,44 @@ size_t* StringUtils::BuildBoyerMooreHorspoolLookup(StringView needle)
 
 bool StringUtils::IsSame(const char* str1, const char* str2, size_t len)
 {
+	const uint64_t* p1 = reinterpret_cast<const uint64_t*>(str1);
+	const uint64_t* p2 = reinterpret_cast<const uint64_t*>(str2);
+
+	while (len >= 8)
+	{
+		uint64_t v1 = *p1;
+		uint64_t v2 = *p2;
+
+		if (v1 != v2)
+		{
+			return false;
+		}
+
+		p1++;
+		p2++;
+		len -= 8;
+	}
+
+	const uint8_t* b1 = reinterpret_cast<const uint8_t*>(p1);
+	const uint8_t* b2 = reinterpret_cast<const uint8_t*>(p2);
+
+	while (len--)
+	{
+		uint8_t v1 = *b1;
+		uint8_t v2 = *b2;
+
+		if (v1 != v2)
+		{
+			return false;
+		}
+
+		p1++;
+		p2++;
+	}
+
+	return true;
+
+	/*
 	size_t i = len - 1;
 
 	while (str1[i] == str2[i])
@@ -296,6 +334,7 @@ bool StringUtils::IsSame(const char* str1, const char* str2, size_t len)
 		i--;
 	}
 	return false;
+	*/
 }
 
 /// <summary>

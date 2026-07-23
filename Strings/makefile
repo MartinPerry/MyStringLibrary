@@ -92,8 +92,8 @@ $(APP): $(OBJ)
 %.obj: ./Testing/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.obj: ./SimpleLocalization/%.c
-	$(C_COMPILER) -g -O3 -Wall $(INCLUDE_DIRS) -c -o $@ $<
+#%.obj: ./SimpleLocalization/%.c
+#	$(C_COMPILER) -g -O3 -Wall $(INCLUDE_DIRS) -c -o $@ $<
 
 
 %.obj: ./%.cpp
